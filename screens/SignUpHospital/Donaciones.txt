@@ -1,0 +1,52 @@
+Donación de Sangre:
+
+Tipos de Sangre:
+
+A+
+A-
+B+
+B-
+AB+
+AB-
+O+
+O-
+Compatibilidad:
+
+Receptor de A+ puede recibir de: A+, A-, O+, O-
+Receptor de A- puede recibir de: A-, O-
+Receptor de B+ puede recibir de: B+, B-, O+, O-
+Receptor de B- puede recibir de: B-, O-
+Receptor de AB+ puede recibir de: Todos los grupos sanguíneos (universal)
+Receptor de AB- puede recibir de: AB-, A-, B-, O-
+Receptor de O+ puede recibir de: O+, O-
+Receptor de O- puede recibir de: O-
+
+Donación de Médula Ósea:
+
+La donación de médula ósea se basa en la compatibilidad de antígenos HLA entre el donante y el receptor.
+La mayoría de las donaciones de médula ósea se realizan a personas con enfermedades graves de la sangre, como leucemia, linfoma y anemia aplásica.
+
+Para realizar las pruebas de tipificación HLA, 
+generalmente se extrae una muestra de sangre del individuo. 
+Es similar a cuando te hacen análisis de sangre para verificar tu salud, por ejemplo, 
+para medir tu nivel de glucosa o colesterol.
+
+
+Donación de Plaquetas:
+
+Las plaquetas son componentes de la sangre que ayudan en la coagulación.
+Se pueden donar mediante un proceso llamado aféresis, en el que se extraen solo las plaquetas y se devuelve el resto de la sangre al donante.
+Las plaquetas son vitales para personas con trastornos de coagulación o que han sufrido trauma grave.
+Derivados:
+
+Sangre:
+
+Glóbulos Rojos: Se utilizan para tratar anemia o pérdida de sangre.
+Plasma: Ayuda en la coagulación y se utiliza para tratar quemaduras graves y trastornos de coagulación.
+Crioprecipitado: Rico en factores de coagulación y se utiliza en trastornos de coagulación.
+Médula Ósea:
+
+La donación de médula ósea puede ayudar a tratar enfermedades de la sangre, como la leucemia, al proporcionar células madre sanas que pueden repoblar la médula ósea del receptor.
+Plaquetas:
+
+Las plaquetas se utilizan para tratar personas con bajos recuentos de plaquetas debido a trastornos de la sangre o tratamientos como la quimioterapia.

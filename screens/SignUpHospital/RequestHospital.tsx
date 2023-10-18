@@ -6,16 +6,19 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
-  Platform, Alert
+  Platform,
+  Alert,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Modal from 'react-native-modal'; // Importa la biblioteca para el modal
+import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
 
+const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 export const RequestHospital = (props: any) => {
   const [donationType, setDonationType] = useState('');
+  const [selectedBloodType, setSelectedBloodType] = useState('');
   const [minAge, setMinAge] = useState('');
   const [maxAge, setMaxAge] = useState('');
   const [startDate, setStartDate] = useState(new Date());
@@ -39,10 +42,17 @@ export const RequestHospital = (props: any) => {
     ]);
   };
 
-  const isFormValid = donationType && minAge && maxAge && startDate && endDate;
+  const handleCancel = () => {
+    toggleModal();
+  };
+
+  const isFormValid =
+  (donationType === 'Sangre' && selectedBloodType !== '') ||
+  (donationType === 'Plaquetas' && minAge !== '' && maxAge !== '') ||
+  (donationType === 'Médula' && minAge !== '' && maxAge !== '');
 
   const onChangeStartDate = (event, selectedDate) => {
-    setShowStartDatePicker(Platform.OS === 'ios'); 
+    setShowStartDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
       setStartDate(selectedDate);
       if (endDate < selectedDate) {
@@ -52,7 +62,7 @@ export const RequestHospital = (props: any) => {
   };
 
   const onChangeEndDate = (event, selectedDate) => {
-    setShowEndDatePicker(Platform.OS === 'ios'); 
+    setShowEndDatePicker(Platform.OS === 'ios');
     if (selectedDate) {
       if (selectedDate >= startDate) {
         setEndDate(selectedDate);
@@ -76,23 +86,43 @@ export const RequestHospital = (props: any) => {
         <Picker.Item label="Plaquetas" value="Plaquetas" />
       </Picker>
 
-      <Text style={styles.label}>De qué edad a qué edad</Text>
-      <View style={styles.ageContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Mínima"
-          keyboardType="numeric"
-          value={minAge}
-          onChangeText={(text) => setMinAge(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Máxima"
-          keyboardType="numeric"
-          value={maxAge}
-          onChangeText={(text) => setMaxAge(text)}
-        />
-      </View>
+      {donationType === 'Sangre' && (
+        <>
+          <Text style={styles.label}>Tipo de sangre</Text>
+          <Picker
+            selectedValue={selectedBloodType}
+            onValueChange={(itemValue) => setSelectedBloodType(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Seleccione" value="" />
+            {bloodTypes.map((type) => (
+              <Picker.Item label={type} value={type} key={type} />
+            ))}
+          </Picker>
+        </>
+      )}
+
+      {(donationType === 'Médula' || donationType === 'Plaquetas') && (
+        <>
+          <Text style={styles.label}>De qué edad a qué edad</Text>
+          <View style={styles.ageContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Mínima"
+              keyboardType="numeric"
+              value={minAge}
+              onChangeText={(text) => setMinAge(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Máxima"
+              keyboardType="numeric"
+              value={maxAge}
+              onChangeText={(text) => setMaxAge(text)}
+            />
+          </View>
+        </>
+      )}
 
       <Text style={styles.label}>A partir de cuando</Text>
       <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
@@ -122,31 +152,47 @@ export const RequestHospital = (props: any) => {
       )}
 
       <TouchableOpacity
-        style={[styles.button, isFormValid ? styles.buttonEnabled : styles.buttonDisabled]}
-        onPress={handleConfirm}
+        style={[
+          styles.button,
+          isFormValid ? styles.buttonEnabled : styles.buttonDisabled,
+        ]}
+        onPress={() => {
+          if (isFormValid) toggleModal();
+        }}
         disabled={!isFormValid}
       >
         <Text style={styles.buttonText}>Confirmar</Text>
       </TouchableOpacity>
 
       <Modal isVisible={isModalVisible}>
-      <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>Datos Confirmados</Text>
-        <Text style={styles.modalText}>Tipo de donación requerida: {donationType}</Text>
-        <Text style={styles.modalText}>Edad mínima: {minAge}</Text>
-        <Text style={styles.modalText}>Edad máxima: {maxAge}</Text>
-        <Text style={styles.modalText}>Fecha de inicio: {startDate.toDateString()}</Text>
-        <Text style={styles.modalText}>Fecha de fin: {endDate.toDateString()}</Text>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Datos Confirmados</Text>
+          {donationType === 'Sangre' && selectedBloodType && (
+            <Text style={styles.modalText}>Tipo de donación: Sangre {selectedBloodType}</Text>
+          )}
+          {(donationType === 'Médula' || donationType === 'Plaquetas') && (
+            <>
+              <Text style={styles.modalText}>Tipo de donación: {donationType}</Text>
+              <Text style={styles.modalText}>Edad mínima: {minAge}</Text>
+              <Text style={styles.modalText}>Edad máxima: {maxAge}</Text>
+            </>
+          )}
+          <Text style={styles.modalText}>Fecha de inicio: {startDate.toDateString()}</Text>
+          <Text style={styles.modalText}>Fecha de fin: {endDate.toDateString()}</Text>
 
-        <TouchableOpacity onPress={() => handleConfirm()} style={styles.modalCloseButton}>
-          <Text style={styles.modalCloseButtonText}>Solicitar</Text>
-        </TouchableOpacity>
-      </View>
-    </Modal>
+          <TouchableOpacity onPress={() => handleConfirm()} style={styles.modalCloseButton}>
+            <Text style={styles.modalCloseButtonText}>Solicitar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => handleCancel()} style={styles.modalCloseButton}>
+            <Text style={styles.modalCloseButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   title: {
@@ -155,7 +201,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     color: '#A4161A',
     textAlign: 'center',
-    fontWeight: 'bold', // Added fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   container: {
     flex: 1,
@@ -192,9 +238,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 10,
     marginBottom: 10,
-    textAlign: 'center', // Center align text
-    fontSize: 18, // Adjust font size
-    lineHeight: 40, // Center vertically in the input box
+    textAlign: 'center',
+    fontSize: 18,
+    lineHeight: 40,
   },
   button: {
     backgroundColor: '#3498db',
@@ -238,6 +284,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#A4161A',
+  },
+  validationError: {
+    color: 'red',  // Puedes personalizar este estilo según tus preferencias
+    fontSize: 16,
+    marginBottom: 10,
   },
 });
 
