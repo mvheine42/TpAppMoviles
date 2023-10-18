@@ -11,6 +11,7 @@ import Proceso from './Proceso';
 import Hospitales from './Hospitales';
 import Hospital from './Hospital';
 import QuieroDonar from './QuieroDonar';
+import GraciasScreen from './GraciasScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,6 +41,7 @@ function HospitalesStackNavigation(){
     <Stack.Navigator>
       <Stack.Screen name="Hospitales" component={Hospitales} options={{ headerShown: false }}/>
       <Stack.Screen name="Hospital" component={HospitalStackNavigation} options={{ headerShown: false }}/>
+      
     </Stack.Navigator>
   );
 }

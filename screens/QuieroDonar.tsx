@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import CheckBox from '@react-native-community/checkbox';
+import GraciasScreen from './GraciasScreen';
 
-const QuieroDonar = () => {
+export const QuieroDonar = (props: any) => {
   const greenStyle = {
     selectedDayBackgroundColor: 'green',
     selectedDayTextColor: 'white',
@@ -20,20 +22,22 @@ const QuieroDonar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedHorario, setSelectedHorario] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [acceptRequerimientos, setAcceptRequerimientos] = useState(false);
 
-  // Nuevo estado para mantener las fechas seleccionadas
-  //hola cami
-  const [markedDates, setMarkedDates] = useState({});
+  const [markedDates, setMarkedDates ]= useState({});
+
+  const horariosNoDisponibles = {
+    '2023-10-18': ['11:00', '12:00'],
+    '2023-10-19': ['09:00', '13:00'],
+  };
 
   const handleDayPress = (day) => {
     const selectedDateString = day.dateString;
     setSelectedDate(selectedDateString);
-  
-    // Actualizar el estado de las fechas seleccionadas
+
     setMarkedDates({ [selectedDateString]: { selected: true } });
 
     if (selectedHorario) {
-      // Mostrar el modal solo si ambos, la fecha y el horario, están seleccionados.
       setShowConfirmationModal(true);
     }
   };
@@ -41,49 +45,74 @@ const QuieroDonar = () => {
   const hideConfirmationModal = () => {
     setSelectedHorario(null);
     setShowConfirmationModal(false);
+    setAcceptRequerimientos(false);
   };
 
   const handleHorarioPress = (horario) => {
-    setSelectedHorario(horario);
-    setShowConfirmationModal(true);
+    const horariosNoDisponiblesParaFecha = horariosNoDisponibles[selectedDate] || [];
+    const isNoDisponible = horariosNoDisponiblesParaFecha.includes(horario);
+  
+    if (!isNoDisponible) {
+      setSelectedHorario(horario);
+      setShowConfirmationModal(true);
+    }
+  };
+
+  const handleAcceptRequerimientosChange = () => {
+    setAcceptRequerimientos(!acceptRequerimientos);
   };
 
   const renderHorarioGrid = () => {
     if (!selectedDate) {
-      return null; // No mostrar la grilla si no se ha seleccionado una fecha.
+      return null; // No mostrar la cuadrícula de horarios si no se ha seleccionado una fecha.
     }
-  
+
     const horaInicio = 6;
     const horaFin = 20;
-    const horarios = [];
-  
-    for (let hora = horaInicio; hora <= horaFin; hora++) {
-      const horaString = hora < 10 ? `0${hora}:00` : `${hora}:00`;
-      horarios.push(horaString);
-    }
-  
+    const horariosNoDisponiblesParaFecha = horariosNoDisponibles[selectedDate] || [];
+
     const rows = [];
     const columnsPerRow = 5; // 5 columnas por fila
-  
-    for (let i = 0; i < horarios.length; i += columnsPerRow) {
-      rows.push(horarios.slice(i, i + columnsPerRow));
+    const rowsPerGrid = 3; // 3 filas en la cuadrícula
+
+    for (let hora = horaInicio; hora <= horaFin; hora++) {
+      const horaString = hora < 10 ? `0${hora}:00` : `${hora}:00`;
+      const isNoDisponible = horariosNoDisponiblesParaFecha.includes(horaString);
+
+      const estilo = [styles.horaBox, isNoDisponible ? styles.horaBoxNoDisponible : null];
+
+      rows.push(
+        <Text
+          key={horaString}
+          style={estilo}
+          onPress={() => handleHorarioPress(horaString)}
+        >
+          {horaString}
+        </Text>
+      );
     }
-  
+
+    const grid = [];
+    for (let i = 0; i < rows.length; i += columnsPerRow) {
+      grid.push(
+        <View key={i} style={styles.horarioRow}>
+          {rows.slice(i, i + columnsPerRow)}
+        </View>
+      );
+    }
+
+    const groupedGrid = [];
+    for (let i = 0; i < grid.length; i += rowsPerGrid) {
+      groupedGrid.push(
+        <View key={i} style={styles.horarioGrid}>
+          {grid.slice(i, i + rowsPerGrid)}
+        </View>
+      );
+    }
+
     return (
-      <View style={styles.horarioGrid}>
-        {rows.map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.horarioRow}>
-            {row.map((horario, columnIndex) => (
-              <Text
-                key={columnIndex}
-                style={styles.horaBox}
-                onPress={() => handleHorarioPress(horario)}
-              >
-                {horario}
-              </Text>
-            ))}
-          </View>
-        ))}
+      <View>
+        {groupedGrid}
       </View>
     );
   };
@@ -100,7 +129,7 @@ const QuieroDonar = () => {
           minDate={minDate}
           maxDate={maxDate}
           onDayPress={handleDayPress}
-          markedDates={markedDates} // Agregar las fechas seleccionadas
+          markedDates={markedDates}
         />
       </View>
       {showConfirmationModal && (
@@ -109,12 +138,23 @@ const QuieroDonar = () => {
             <View style={styles.modalView}>
               <Text style={styles.selectedDateText}>{selectedDate}</Text>
               <Text style={styles.selectedHorarioText}>{selectedHorario}</Text>
+              <View style={styles.checkboxContainer}>
+                <CheckBox
+                  value={acceptRequerimientos}
+                  onValueChange={handleAcceptRequerimientosChange}
+                />
+                <Text style={styles.checkboxText}>Acepto y leí los requerimientos para donar</Text>
+              </View>
               <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={hideConfirmationModal}
+                style={[styles.confirmButton, !acceptRequerimientos && styles.disabledButton]}
+                onPress={() => props.navigation.navigate(GraciasScreen)}
+                disabled={!acceptRequerimientos}
               >
                 <Text style={styles.confirmButtonText}>Confirmar</Text>
               </TouchableOpacity>
+              <TouchableOpacity style={styles.closeButton} onPress={hideConfirmationModal}>
+                <Text style={styles.closeButtonText}>Cerrar</Text>
+</TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -185,8 +225,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   horarioGrid: {
-    flex: 1,
-    flexDirection: 'column',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     padding: 10,
@@ -196,12 +235,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   horaBox: {
-    width: '16%',
-    height: 60,
+    width: '18%', // Ajusta el ancho según tus preferencias
+    height: 70, // Ajusta el alto según tus preferencias
     borderWidth: 2,
     borderColor: 'rgb(173, 193, 120)',
-    alignItems: 'center', // Centra horizontalmente
-    justifyContent: 'center', // Centra verticalmente
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'rgb(221, 229, 182)',
     borderRadius: 10,
     margin: '1%',
@@ -213,8 +252,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 5,
-    textAlign: 'center', // Centra el texto horizontalmente
+    textAlign: 'center',
     textAlignVertical: 'center',
+  },
+  horaBoxNoDisponible: {
+    backgroundColor: 'gray', // Cambia el color de fondo a gris para los horarios no disponibles
   },
   selectedDateText: {
     fontSize: 18,
@@ -222,11 +264,32 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   selectedHorarioText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'green',
+    fontSize: 16,
+    color: 'gray',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  checkboxText: {
+    marginLeft: 10,
+  },
+  disabledButton: {
+    backgroundColor: 'gray', // Cambia el color del botón cuando está deshabilitado
+  },
+  closeButton: {
+    backgroundColor: 'red', // Puedes personalizar el color de fondo
+    padding: 10,
+    borderRadius: 10,
     marginTop: 10,
   },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  
 });
 
 export default QuieroDonar;

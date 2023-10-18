@@ -15,6 +15,7 @@ import { TabScreen } from './TabScreen';
 import { CargarTurnos } from './CargarTurnos';
 import { TipoDeUsuario } from './TipoDeUsuario';
 import QuieroDonar from './QuieroDonar';
+import GraciasScreen from './GraciasScreen';
 
 
 
@@ -35,5 +36,6 @@ export {
     TabScreen, 
     CargarTurnos,
     QuieroDonar,
-    TipoDeUsuario
+    TipoDeUsuario,
+    GraciasScreen,
 }

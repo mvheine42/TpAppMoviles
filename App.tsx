@@ -6,8 +6,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {EligeFactorRH, EligeTipoDeSangre, Home, Hospital, Hospitales, Login, MyProfile, Proceso, Requerimientos, 
-  VerificacionDeDatos, Turnos, CargarTurnos, TabScreen, TipoDeUsuario, QuieroDonar, SignUpDonante} from './screens';
+  VerificacionDeDatos, Turnos, CargarTurnos, TabScreen, TipoDeUsuario, QuieroDonar, SignUpDonante, GraciasScreen} from './screens';
 import { SignUpHospital, HomeHospital, MyProfileHospital, RequestHospital, VerificacionDeDatosHospital, TurnosHospital, CalendarioHospital } from './screens/SignUpHospital/IndexHospital';
+import { panGestureHandlerCustomNativeProps } from 'react-native-gesture-handler/lib/typescript/handlers/PanGestureHandler';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,7 @@ const App = () => {
         <Stack.Screen name="VerificacionDeDatosHospital" component={VerificacionDeDatosHospital} options={{ headerShown: false }} />
         <Stack.Screen name="TurnosHospital" component={TurnosHospital} options={{ headerShown: false }} />
         <Stack.Screen name="CalendarioHospital" component={CalendarioHospital} options={{ headerShown: false }} />
+        <Stack.Screen name="GraciasScreen" component={GraciasScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
