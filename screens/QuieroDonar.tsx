@@ -20,8 +20,9 @@ const QuieroDonar = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedHorario, setSelectedHorario] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  
+
   // Nuevo estado para mantener las fechas seleccionadas
+  //hola cami
   const [markedDates, setMarkedDates] = useState({});
 
   const handleDayPress = (day) => {
