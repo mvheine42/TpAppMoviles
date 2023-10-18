@@ -164,8 +164,13 @@ export const RequestHospital = (props: any) => {
         <Text style={styles.buttonText}>Confirmar</Text>
       </TouchableOpacity>
 
+      
       <Modal isVisible={isModalVisible}>
         <View style={styles.modalContainer}>
+          <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>x</Text>
+          </TouchableOpacity>
+
           <Text style={styles.modalTitle}>Datos Confirmados</Text>
           {donationType === 'Sangre' && selectedBloodType && (
             <Text style={styles.modalText}>Tipo de donación: Sangre {selectedBloodType}</Text>
@@ -180,16 +185,12 @@ export const RequestHospital = (props: any) => {
           <Text style={styles.modalText}>Fecha de inicio: {startDate.toDateString()}</Text>
           <Text style={styles.modalText}>Fecha de fin: {endDate.toDateString()}</Text>
 
-          <TouchableOpacity onPress={() => handleConfirm()} style={styles.modalCloseButton}>
+          <TouchableOpacity onPress={handleConfirm} style={styles.modalCloseButton}>
             <Text style={styles.modalCloseButtonText}>Solicitar</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => handleCancel()} style={styles.modalCloseButton}>
-            <Text style={styles.modalCloseButtonText}>Cancelar</Text>
-          </TouchableOpacity>
-
         </View>
       </Modal>
+
     </ScrollView>
   );
 };
@@ -289,6 +290,15 @@ const styles = StyleSheet.create({
     color: 'red',  // Puedes personalizar este estilo según tus preferencias
     fontSize: 16,
     marginBottom: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 3,
+    right: 20,
+  },
+  closeButtonText: {
+    fontSize: 28,
+    color: 'black',  // Color de la "X"
   },
 });
 
