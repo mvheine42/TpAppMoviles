@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native';
+import Modal from 'react-native-modal';
+import { useNavigation } from '@react-navigation/native';
+
+const trashImage = require('../imagenes/basura.png');
 
 const mockSolicitudesEnCurso = [
   { id: '1', tipo: 'Sangre A+', edadMinima: 18, edadMaxima: 60, tiempoExpiracion: 30 },
@@ -12,26 +16,30 @@ const mockSolicitudesEnCurso = [
   { id: '8', tipo: 'Sangre AB+', edadMinima: 25, edadMaxima: 65, tiempoExpiracion: 18 },
   { id: '9', tipo: 'Sangre B+', edadMinima: 20, edadMaxima: 50, tiempoExpiracion: 22 },
   { id: '10', tipo: 'Médula', edadMinima: 18, edadMaxima: 60, tiempoExpiracion: 30 },
+
 ];
 
-export const PedidosEnCurso = (props: any) => {
+export const PedidosEnCurso = () => {
   const [solicitudes, setSolicitudes] = useState(mockSolicitudesEnCurso);
+  const [selectedSolicitud, setSelectedSolicitud] = useState(null);
+  const [isConfirmationVisible, setConfirmationVisible] = useState(false);
+
+  const navigation = useNavigation();
 
   const cancelarSolicitud = (id) => {
-    Alert.alert(
-      'Confirmar',
-      '¿Estás seguro de que deseas cancelar esta solicitud?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Sí',
-          onPress: () => {
-            setSolicitudes(solicitudes.filter((solicitud) => solicitud.id !== id));
-          },
-        },
-      ],
-      { cancelable: true }
-    );
+    setSelectedSolicitud(id);
+    setConfirmationVisible(true);
+  };
+
+  const confirmCancellation = () => {
+    setSolicitudes((prevSolicitudes) => prevSolicitudes.filter((solicitud) => solicitud.id !== selectedSolicitud));
+    setSelectedSolicitud(null);
+    setConfirmationVisible(false);
+  };
+
+  const cancelCancellation = () => {
+    setSelectedSolicitud(null);
+    setConfirmationVisible(false);
   };
 
   const renderSolicitud = ({ item }) => {
@@ -41,7 +49,12 @@ export const PedidosEnCurso = (props: any) => {
 
     return (
       <View style={styles.solicitudContainer}>
-        <Text style={styles.solicitudTitle}>{titulo}</Text>
+        <View style={styles.solicitudInfo}>
+          <Text style={styles.solicitudTitle}>{titulo}</Text>
+          <TouchableOpacity onPress={() => cancelarSolicitud(id)}>
+            <Image source={trashImage} style={styles.trashIcon} />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.solicitudText}>
           Edad mínima: {edadMinima} años
         </Text>
@@ -51,22 +64,32 @@ export const PedidosEnCurso = (props: any) => {
         <Text style={styles.solicitudText}>
           Tiempo de expiración: {tiempoExpiracion} {tiempoExpiracionTexto}
         </Text>
-        <TouchableOpacity onPress={() => cancelarSolicitud(id)}>
-          <Text style={styles.cancelarText}>Cancelar</Text>
-        </TouchableOpacity>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text onPress={() => props.navigation.navigate('HomeHospital')} style={styles.backButton}>{'<'}</Text>
       <Text style={styles.title}>Solicitudes en Curso</Text>
       <FlatList
         data={solicitudes}
         keyExtractor={(item) => item.id}
         renderItem={renderSolicitud}
       />
+
+      <Modal isVisible={isConfirmationVisible}>
+        <View style={styles.confirmationModal}>
+          <Text style={styles.confirmationQuestion}>¿Estás seguro de cancelar esta solicitud?</Text>
+          <View style={styles.confirmationButtons}>
+            <TouchableOpacity onPress={cancelCancellation} style={styles.confirmationButton}>
+              <Text style={styles.confirmationButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={confirmCancellation} style={styles.confirmationButton}>
+              <Text style={styles.confirmationButtonText}>Aceptar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -89,7 +112,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'left',
     position: 'absolute',
-    left: 10,
+    left: 2,
     top: 10,
   },
   solicitudContainer: {
@@ -99,10 +122,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 10,
   },
+  solicitudInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   solicitudTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
     color: '#A4161A',
   },
   solicitudText: {
@@ -110,10 +138,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
   },
-  cancelarText: {
+  trashIcon: {
+    width: 20,
+    height: 20,
+  },
+  confirmationModal: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+  },
+  confirmationQuestion: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: 'black',
+  },
+  confirmationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  confirmationButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  confirmationButtonText: {
+    fontSize: 20,
     color: '#A4161A',
     fontWeight: 'bold',
-    fontSize: 18,
   },
 });
 
