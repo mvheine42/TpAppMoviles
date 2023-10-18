@@ -1,12 +1,11 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const masImage = require('./imagenes/mas.png');
-const menosImage = require('./imagenes/menos.png');
-
-export const EligeFactorRH = (props: any) => {
-  const options = ['+', '-'];
+export const TipoDeUsuario = (props: any) => {
+  const options = ['Donante', 'Hospital'];
   const [selectedOption, setSelectedOption] = useState(null);
+  const navigation = useNavigation();
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -16,9 +15,19 @@ export const EligeFactorRH = (props: any) => {
     return selectedOption === option;
   };
 
+  const handleContinue = () => {
+    if (selectedOption === 'Donante') {
+      navigation.navigate('SignUpDonante');
+    } else if (selectedOption === 'Hospital') {
+      navigation.navigate('SignUpHospital');
+    }
+  };
+
+  const isContinueDisabled = selectedOption === null; // Si no hay opción seleccionada, el botón estará deshabilitado
+
   return (
     <View style={styles.container}>
-      <Text style={styles.mainText}>¿Qué factor RH eres?</Text>
+      <Text style={styles.mainText}>Tipo de Usuario</Text>
 
       {options.map((option) => (
         <TouchableOpacity
@@ -36,8 +45,9 @@ export const EligeFactorRH = (props: any) => {
       ))}
 
       <TouchableOpacity
-        onPress={() => props.navigation.navigate('VerificacionDeDatos')}
-        style={styles.continueButton}
+        onPress={handleContinue}
+        style={[styles.continueButton, isContinueDisabled && styles.disabledButton]}
+        disabled={isContinueDisabled}
       >
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>
@@ -73,7 +83,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   optionText: {
-    fontSize: 90,
+    fontSize: 45,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
@@ -101,5 +111,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#660708',
     textAlign: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#A8A8A880',
   },
 });

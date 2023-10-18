@@ -1,11 +1,11 @@
 import {Login} from './Login';
-import {SignUp} from './SignUp';
+import {SignUpDonante} from './SignUpDonante/SignUpDonante';
 import { MyProfile } from './MyProfile';
 import { Home } from './Home';
-import { EligeQueDonar } from './EligeQueDonar';
-import {EligeTipoDeSangre} from './EligeTipoDeSangre';
-import {EligeFactorRH} from './EligeFactorRH';
-import {VerificacionDeDatos} from './VerificacionDeDatos';
+import { EligeQueDonar } from './SignUpDonante/EligeQueDonar';
+import {EligeTipoDeSangre} from './SignUpDonante/EligeTipoDeSangre';
+import {EligeFactorRH} from './SignUpDonante/EligeFactorRH';
+import {VerificacionDeDatos} from './SignUpDonante/VerificacionDeDatos';
 import Hospitales from './Hospitales';
 import Requerimientos from './Requerimientos';
 import Proceso from './Proceso';
@@ -13,11 +13,14 @@ import Hospital from './Hospital';
 import Turnos from './Turnos';
 import { TabScreen } from './TabScreen';
 import { CargarTurnos } from './CargarTurnos';
+import { TipoDeUsuario } from './TipoDeUsuario';
 import QuieroDonar from './QuieroDonar';
+
+
 
 export {
     Login,
-    SignUp,
+    SignUpDonante,
     MyProfile,
     Home,
     EligeQueDonar,
@@ -32,4 +35,5 @@ export {
     TabScreen, 
     CargarTurnos,
     QuieroDonar,
+    TipoDeUsuario
 }
