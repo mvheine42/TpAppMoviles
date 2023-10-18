@@ -64,7 +64,7 @@ export const QuieroDonar = (props: any) => {
 
   const renderHorarioGrid = () => {
     if (!selectedDate) {
-      return null; // No mostrar la cuadrícula de horarios si no se ha seleccionado una fecha.
+      return null; 
     }
 
     const horaInicio = 6;
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
   horaBoxNoDisponible: {
-    backgroundColor: 'gray', // Cambia el color de fondo a gris para los horarios no disponibles
+    backgroundColor: 'gray',
   },
   selectedDateText: {
     fontSize: 18,
@@ -276,10 +276,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   disabledButton: {
-    backgroundColor: 'gray', // Cambia el color del botón cuando está deshabilitado
+    backgroundColor: 'gray', 
   },
   closeButton: {
-    backgroundColor: 'red', // Puedes personalizar el color de fondo
+    backgroundColor: 'red', 
     padding: 10,
     borderRadius: 10,
     marginTop: 10,

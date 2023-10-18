@@ -12,6 +12,7 @@ import Hospitales from './Hospitales';
 import Hospital from './Hospital';
 import QuieroDonar from './QuieroDonar';
 import GraciasScreen from './GraciasScreen';
+import TiposHospital from './TiposHospital';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,9 +40,17 @@ function MyProfileStackNavigation(){
 function HospitalesStackNavigation(){
   return(
     <Stack.Navigator>
+      <Stack.Screen name="TiposHospital" component={TiposHospital} options={{ headerShown: false }}/>
+      <Stack.Screen name="Hospitales" component={ListaDeHospitales} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+
+function ListaDeHospitales(){
+  return(
+    <Stack.Navigator>
       <Stack.Screen name="Hospitales" component={Hospitales} options={{ headerShown: false }}/>
       <Stack.Screen name="Hospital" component={HospitalStackNavigation} options={{ headerShown: false }}/>
-      
     </Stack.Navigator>
   );
 }

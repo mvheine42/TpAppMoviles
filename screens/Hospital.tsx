@@ -12,6 +12,7 @@ export const Hospital = (props: any) => {
         source={require('./imagenes/Untitled.png')}
         style={styles.image}
       />
+      <Text style={styles.texto}>La historia de esta centenaria institución se remonta a 1888, cuando en razón de la importante epidemia de enfermedades de transmisión sexual, la Comisión de Higiene del Concejo Municipal de la Ciudad de Buenos Aires creó el Dispensario de Salubridad y el Sifilocomio Municipal, destinando una importante suma de dinero para la construcción de un edificio, aún cuando en la práctica y por largos años, se utilizó un antiguo frenocomio privado ubicado en la actual manzana del hospital Fernández.</Text>
       <TouchableOpacity style={styles.donarButton} onPress={() => props.navigation.navigate('QuieroDonar')}>
         <Text style={styles.donarButtonText}>Quiero donar</Text>
       </TouchableOpacity>
@@ -60,6 +61,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  texto:{
+    fontSize: 14,
+    color: 'grey',
+    marginHorizontal: 10,
+    justifyContent: 'center',
+  }
 });
 
 export default Hospital;

@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 const data = [
-  { id: '1', text: 'Sangre', category: 'Sangre' },
-  { id: '2', text: 'Plaquetas', category: 'Plaquetas' },
-  { id: '3', text: 'Medula', category: 'Médula' },
-  { id: '4', text: 'Sangre', category: 'Sangre' },
-  { id: '5', text: 'Plaquetas', category: 'Plaquetas' },
-  { id: '6', text: 'Medula', category: 'Médula' },
-  { id: '7', text: 'Sangre', category: 'Sangre' },
-  { id: '8', text: 'Plaquetas', category: 'Plaquetas' },
-  { id: '9', text: 'Medula', category: 'Médula' },
-  { id: '10', text: 'Sangre', category: 'Sangre' },
-  { id: '11', text: 'Plaquetas', category: 'Plaquetas' },
-  { id: '12', text: 'Medula', category: 'Médula' },
+  { id: '1', text: 'Sangre 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '2', text: 'Plaquetas', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '3', text: 'Medula', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '4', text: 'Sangre 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '5', text: 'Plaquetas', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '6', text: 'Medula', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '7', text: 'Sangre 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '8', text: 'Plaquetas', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '9', text: 'Medula', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
 ];
 
 const categories = Array.from(new Set(data.map((item) => item.category)));
@@ -26,18 +23,10 @@ interface Item {
   category: string;
 }
 
-const renderItem = ({ item }: { item: Item }) => (
-  <View style={styles.item}>
-    <Text style={styles.itemText}>{item.text}</Text>
-  </View>
-);
-
 export const Home = (props: any) => {
-  const [selectedCategories, setSelectedCategories] = useState(['Sangre']); // Inicialmente muestra la categoría 'Sangre'
+  const [selectedCategories, setSelectedCategories] = useState(['Sangre']);
 
-  // Función para cambiar las categorías seleccionadas
   const toggleCategory = (category: string) => {
-    // Si la categoría ya está seleccionada, la eliminamos; de lo contrario, la agregamos.
     setSelectedCategories((prevCategories) =>
       prevCategories.includes(category)
         ? prevCategories.filter((c) => c !== category)
@@ -45,9 +34,22 @@ export const Home = (props: any) => {
     );
   };
 
-  // Filtra los elementos basados en las categorías seleccionadas
   const filteredData = data.filter((item) =>
     selectedCategories.includes(item.category)
+  );
+
+  const navigateToAnotherScreen = (itemId: string) => {
+    // Reemplaza 'NombreDeLaPantalla' con el nombre de la pantalla a la que deseas navegar
+    props.navigation.navigate('Hospital', { itemId });
+  };
+
+  const renderItem = ({ item }: { item: Item }) => (
+    <TouchableOpacity onPress={() => navigateToAnotherScreen(item.id)}>
+      <View style={styles.item}>
+        <Text style={styles.itemText}>{item.text}</Text>
+        <Image source={{ uri: item.image }} style={styles.itemImage} />
+      </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -57,6 +59,7 @@ export const Home = (props: any) => {
       </View>
       <View style={styles.tituloNoticias}>
         <Text style={styles.noticiasText}>DONACIONES</Text>
+        <Text style={styles.noticiaSubBText}>Hecho especialmente para tí</Text>
       </View>
       <View style={styles.categoryButtons}>
         {categories.map((category) => (
@@ -209,5 +212,16 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  itemImage: {
+    width: 150,
+    height: 150,
+    resizeMode: 'cover', // Puedes ajustar esto según tus necesidades
+    marginBottom: 10, // Agrega espacio entre la imagen y el texto
+  },
+  noticiaSubBText:{
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: 'rgb(229, 56, 59)'
   },
 });

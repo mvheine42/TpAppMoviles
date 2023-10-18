@@ -16,6 +16,8 @@ import { CargarTurnos } from './CargarTurnos';
 import { TipoDeUsuario } from './TipoDeUsuario';
 import QuieroDonar from './QuieroDonar';
 import GraciasScreen from './GraciasScreen';
+import { PedidosEnCurso } from './SignUpHospital/PedidosEnCurso';
+import TiposHospital from './TiposHospital';
 
 
 
@@ -38,4 +40,6 @@ export {
     QuieroDonar,
     TipoDeUsuario,
     GraciasScreen,
+    PedidosEnCurso,
+    TiposHospital,
 }
