@@ -4,7 +4,7 @@ import { RequestHospital } from "./RequestHospital";
 import { SignUpHospital} from "./SignUpHospital";
 import {VerificacionDeDatosHospital} from "./VerificacionDeDatosHospital";
 import {TurnosHospital} from "./TurnosHospital";
-import {CalendarioHospital} from "./CalendarioHospital";
+import { PedidosEnCurso } from "./PedidosEnCurso";
 
 
 export{
@@ -14,5 +14,5 @@ export{
     SignUpHospital,
     VerificacionDeDatosHospital,
     TurnosHospital,
-    CalendarioHospital
+    PedidosEnCurso
 }

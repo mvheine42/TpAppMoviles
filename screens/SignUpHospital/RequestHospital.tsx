@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Platform, Alert
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Modal from 'react-native-modal'; // Importa la biblioteca para el modal
+import { useNavigation } from '@react-navigation/native';
 
-export const RequestHospital = (props) => {
+
+export const RequestHospital = (props: any) => {
   const [donationType, setDonationType] = useState('');
   const [minAge, setMinAge] = useState('');
   const [maxAge, setMaxAge] = useState('');
@@ -12,25 +23,28 @@ export const RequestHospital = (props) => {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const navigation = useNavigation();
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   const handleConfirm = () => {
-    console.log('Solicitud confirmada:', {
-      donationType,
-      minAge,
-      maxAge,
-      startDate,
-      endDate,
-    });
     setIsConfirmed(true);
+    toggleModal();
+    Alert.alert('Solicitud Confirmada', 'La solicitud se realizó con éxito.', [
+      { text: 'OK', onPress: () => navigation.navigate('HomeHospital') },
+    ]);
   };
 
   const isFormValid = donationType && minAge && maxAge && startDate && endDate;
 
   const onChangeStartDate = (event, selectedDate) => {
-    setShowStartDatePicker(Platform.OS === 'ios'); // Show date picker for iOS immediately
+    setShowStartDatePicker(Platform.OS === 'ios'); 
     if (selectedDate) {
       setStartDate(selectedDate);
-      // Ensure endDate is not before startDate
       if (endDate < selectedDate) {
         setEndDate(selectedDate);
       }
@@ -38,9 +52,8 @@ export const RequestHospital = (props) => {
   };
 
   const onChangeEndDate = (event, selectedDate) => {
-    setShowEndDatePicker(Platform.OS === 'ios'); // Show date picker for iOS immediately
+    setShowEndDatePicker(Platform.OS === 'ios'); 
     if (selectedDate) {
-      // Ensure endDate is not before startDate
       if (selectedDate >= startDate) {
         setEndDate(selectedDate);
       }
@@ -113,11 +126,27 @@ export const RequestHospital = (props) => {
         onPress={handleConfirm}
         disabled={!isFormValid}
       >
-        <Text style={[styles.buttonText]}>Confirmar</Text>
+        <Text style={styles.buttonText}>Confirmar</Text>
       </TouchableOpacity>
+
+      <Modal isVisible={isModalVisible}>
+      <View style={styles.modalContainer}>
+        <Text style={styles.modalTitle}>Datos Confirmados</Text>
+        <Text style={styles.modalText}>Tipo de donación requerida: {donationType}</Text>
+        <Text style={styles.modalText}>Edad mínima: {minAge}</Text>
+        <Text style={styles.modalText}>Edad máxima: {maxAge}</Text>
+        <Text style={styles.modalText}>Fecha de inicio: {startDate.toDateString()}</Text>
+        <Text style={styles.modalText}>Fecha de fin: {endDate.toDateString()}</Text>
+
+        <TouchableOpacity onPress={() => handleConfirm()} style={styles.modalCloseButton}>
+          <Text style={styles.modalCloseButtonText}>Solicitar</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   title: {
@@ -170,10 +199,11 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#3498db',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 50,
     width: '100%',
     alignItems: 'center',
-    marginTop: 100,
+    marginTop: 95,
+    marginBottom:20,
   },
   buttonText: {
     color: 'white',
@@ -184,6 +214,30 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     backgroundColor: '#ccc',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#A4161A',
+  },
+  modalText:{
+    fontSize: 18,
+  },
+  modalCloseButton: {
+    marginTop: 20,
+    alignSelf: 'flex-end',
+  },
+  modalCloseButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#A4161A',
   },
 });
 

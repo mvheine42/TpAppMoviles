@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const profileImage = require('../imagenes/usuario.png');
 
-export const HomeHospital = () => {
+export const HomeHospital = (props: any) => {
   const navigation = useNavigation();
 
   const navigateToTurnos = () => {
@@ -30,6 +30,14 @@ export const HomeHospital = () => {
 
       <TouchableOpacity onPress={navigateToAgregarPedido} style={styles.button}>
         <Text style={styles.buttonText}>+ Agregar pedido</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => props.navigation.navigate('PedidosEnCurso')} style={styles.button}>
+        <Text style={styles.buttonText}>Pedidos en curso</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={navigateToAgregarPedido} style={styles.button}>
+        <Text style={styles.buttonText}>Configuración</Text>
       </TouchableOpacity>
 
       <View style={styles.footer}>

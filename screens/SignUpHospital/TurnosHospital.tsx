@@ -46,10 +46,6 @@ export const TurnosHospital = () => {
   const [selectedTurn, setSelectedTurn] = useState(null);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
 
-  const openCalendar = () => {
-    navigation.navigate('CalendarioHospital');
-  };
-
   const openTurnsHistory = () => {
     console.log('Abrir historial de turnos');
   };
@@ -79,9 +75,6 @@ export const TurnosHospital = () => {
         <Text style={styles.headerTitle}>Turnos</Text>
       </View>
 
-      <TouchableOpacity onPress={openCalendar} style={styles.button}>
-        <Text style={styles.buttonText}>Calendario</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity onPress={openTurnsHistory} style={styles.button}>
         <Text style={styles.buttonText}>Historial de turnos</Text>
