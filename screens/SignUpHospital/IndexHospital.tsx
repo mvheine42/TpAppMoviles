@@ -5,6 +5,7 @@ import { SignUpHospital} from "./SignUpHospital";
 import {VerificacionDeDatosHospital} from "./VerificacionDeDatosHospital";
 import {TurnosHospital} from "./TurnosHospital";
 import { PedidosEnCurso } from "./PedidosEnCurso";
+import {HistorialTurnosHospital } from "./HistorialTurnosHospital";
 
 
 export{
@@ -14,5 +15,6 @@ export{
     SignUpHospital,
     VerificacionDeDatosHospital,
     TurnosHospital,
-    PedidosEnCurso
+    PedidosEnCurso,
+    HistorialTurnosHospital
 }

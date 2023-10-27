@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { SignUpHospital, HomeHospital, MyProfileHospital, RequestHospital, PedidosEnCurso, VerificacionDeDatosHospital, TurnosHospital } from './IndexHospital';
+import { HistorialTurnosHospital, HomeHospital, MyProfileHospital, RequestHospital, PedidosEnCurso, VerificacionDeDatosHospital, TurnosHospital } from './IndexHospital';
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -27,10 +27,19 @@ function MyProfileHospitalStackNavigation() {
   );
 }
 
-export const TabScreenHospital = (props) => {
+function TurnosHospitalStackNavigator(){
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name='TurnosHospital' component={TurnosHospital} options={{ headerShown: false }} />
+      <Stack.Screen name='HistorialTurnosHospital' component={HistorialTurnosHospital} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
+export const TabScreenHospital = (props: any) => {
   const [activeTab, setActiveTab] = useState('Home');
 
-  const changeTab = (tabName) => {
+  const changeTab = (tabName: any) => {
     setActiveTab(tabName);
   };
 
@@ -54,7 +63,7 @@ export const TabScreenHospital = (props) => {
         ),
         tabBarOnPress: () => changeTab('Home'),
       }} />
-      <Tab.Screen name='Turnos' component={TurnosHospital} options={{
+      <Tab.Screen name='Turnos' component={TurnosHospitalStackNavigator} options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
           <Image
