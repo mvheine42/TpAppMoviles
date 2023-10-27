@@ -36,10 +36,6 @@ export const HomeHospital = (props: any) => {
         <Text style={styles.buttonText}>Pedidos en curso</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={navigateToAgregarPedido} style={styles.button}>
-        <Text style={styles.buttonText}>Configuración</Text>
-      </TouchableOpacity>
-
       <View style={styles.footer}>
         <Text style={styles.footerText}>- DonaVida 2023 -</Text>
       </View>

@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity,Button } from 'react-native';
 
-const usuarioImage = require('./imagenes/usuario.png');
+const usuarioImage = require('./imagenes/usuario-2.png');
 const cerrarImage = require('./imagenes/candado.png');
 
 export const Login = (props:any) => {

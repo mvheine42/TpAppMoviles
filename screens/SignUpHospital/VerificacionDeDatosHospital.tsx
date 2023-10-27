@@ -39,12 +39,13 @@ export const VerificacionDeDatosHospital = (props: any) => {
         </View>
 
         <TouchableOpacity
-          onPress={() => props.navigation.navigate('HomeHospital')}
+          onPress={() => props.navigation.navigate('TabScreenHospital')}
           style={[styles.continueButton, !isChecked && styles.disabledButton]}
           disabled={!isChecked}
         >
           <Text style={styles.buttonText}>Crear Cuenta</Text>
         </TouchableOpacity>
+
       </View>
     </ScrollView>
     

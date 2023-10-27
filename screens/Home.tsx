@@ -15,8 +15,6 @@ const data = [
 
 const categories = Array.from(new Set(data.map((item) => item.category)));
 
-
-
 interface Item {
   id: string;
   text: string;
