@@ -35,7 +35,7 @@ export const Login = (props:any) => {
         </View>
   
         <TouchableOpacity
-          onPress={() => props.navigation.navigate('TabScreen')}
+          onPress={() => props.navigation.navigate('TabScreenHospital')}
           style={styles.loginButton}>
           <Text style={styles.buttonText}>Iniciar Sesion</Text>
         </TouchableOpacity>
