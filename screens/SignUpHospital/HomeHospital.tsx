@@ -51,7 +51,7 @@ export const HomeHospital = () => {
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Turnos del día de hoy:</Text>
+      <Text style={styles.sectionTitle}>Turnos de hoy:</Text>
       <FlatList
         horizontal={true}
         data={turnsData}
@@ -65,7 +65,7 @@ export const HomeHospital = () => {
         )}
       />
 
-      <Text style={styles.sectionTitle}>Pedidos actuales:</Text>
+      <Text style={styles.sectionTitle}>Pedidos activos:</Text>
       <FlatList
         horizontal={true}
         data={currentRequests}

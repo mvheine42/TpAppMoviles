@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert } fr
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal'; // Importa la biblioteca para el modal
 
-const backButtonImage = require('../imagenes/volver.png');
 const trashImage = require('../imagenes/basura.png');
 
 // Mock data for turns
@@ -41,7 +40,6 @@ const turnsData = [
 ];
 
 export const TurnosHospital = () => {
-  const navigation = useNavigation();
   const [turns, setTurns] = useState(turnsData);
   const [selectedTurn, setSelectedTurn] = useState(null);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
@@ -69,12 +67,8 @@ export const TurnosHospital = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={backButtonImage} style={styles.backButtonImage} />
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>Turnos</Text>
       </View>
-
 
       <TouchableOpacity onPress={openTurnsHistory} style={styles.button}>
         <Text style={styles.buttonText}>Historial de turnos</Text>
