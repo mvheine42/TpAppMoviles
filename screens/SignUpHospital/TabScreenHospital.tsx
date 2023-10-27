@@ -12,9 +12,7 @@ function HomeHospitalStackNavigation() {
     <Stack.Navigator>
       <Stack.Screen name='HomeHospital' component={HomeHospital} options={{ headerShown: false }} />
       <Stack.Screen name='TurnosHospital' component={TurnosHospital} options={{ headerShown: false }} />
-      <Stack.Screen name='RequestHospital' component={RequestHospital} options={{ headerShown: false }} />
       <Stack.Screen name='MyProfileHospital' component={MyProfileHospital} options={{ headerShown: false }} />
-      <Stack.Screen name='PedidosEnCurso' component={PedidosEnCurso} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -32,6 +30,15 @@ function TurnosHospitalStackNavigator(){
     <Stack.Navigator>
       <Stack.Screen name='TurnosHospital' component={TurnosHospital} options={{ headerShown: false }} />
       <Stack.Screen name='HistorialTurnosHospital' component={HistorialTurnosHospital} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
+function PedidosHospitalStackNavigator(){
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name='PedidosEnCurso' component={PedidosEnCurso} options={{ headerShown: false }} />
+      <Stack.Screen name='RequestHospital' component={RequestHospital} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -77,7 +84,7 @@ export const TabScreenHospital = (props: any) => {
         ),
         tabBarOnPress: () => changeTab('Turnos'),
       }} />
-      <Tab.Screen name='Pedidos' component={PedidosEnCurso} options={{
+      <Tab.Screen name='Pedidos' component={PedidosHospitalStackNavigator} options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
           <Image

@@ -16,7 +16,6 @@ const mockSolicitudesEnCurso = [
   { id: '8', tipo: 'Sangre AB+', edadMinima: 25, edadMaxima: 65, tiempoExpiracion: 18 },
   { id: '9', tipo: 'Sangre B+', edadMinima: 20, edadMaxima: 50, tiempoExpiracion: 22 },
   { id: '10', tipo: 'Médula', edadMinima: 18, edadMaxima: 60, tiempoExpiracion: 30 },
-
 ];
 
 export const PedidosEnCurso = () => {
@@ -26,7 +25,7 @@ export const PedidosEnCurso = () => {
 
   const navigation = useNavigation();
 
-  const cancelarSolicitud = (id) => {
+  const cancelarSolicitud = (id: any) => {
     setSelectedSolicitud(id);
     setConfirmationVisible(true);
   };
@@ -70,7 +69,16 @@ export const PedidosEnCurso = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Solicitudes en Curso</Text>
+      <Text style={styles.title}>Pedidos</Text>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          navigation.navigate('RequestHospital'); // Cambia 'RequestHospital' por el nombre de tu componente de agregar pedido
+        }}
+      >
+        <Text style={styles.addButtonText}>+ Agregar Pedido</Text>
+      </TouchableOpacity>
+      <Text style={styles.subtitle}>Pedidos Activos</Text>
       <FlatList
         data={solicitudes}
         keyExtractor={(item) => item.id}
@@ -104,16 +112,26 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: 'left', // Cambio de 'center' a 'left'
     color: '#A4161A',
   },
-  backButton: {
+  subtitle: {
+    fontSize: 22,
+    marginBottom: 20,
+    textAlign: 'left', // Cambio de 'center' a 'left'
+    color: '#A4161A',
+  },
+  addButton: {
+    backgroundColor: '#A4161A',
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  addButtonText: {
     fontSize: 24,
-    marginBottom: 10,
-    textAlign: 'left',
-    position: 'absolute',
-    left: 2,
-    top: 10,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
   },
   solicitudContainer: {
     borderWidth: 1,
