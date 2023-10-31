@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import CheckBox from '@react-native-community/checkbox';
 import GraciasScreen from './GraciasScreen';
+import Requerimientos from './Requerimientos';
 
 export const QuieroDonar = (props: any) => {
   const greenStyle = {
@@ -24,11 +25,11 @@ export const QuieroDonar = (props: any) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [acceptRequerimientos, setAcceptRequerimientos] = useState(false);
 
-  const [markedDates, setMarkedDates ]= useState({});
+  const [markedDates, setMarkedDates] = useState({});
 
   const horariosNoDisponibles = {
-    '2023-10-18': ['11:00', '12:00'],
-    '2023-10-19': ['09:00', '13:00'],
+    '2023-10-21': ['11:00', '12:00'],
+    '2023-10-22': ['09:00', '13:00'],
   };
 
   const handleDayPress = (day) => {
@@ -51,7 +52,7 @@ export const QuieroDonar = (props: any) => {
   const handleHorarioPress = (horario) => {
     const horariosNoDisponiblesParaFecha = horariosNoDisponibles[selectedDate] || [];
     const isNoDisponible = horariosNoDisponiblesParaFecha.includes(horario);
-  
+
     if (!isNoDisponible) {
       setSelectedHorario(horario);
       setShowConfirmationModal(true);
@@ -64,7 +65,7 @@ export const QuieroDonar = (props: any) => {
 
   const renderHorarioGrid = () => {
     if (!selectedDate) {
-      return null; 
+      return null;
     }
 
     const horaInicio = 6;
@@ -117,6 +118,16 @@ export const QuieroDonar = (props: any) => {
     );
   };
 
+  const [showRequerimientosModal, setShowRequerimientosModal] = useState(false);
+
+  const handleRequerimientosLinkPress = () => {
+    setShowRequerimientosModal(true);
+  };
+
+  const hideRequerimientosModal = () => {
+    setShowRequerimientosModal(false);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -143,7 +154,9 @@ export const QuieroDonar = (props: any) => {
                   value={acceptRequerimientos}
                   onValueChange={handleAcceptRequerimientosChange}
                 />
-                <Text style={styles.checkboxText}>Acepto y leí los requerimientos para donar</Text>
+                <TouchableOpacity onPress={handleRequerimientosLinkPress}>
+                  <Text style={styles.checkboxText}>Acepto y leí los requerimientos para donar</Text>
+                </TouchableOpacity>
               </View>
               <TouchableOpacity
                 style={[styles.confirmButton, !acceptRequerimientos && styles.disabledButton]}
@@ -154,12 +167,28 @@ export const QuieroDonar = (props: any) => {
               </TouchableOpacity>
               <TouchableOpacity style={styles.closeButton} onPress={hideConfirmationModal}>
                 <Text style={styles.closeButtonText}>Cerrar</Text>
-</TouchableOpacity>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
       )}
       {selectedDate && renderHorarioGrid()}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showRequerimientosModal}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            {/* Contenido de los requerimientos */}
+            <Text>Estos son los requerimientos para donar:</Text>
+            {/* Puedes agregar más texto u otros elementos aquí */}
+            <TouchableOpacity style={styles.closeButton} onPress={hideRequerimientosModal}>
+              <Text style={styles.closeButtonText}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

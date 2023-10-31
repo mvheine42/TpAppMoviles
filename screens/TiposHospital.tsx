@@ -42,9 +42,18 @@ export const TiposHospital = (props: any) => {
       },
   ];
 
-  const renderItem = (item) => (
+  const colors = [
+    'rgb(102, 7, 8)',
+    'rgb(164, 22, 26)',
+    'rgb(186, 24, 27)',
+    'rgb(229, 56, 59)',
+    // Add more colors as needed
+  ];
+
+
+  const renderItem = (item, index) => (
     <TouchableOpacity onPress={() => props.navigation.navigate('Hospitales')}>
-      <View style={styles.item}>
+      <View style={[styles.item, { backgroundColor: colors[index % colors.length] }]}>
         <Text style={styles.itemTitle}>{item.name}</Text>
       </View>
     </TouchableOpacity>
@@ -59,9 +68,9 @@ export const TiposHospital = (props: any) => {
         style={styles.columnContainer}
         contentContainerStyle={styles.columnContent}
       >
-        {data.map((item) => (
+        {data.map((item, index) => (
           <View style={styles.columnItem} key={item.id}>
-            {renderItem(item)}
+            {renderItem(item, index)}
           </View>
         ))}
       </ScrollView>
@@ -107,6 +116,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'white',
   },
   itemType: {
     fontSize: 16,

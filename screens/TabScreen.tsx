@@ -11,6 +11,7 @@ import Hospitales from './Hospitales';
 import Hospital from './Hospital';
 import QuieroDonar from './QuieroDonar';
 import TiposHospital from './TiposHospital';
+import HistoryDonation from './HistoryDonation';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,7 @@ function MyProfileStackNavigation(){
     <Stack.Navigator>
       <Stack.Screen name="Perfil" component={MyProfile} options={{ headerShown: false }}/>
       <Stack.Screen name='MisTurnos' component={Turnos} options={{ headerShown: false }}/>
+      <Stack.Screen name='HistoryDonation' component={HistoryDonation} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }

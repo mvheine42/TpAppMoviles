@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {EligeFactorRH, EligeTipoDeSangre, Home, Login,
-  VerificacionDeDatos, TabScreen, TipoDeUsuario, SignUpDonante, GraciasScreen, TiposHospital} from './screens';
+  VerificacionDeDatos, TabScreen, TipoDeUsuario, SignUpDonante, GraciasScreen, TiposHospital, HistoryDonation} from './screens';
 import { SignUpHospital, VerificacionDeDatosHospital } from './screens/SignUpHospital/IndexHospital';
 import { TabScreenHospital } from './screens/SignUpHospital/TabScreenHospital';
 
@@ -30,6 +30,7 @@ const App = () => {
         <Stack.Screen name="GraciasScreen" component={GraciasScreen} options={{ headerShown: false }} />
         <Stack.Screen name="TiposHospital" component={TiposHospital} options={{ headerShown: false }} />
         <Stack.Screen name="TabScreenHospital" component={TabScreenHospital} options={{ headerShown: false }} />
+        <Stack.Screen name="HistoryDonation" component={HistoryDonation} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

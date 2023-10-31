@@ -18,7 +18,7 @@ import QuieroDonar from './QuieroDonar';
 import GraciasScreen from './GraciasScreen';
 import { PedidosEnCurso } from './SignUpHospital/PedidosEnCurso';
 import TiposHospital from './TiposHospital';
-
+import HistoryDonation from './HistoryDonation';
 
 
 export {
@@ -42,4 +42,5 @@ export {
     GraciasScreen,
     PedidosEnCurso,
     TiposHospital,
+    HistoryDonation,
 }
