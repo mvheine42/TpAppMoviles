@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, Image} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import CheckBox from '@react-native-community/checkbox';
 import GraciasScreen from './GraciasScreen';
 import Requerimientos from './Requerimientos';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export const QuieroDonar = (props: any) => {
   const greenStyle = {
@@ -28,8 +29,8 @@ export const QuieroDonar = (props: any) => {
   const [markedDates, setMarkedDates] = useState({});
 
   const horariosNoDisponibles = {
-    '2023-10-21': ['11:00', '12:00'],
-    '2023-10-22': ['09:00', '13:00'],
+    '2023-11-23': ['11:00', '12:00'],
+    '2023-11-22': ['09:00', '13:00'],
   };
 
   const handleDayPress = (day) => {
@@ -128,11 +129,30 @@ export const QuieroDonar = (props: any) => {
     setShowRequerimientosModal(false);
   };
 
+  const data = [
+    { id: '1', source: require('./imagenes/business-people.png'), text: 'Tener entre 16 y 65 años' },
+    { id: '2', source: require('./imagenes/bascula.png'), text: 'Pesar mas de 50K' },
+    { id: '3', source: require('./imagenes/sangre.png'), text: '2 meses desde ultima donacion' },
+    { id: '4', source: require('./imagenes/dormir.png'), text: 'dormir mas de 6 horas' },
+    { id: '5', source: require('./imagenes/plato.png'), text: 'Desayunar/Almorzar' },
+    { id: '6', source: require('./imagenes/tatuaje.png'), text: '6 meses desde ultimo tatuaje' },
+  ];
+
+  const renderItem = ({ item }) => (
+      <View style={styles.circleContainer}>
+          <Image source={item.source} style={styles.image} />
+        <View style={styles.textContainer}>
+          <Text style={styles.iconText}>{item.text}</Text>
+        </View>
+      </View>
+    );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
+      <ScrollView>
       <View style={styles.tituloRequerimientos}>
         <Text style={styles.RequerimientosText}>TURNOS DISPONIBLES</Text>
         <Calendar
@@ -143,6 +163,7 @@ export const QuieroDonar = (props: any) => {
           markedDates={markedDates}
         />
       </View>
+      </ScrollView>
       {showConfirmationModal && (
         <Modal animationType="slide" transparent={true} visible={showConfirmationModal}>
           <View style={styles.centeredView}>
@@ -155,7 +176,9 @@ export const QuieroDonar = (props: any) => {
                   onValueChange={handleAcceptRequerimientosChange}
                 />
                 <TouchableOpacity onPress={handleRequerimientosLinkPress}>
-                  <Text style={styles.checkboxText}>Acepto y leí los requerimientos para donar</Text>
+                <Text style={styles.checkboxText}>Acepto y leí los{' '}
+                  <Text style={styles.redText}>requerimientos</Text> para donar
+                </Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
@@ -179,10 +202,15 @@ export const QuieroDonar = (props: any) => {
         visible={showRequerimientosModal}
       >
         <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            {/* Contenido de los requerimientos */}
+          <View style={styles.modalRequerimientosView}>
             <Text>Estos son los requerimientos para donar:</Text>
-            {/* Puedes agregar más texto u otros elementos aquí */}
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              numColumns={2}
+              contentContainerStyle={styles.iconContainer}
+            />
             <TouchableOpacity style={styles.closeButton} onPress={hideRequerimientosModal}>
               <Text style={styles.closeButtonText}>Cerrar</Text>
             </TouchableOpacity>
@@ -199,16 +227,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    backgroundColor: 'rgb(229, 56, 59)',
     width: '100%',
-    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
+    height: '14%',
+    backgroundColor: 'rgb(245, 243, 244)',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
+    position: 'relative',
   },
   title: {
-    fontSize: 24,
+    fontSize: 40,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#A4161A',
+    textAlign: 'center',
+    textShadowColor: '#A4161A',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
   tituloRequerimientos: {
     alignItems: 'center',
@@ -219,7 +260,7 @@ const styles = StyleSheet.create({
   RequerimientosText: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: 'rgb(229, 56, 59)',
+    color: '#A4161A',
   },
   centeredView: {
     flex: 1,
@@ -304,6 +345,10 @@ const styles = StyleSheet.create({
   checkboxText: {
     marginLeft: 10,
   },
+  redText: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
   disabledButton: {
     backgroundColor: 'gray', 
   },
@@ -317,6 +362,50 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  iconContainer: {
+    // Aumenta el padding para dar más espacio a los iconos
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 20,
+    alignContent: 'space-between'
+  },
+  image: {
+    width: 100,  // Aumenta el tamaño del icono
+    height: 100, // Aumenta el tamaño del icono
+    resizeMode: 'contain',
+    marginTop: 15,
+  },
+  iconText: {
+    marginTop: 5,
+    textAlign: 'center', 
+    color: 'black', 
+    fontSize: 14,
+  },
+  textContainer: {
+    width: 110, 
+    alignItems: 'center', 
+  },
+  circleContainer:{
+    alignItems: 'center',
+    marginBottom: 15,
+    padding: 5,
+  },
+  modalRequerimientosView:{
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   
 });

@@ -60,7 +60,7 @@ export const TiposHospital = (props: any) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
@@ -74,7 +74,7 @@ export const TiposHospital = (props: any) => {
           </View>
         ))}
       </ScrollView>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -84,18 +84,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    backgroundColor: 'rgb(229, 56, 59)',
     width: '100%',
-    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
+    height: '14%',
+    backgroundColor: 'rgb(245, 243, 244)',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
+    position: 'relative',
   },
   title: {
-    fontSize: 24,
+    fontSize: 40,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#A4161A',
+    textAlign: 'center',
+    textShadowColor: '#A4161A',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
   columnContainer: {
+    height: '100%',
     margin: 10,
   },
   columnContent: {

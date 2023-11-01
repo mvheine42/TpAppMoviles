@@ -76,19 +76,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    backgroundColor: 'rgb(229, 56, 59)',
     width: '100%',
-    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
+    height: '14%',
+    backgroundColor: 'rgb(245, 243, 244)',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
+    position: 'relative',
   },
   title: {
-    fontSize: 24,
+    fontSize: 40,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#A4161A',
+    textAlign: 'center',
+    textShadowColor: '#A4161A',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
   item: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#A4161A',
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
@@ -103,13 +116,14 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'white'
   },
   itemSubtitle: {
     fontSize: 16,
-    color: 'gray',
+    color: 'white',
   },
   cancelButton: {
-    color: 'red',
+    color: 'white',
     fontSize: 16,
   },
 });

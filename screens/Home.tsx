@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Modal, TouchableWithoutFeedback } from 'react-native';
 
 const data = [
-  { id: '1', text: 'Sangre 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '2', text: 'Plaquetas', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '3', text: 'Medula', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '4', text: 'Sangre 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '5', text: 'Plaquetas', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '6', text: 'Medula', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '7', text: 'Sangre 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '8', text: 'Plaquetas', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '9', text: 'Medula', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '1', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '2', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '3', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '4', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '5', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '6', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '7', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '8', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '9', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
 ];
 
 const categories = Array.from(new Set(data.map((item) => item.category)));
@@ -37,21 +37,63 @@ export const Home = (props: any) => {
   );
 
   const navigateToAnotherScreen = (itemId: string) => {
-    // Reemplaza 'NombreDeLaPantalla' con el nombre de la pantalla a la que deseas navegar
     props.navigation.navigate('Hospital', { itemId });
   };
 
   const renderItem = ({ item }: { item: Item }) => (
     <TouchableOpacity onPress={() => navigateToAnotherScreen(item.id)}>
       <View style={styles.item}>
-        <Text style={styles.itemText}>{item.text}</Text>
-        <Image source={{ uri: item.image }} style={styles.itemImage} />
+      <Text style={styles.itemText}>{item.text}</Text>
+        <View style={styles.itemContent}>
+          <View style={styles.itemTextContainer}>
+            <Text style= {styles.itemInfoText}>Aquí va información del hospital tipo el nombre, la loc, a cuanta distancia esta de vos etc</Text>
+          </View>
+          <Image source={{ uri: item.image }} style={styles.itemImage} />
+        </View>
       </View>
     </TouchableOpacity>
   );
 
+  const [showModal, setShowModal] = useState(true);
+
+  // Establece la fecha en la que podrás donar (reemplaza con la fecha real)
+  const fechaDonacion = new Date('2023-11-10');
+  const fechaActual = new Date();
+  const tiempoRestante = Math.ceil((fechaDonacion - fechaActual) / (1000 * 60 * 60 * 24)); // Diferencia en días
+
+  const closeCountdown = () => {
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    if (showModal) {
+      const timer = setInterval(() => {
+        closeCountdown();
+      }, tiempoRestante * 24 * 60 * 60 * 1000);
+
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [showModal, tiempoRestante]);
+
   return (
     <View style={styles.container}>
+      <Modal
+        visible={showModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeCountdown}
+      >
+        <TouchableWithoutFeedback onPress={closeCountdown}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>¡Bienvenido!</Text>
+              <Text style={styles.countdownText}>{`Faltan ${tiempoRestante} días para poder donar`}</Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
@@ -108,26 +150,43 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   header: {
-    backgroundColor: 'rgb(229, 56, 59)',
     width: '100%',
-    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
+    height: '14%',
+    backgroundColor: 'rgb(245, 243, 244)',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
+    position: 'relative',
   },
   title: {
-    fontSize: 24,
+    fontSize: 40,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#A4161A',
+    textAlign: 'center',
+    textShadowColor: '#A4161A',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
   tituloNoticias: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 30,
+    margin: '3%',
+
   },
   noticiasText: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: 'rgb(229, 56, 59)',
+    color: '#A4161A',
+    textShadowColor: 'rgba(164, 22, 26, 0.75)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 10
   },
   categoryButtons: {
     flexDirection: 'row',
@@ -136,7 +195,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   categoryButton: {
-    backgroundColor: 'rgb(229, 56, 59)',
+    backgroundColor: '#BA181B',
     borderRadius: 10,
     paddingVertical: 15,
     paddingHorizontal: 20,
@@ -173,35 +232,57 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   informacionText: {
-    color: 'rgb(229, 56, 59)',
+    color: '#A4161A',
     fontSize: 24,
     fontWeight: 'bold',
   },
   item: {
-    width: 200,
+    width: 300,
     height: 220,
-    backgroundColor: 'rgb(229, 56, 59)',
+    backgroundColor: '#A4161A',
     margin: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
     borderRadius: 20,
     borderWidth: 3,
     borderColor: 'darkred',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 5,
+    alignItems: 'center',
+  },
+  itemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  itemTextContainer: {
+    marginLeft: 10,
+    width: '60%',
   },
   itemText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+    textAlign: 'center',
+    margin: 3,
   },
   flatlistContent: {
     flexGrow: 1,
   },
   button: {
-    backgroundColor: 'rgb(229, 56, 59)',
+    backgroundColor: '#BA181B',
     borderRadius: 10,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    marginVertical: 10,
+    marginVertical: 5,
     width: '90%',
     alignItems: 'center',
     borderWidth: 3,
@@ -212,14 +293,59 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   itemImage: {
-    width: 150,
-    height: 150,
-    resizeMode: 'cover', // Puedes ajustar esto según tus necesidades
-    marginBottom: 10, // Agrega espacio entre la imagen y el texto
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#660708',
+    marginRight: 7,
   },
   noticiaSubBText:{
     fontSize: 22,
     fontWeight: 'bold',
-    color: 'rgb(229, 56, 59)'
+    color: '#A4161A'
+  },
+  itemInfoText:{
+    color: 'white'
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    borderWidth: 3,
+    borderColor: 'darkred',
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#A4161A',
+    marginBottom: 20,
+  },
+  countdownText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#A4161A',
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: '#BA181B',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 3,
+    borderColor: 'darkred',
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
+
+export default Home;

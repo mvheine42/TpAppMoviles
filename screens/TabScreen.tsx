@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -12,17 +12,19 @@ import Hospital from './Hospital';
 import QuieroDonar from './QuieroDonar';
 import TiposHospital from './TiposHospital';
 import HistoryDonation from './HistoryDonation';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialBottomTabNavigator();
 
 
 function StackNavigation(){
   return(
     <Stack.Navigator>
-      <Stack.Screen name='Home' component={Home} options={{ headerShown: false }}/>
+      <Stack.Screen name='HomeDonante' component={Home} options={{ headerShown: false }}/>
         <Stack.Screen name='Requerimientos' component={Requerimientos} options={{ headerShown: false }}/>
         <Stack.Screen name='Proceso' component={Proceso} options={{ headerShown: false }}/>
+        <Stack.Screen name='Hospital' component={Hospital} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -30,7 +32,7 @@ function StackNavigation(){
 function MyProfileStackNavigation(){
   return(
     <Stack.Navigator>
-      <Stack.Screen name="Perfil" component={MyProfile} options={{ headerShown: false }}/>
+      <Stack.Screen name="PerfilDonante" component={MyProfile} options={{ headerShown: false }}/>
       <Stack.Screen name='MisTurnos' component={Turnos} options={{ headerShown: false }}/>
       <Stack.Screen name='HistoryDonation' component={HistoryDonation} options={{ headerShown: false }}/>
     </Stack.Navigator>
@@ -49,7 +51,7 @@ function HospitalesStackNavigation(){
 function ListaDeHospitales(){
   return(
     <Stack.Navigator>
-      <Stack.Screen name="Hospitales" component={Hospitales} options={{ headerShown: false }}/>
+      <Stack.Screen name="HospitalesDonante" component={Hospitales} options={{ headerShown: false }}/>
       <Stack.Screen name="Hospital" component={HospitalStackNavigation} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
@@ -65,32 +67,73 @@ function HospitalStackNavigation(){
 }
 
 export const TabScreen = (props:any) => {
+  const [activeTab, setActiveTab] = useState('HomeDonante');
+
+  const changeTab = (tabName: any) => {
+    setActiveTab(tabName);
+  };
   return (
-    <Tab.Navigator>
-      <Tab.Screen name='HomeDonante' component={StackNavigation} options={{ headerShown: false, tabBarIcon: ({ color, size }) => (
-              <Image
-                source={{ uri: 'https://img.icons8.com/fluency/48/home-page.png' }}
-                style={{ width: size, height: size, tintColor: color }}
-              />
-            ),}}/>
-      <Tab.Screen name="PerfilDonante" component={MyProfileStackNavigation} options={{ headerShown: false, tabBarIcon: ({ color, size }) => (
-              <Image
-                source={{ uri: 'https://img.icons8.com/fluency/48/gender-neutral-user--v1.png' }}
-                style={{ width: size, height: size, tintColor: color }}
-              />
-            ), }}/>
-      <Tab.Screen name="TurnosDonante" component={Turnos} options={{ headerShown: false, tabBarIcon: ({ color, size }) => (
-              <Image
-                source={{ uri: 'https://img.icons8.com/fluency/48/calendar--v1.png' }}
-                style={{ width: size, height: size, tintColor: color }}
-              />
-            ),}}/>
-      <Tab.Screen name="HospitalesDonante" component={HospitalesStackNavigation} options={{ headerShown: false, tabBarIcon: ({ color, size }) => (
-              <Image
-                source={{ uri: 'https://img.icons8.com/emoji/48/hospital-emoji.png' }}
-                style={{ width: size, height: size, tintColor: color }}
-              />
-            ), }}/>
+    <Tab.Navigator
+      shifting={true}
+      activeColor="#FFFFFF" // Color rojo para pestañas activas
+      barStyle={{ backgroundColor: '#A4161A', height: 65}} // Establecer el fondo blanco
+    >
+ <Tab.Screen name='HomeDonante' component={StackNavigation} options={{
+        headerShown: false,
+        tabBarIcon: ({ focused }) => (
+          <Image
+            source={require('./imagenes/icons8-home-48.png')}
+            style={{
+              width: 30,
+              height: 30,
+              tintColor: focused ? '#A4161A' : 'white', // Cambiar el color del icono según la pestaña activa
+            }}
+          />
+        ),
+        tabBarOnPress: () => changeTab('HomeDonante'),
+      }} />
+      <Tab.Screen name="TurnosDonante" component={Turnos} options={{
+        headerShown: false,
+        tabBarIcon: ({ focused }) => (
+          <Image
+            source={require('./imagenes/icons8-calendar-48.png')}
+            style={{
+              width: 30,
+              height: 30,
+              tintColor: focused ? '#A4161A' : 'white', // Cambiar el color del icono según la pestaña activa
+            }}
+          />
+        ),
+        tabBarOnPress: () => changeTab('TurnosDonante'),
+      }} />
+      <Tab.Screen name="HospitalesDonante" component={HospitalesStackNavigation} options={{
+        headerShown: false,
+        tabBarIcon: ({ focused }) => (
+          <Image
+            source={require('./imagenes/icons8-hospital-64.png')}
+            style={{
+              width: 33,
+              height: 33,
+              tintColor: focused ? '#A4161A' : 'white', // Cambiar el color del icono según la pestaña activa
+            }}
+          />
+        ),
+        tabBarOnPress: () => changeTab('HospitalesDonante'),
+      }} />
+      <Tab.Screen name="PerfilDonante" component={MyProfileStackNavigation} options={{
+        headerShown: false,
+        tabBarIcon: ({ focused }) => (
+          <Image
+            source={require('./imagenes/usuario.png')}
+            style={{
+              width: 25,
+              height: 25,
+              tintColor: focused ? '#A4161A' : 'white', // Cambiar el color del icono según la pestaña activa
+            }}
+          />
+        ),
+        tabBarOnPress: () => changeTab('PerfilDonante'),
+      }} />
     </Tab.Navigator>
   );
 }
