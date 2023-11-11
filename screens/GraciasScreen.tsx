@@ -1,34 +1,59 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated, Image, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { TabScreen } from './TabScreen';
 
-export const GraciasScreen = (props: any) => {
-  const opacity = new Animated.Value(0);
+const GraciasScreen = () => {
+  const navigation = useNavigation();
+
+  const circleScaleValue = useRef(new Animated.Value(1)).current;
+  const imageScaleValue = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    startAnimation();
-  }, []);
+    const navigateToNextScreen = () => {
+      navigation.navigate(TabScreen);
+    };
 
-  const startAnimation = () => {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 1000,
-      easing: Easing.ease,
-      useNativeDriver: true,
-    }).start();
+    const animationDuration = 5000; // 5 seconds
+
+    Animated.parallel([
+      Animated.timing(circleScaleValue, {
+        toValue: 2,
+        duration: 2000,
+        useNativeDriver: false,
+      }),
+      Animated.timing(imageScaleValue, {
+        toValue: 1.5,
+        duration: 1980,
+        useNativeDriver: false,
+      }),
+    ]).start();
+
+    const timeoutId = setTimeout(navigateToNextScreen, animationDuration);
+
+    return () => clearTimeout(timeoutId);
+  }, [navigation]);
+
+  const animatedCircleStyle = {
+    transform: [{ scale: circleScaleValue }],
   };
 
+  const animatedImageStyle = {
+    transform: [{ scale: imageScaleValue }],
+  };
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.animatedContainer, { opacity }]}>
-        <Text style={styles.text}>Gracias por confiar en DonaVida+!</Text>
-      </Animated.View>
-      <TouchableOpacity onPress={() => props.navigation.navigate(TabScreen)}>
-        <View style={styles.buttonContainer}>
-          <Text style={styles.buttonText}>Ir al inicio</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.animation}>
+        <Animated.View style={[styles.circle, animatedCircleStyle]} />
+        <Animated.Image
+          source={require('./imagenes/icons8-check-100.png')}
+          style={[styles.image, animatedImageStyle]}
+        />
+      </View>
+      <View style={styles.textContainer}>
+        <Text style={styles.text}>Turno reservado con éxito!</Text>
+      </View>
     </View>
   );
 };
@@ -39,26 +64,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  animatedContainer: {
-    backgroundColor: 'red', // Cambia el color de fondo a rojo
-    padding: 20,
-    borderRadius: 10,
+  animation: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 40,
   },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+  circle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#D3D3D3',
+
+    zIndex: 1,
   },
-  buttonContainer: {
-    backgroundColor: 'green', // Cambia el color del botón a verde
-    padding: 10,
-    borderRadius: 10,
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: 'cover',
+    position: 'absolute',
+    zIndex: 2,
+  },
+  textContainer: {
     marginTop: 20,
   },
-  buttonText: {
+  text: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
   },
 });
 

@@ -46,7 +46,8 @@ export const Home = (props: any) => {
       <Text style={styles.itemText}>{item.text}</Text>
         <View style={styles.itemContent}>
           <View style={styles.itemTextContainer}>
-            <Text style= {styles.itemInfoText}>Aquí va información del hospital tipo el nombre, la loc, a cuanta distancia esta de vos etc</Text>
+            <Text style= {styles.itemInfoText}>Hospital Británico</Text>
+            <Text style= {styles.itemInfoText}>Ubicado a 5km de tu ubicación actual</Text>
           </View>
           <Image source={{ uri: item.image }} style={styles.itemImage} />
         </View>
@@ -237,8 +238,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   item: {
-    width: 300,
-    height: 220,
+    width: 190,
+    height: 200,
     backgroundColor: '#A4161A',
     margin: 10,
     borderRadius: 20,
@@ -255,14 +256,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   itemContent: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '100%',
   },
   itemTextContainer: {
-    marginLeft: 10,
-    width: '60%',
+    justifyContent: 'center',
+    textAlign: 'center',
   },
   itemText: {
     fontSize: 20,
@@ -271,7 +271,6 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: -1, height: 1 },
     textShadowRadius: 10,
-    textAlign: 'center',
     margin: 3,
   },
   flatlistContent: {
@@ -298,7 +297,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: '#660708',
-    marginRight: 7,
   },
   noticiaSubBText:{
     fontSize: 22,
@@ -306,7 +304,10 @@ const styles = StyleSheet.create({
     color: '#A4161A'
   },
   itemInfoText:{
-    color: 'white'
+    marginHorizontal:20,
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 14,
   },
   modalContainer: {
     flex: 1,

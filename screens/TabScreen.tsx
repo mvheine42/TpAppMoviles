@@ -24,7 +24,7 @@ function StackNavigation(){
       <Stack.Screen name='HomeDonante' component={Home} options={{ headerShown: false }}/>
         <Stack.Screen name='Requerimientos' component={Requerimientos} options={{ headerShown: false }}/>
         <Stack.Screen name='Proceso' component={Proceso} options={{ headerShown: false }}/>
-        <Stack.Screen name='Hospital' component={Hospital} options={{ headerShown: false }}/>
+        <Stack.Screen name='Hospital' component={HospitalStackNavigation} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }

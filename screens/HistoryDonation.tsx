@@ -1,55 +1,80 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
+import { View, ScrollView, Text, FlatList, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 
-const HistoryDonation = () => {
-  const [donations, setDonations] = useState([
-    { id: 1, bloodType: 'O+', date: '2023-10-31', hospital: 'Hospital A', image: require('./imagenes/gota-de-sangre.png')},
-    { id: 2, bloodType: 'A-', date: '2023-10-30', hospital: 'Hospital B', image: require('./imagenes/gota-de-sangre.png')},
-    { id: 3, bloodType: 'A-', date: '2023-10-30', hospital: 'Hospital B', image: require('./imagenes/gota-de-sangre.png')},
-    { id: 4, bloodType: 'A-', date: '2023-10-30', hospital: 'Hospital B', image: require('./imagenes/gota-de-sangre.png')},
-    // Puedes agregar más donaciones aquí
+const DonationsScreen = () => {
+  const [donationHistory, setDonationHistory] = useState([
+    { id: 1, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
+    { id: 2, date: '02/15/2023', location: 'Clinica B', donationType: 'Plaquetas' },
+    { id: 3, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
+    { id: 4, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
+    { id: 5, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
+    // Agrega más datos según sea necesario
   ]);
 
-  const [benefits, setBenefits] = useState([
-    { id: 1, location: 'La Parolaccia', image: require('./imagenes/468c5d82ce5a6d1c23a90a3c3a6c0996.jpg') },
-    { id: 2, location: 'Gimnasio Y' },
-    { id: 3, location: 'Gimnasio Y' },
-    { id: 4, location: 'Gimnasio Y' },
-    // Puedes agregar más beneficios aquí
+  const [discounts, setDiscounts] = useState([
+    { id: 1, name: 'La Parolaccia', image: require('./imagenes/468c5d82ce5a6d1c23a90a3c3a6c0996.jpg'), discount: '30%', details: '30% de descuento en toda la carta', discountCode: 'A2WER34' },
+    { id: 2, name: 'Megatlon', image: require('./imagenes/logo-01-e1507801775879.jpg.webp'), discount: '20%', details: '20% de descuento en la membresía mensual', discountCode: 'B1CDF45' },
+    { id: 3, name: 'La Bisteca', image: require('./imagenes/images.png'), discount: '30%', details: '30% de descuento en toda la carta', discountCode: 'A2WER34' },
+    // Agrega más datos según sea necesario
   ]);
+
+  const [selectedDiscount, setSelectedDiscount] = useState(null);
+
+  const openDiscountDetails = (item) => {
+    setSelectedDiscount(item);
+  };
+
+  const closeDiscountDetails = () => {
+    setSelectedDiscount(null);
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>DonaVida+</Text>
-      </View>
-      <View style={styles.content}>
-        <Text style={styles.sectionTitle}>Donaciones</Text>
+      <Text style={styles.header}>DonaVida+</Text>
+      <Text style={styles.heading}>Historial de Donaciones</Text>
+      <ScrollView style={styles.section}>
         <FlatList
-          data={donations}
+          data={donationHistory}
           keyExtractor={(item) => item.id.toString()}
-          horizontal
           renderItem={({ item }) => (
-            <View style={styles.box}>
-              <Text>Tipo de Sangre: {item.bloodType}</Text>
-              <Text>Fecha: {item.date}</Text>
-              <Text>Hospital: {item.hospital}</Text>
-              <Image source={item.image} style={styles.image} />
-            </View>
-          )}/>
-        <Text style={styles.sectionTitle}>Beneficios</Text>
-        <FlatList
-          data={benefits}
-          keyExtractor={(item) => item.id.toString()}
-          horizontal
-          renderItem={({ item }) => (
-            <View style={styles.box}>
-              <Text> {item.location}</Text>
-              <Image source={item.image} style={styles.image} />
+            <View style={styles.donationItem}>
+              <Text>{`Fecha: ${item.date}`}</Text>
+              <Text>{`Ubicación: ${item.location}`}</Text>
+              <Text>{`Tipo de Donación: ${item.donationType}`}</Text>
             </View>
           )}
         />
-      </View>
+      </ScrollView>
+      <Text style={styles.heading}>Beneficios y Descuentos</Text>
+      <ScrollView style={styles.section}>
+        <FlatList
+          data={discounts}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => openDiscountDetails(item)}>
+              <View style={styles.discountItem}>
+                <Image source={item.image} style={styles.discountImage} />
+                <View style={styles.discountOverlay}>
+                  <Text style={styles.discountText}>{item.discount}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </ScrollView>
+
+      <Modal visible={selectedDiscount !== null} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalHeading}>{selectedDiscount?.name}</Text>
+            <Text>{selectedDiscount?.details}</Text>
+            <Text>{`Código de descuento: ${selectedDiscount?.discountCode || 'N/A'}`}</Text>
+            <TouchableOpacity onPress={closeDiscountDetails}>
+              <Text style={styles.closeButton}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -59,22 +84,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '14%',
-    backgroundColor: 'rgb(245, 243, 244)',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.34,
-    shadowRadius: 6.27,
-    elevation: 10,
-    position: 'relative',
-  },
-  title: {
     fontSize: 40,
     fontWeight: 'bold',
     color: '#A4161A',
@@ -82,33 +91,70 @@ const styles = StyleSheet.create({
     textShadowColor: '#A4161A',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 4,
+    marginTop: 10,
+    marginBottom: 20,
   },
-  content: {
-    flex: 1,
-    alignItems: 'flex-start', // Alinear en la parte superior
+  section: {
+    marginHorizontal: 16,
+    marginBottom: 20,
   },
-  sectionTitle: {
-    fontSize: 30,
+  heading: {
+    fontSize: 18,
     fontWeight: 'bold',
-    margin: 5,
-    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 5,
+    marginLeft: 16,
+  },
+  donationItem: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 10,
+  },
+  discountItem: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  discountImage: {
+    width: 200,
+    height: 100,
+    resizeMode: 'cover',
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  discountOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 8,
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  box: {
-    backgroundColor: '#E5E5E5',
-    padding: 10,
-    margin: 5,
-    borderRadius: 3,
-    height: '80%',
-    alignSelf: 'center',
-    alignContent: 'flex-start',
+  discountText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
-  image: {
-    width: 100, 
-    height: 100, 
-    resizeMode: 'cover', 
-    alignSelf: 'center',
-  },  
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 8,
+    width: '80%',
+  },
+  modalHeading: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  closeButton: {
+    color: 'blue',
+    marginTop: 10,
+    textAlign: 'right',
+  },
 });
 
-export default HistoryDonation;
+export default DonationsScreen;

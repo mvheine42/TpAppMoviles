@@ -7,7 +7,7 @@ export const Hospital = (props: any) => {
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      <Text style={styles.subtitle}>Hospital</Text>
+      <Text style={styles.subtitle}>Hospital Británico</Text>
       <Image
         source={require('./imagenes/Untitled.png')}
         style={styles.image}
