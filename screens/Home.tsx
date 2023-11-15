@@ -37,7 +37,7 @@ export const Home = (props: any) => {
   );
 
   const navigateToAnotherScreen = (itemId: string) => {
-    props.navigation.navigate('Hospital', { itemId });
+    props.navigation.navigate('HospitalDonante', { itemId });
   };
 
   const renderItem = ({ item }: { item: Item }) => (

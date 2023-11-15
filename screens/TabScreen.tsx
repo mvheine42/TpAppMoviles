@@ -18,13 +18,14 @@ const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
 
 
+
 function StackNavigation(){
   return(
     <Stack.Navigator>
-      <Stack.Screen name='HomeDonante' component={Home} options={{ headerShown: false }}/>
+      <Stack.Screen name='HomeDelDonante' component={Home} options={{ headerShown: false }}/>
         <Stack.Screen name='Requerimientos' component={Requerimientos} options={{ headerShown: false }}/>
         <Stack.Screen name='Proceso' component={Proceso} options={{ headerShown: false }}/>
-        <Stack.Screen name='Hospital' component={HospitalStackNavigation} options={{ headerShown: false }}/>
+        <Stack.Screen name='HospitalDonante' component={HospitalStackNavigation} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -43,7 +44,7 @@ function HospitalesStackNavigation(){
   return(
     <Stack.Navigator>
       <Stack.Screen name="TiposHospital" component={TiposHospital} options={{ headerShown: false }}/>
-      <Stack.Screen name="Hospitales" component={ListaDeHospitales} options={{ headerShown: false }}/>
+      <Stack.Screen name="ListaDeHospitales" component={ListaDeHospitales} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -52,7 +53,7 @@ function ListaDeHospitales(){
   return(
     <Stack.Navigator>
       <Stack.Screen name="HospitalesDonante" component={Hospitales} options={{ headerShown: false }}/>
-      <Stack.Screen name="Hospital" component={HospitalStackNavigation} options={{ headerShown: false }}/>
+      <Stack.Screen name="HospitalParaDonar" component={HospitalStackNavigation} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -67,7 +68,7 @@ function HospitalStackNavigation(){
 }
 
 export const TabScreen = (props:any) => {
-  const [activeTab, setActiveTab] = useState('HomeDonante');
+  const [activeTab, setActiveTab] = useState('Home');
 
   const changeTab = (tabName: any) => {
     setActiveTab(tabName);
@@ -78,7 +79,7 @@ export const TabScreen = (props:any) => {
       activeColor="#FFFFFF" // Color rojo para pestañas activas
       barStyle={{ backgroundColor: '#A4161A', height: 65}} // Establecer el fondo blanco
     >
- <Tab.Screen name='HomeDonante' component={StackNavigation} options={{
+ <Tab.Screen name='Home' component={StackNavigation} options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
           <Image
@@ -90,9 +91,9 @@ export const TabScreen = (props:any) => {
             }}
           />
         ),
-        tabBarOnPress: () => changeTab('HomeDonante'),
+        tabBarOnPress: () => changeTab('Home'),
       }} />
-      <Tab.Screen name="TurnosDonante" component={Turnos} options={{
+      <Tab.Screen name="Turnos" component={Turnos} options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
           <Image
@@ -104,9 +105,9 @@ export const TabScreen = (props:any) => {
             }}
           />
         ),
-        tabBarOnPress: () => changeTab('TurnosDonante'),
+        tabBarOnPress: () => changeTab('Turnos'),
       }} />
-      <Tab.Screen name="HospitalesDonante" component={HospitalesStackNavigation} options={{
+      <Tab.Screen name="Hospitales" component={HospitalesStackNavigation} options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
           <Image
@@ -118,9 +119,9 @@ export const TabScreen = (props:any) => {
             }}
           />
         ),
-        tabBarOnPress: () => changeTab('HospitalesDonante'),
+        tabBarOnPress: () => changeTab('Hospitales'),
       }} />
-      <Tab.Screen name="PerfilDonante" component={MyProfileStackNavigation} options={{
+      <Tab.Screen name="Perfil" component={MyProfileStackNavigation} options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
           <Image
@@ -132,7 +133,7 @@ export const TabScreen = (props:any) => {
             }}
           />
         ),
-        tabBarOnPress: () => changeTab('PerfilDonante'),
+        tabBarOnPress: () => changeTab('Perfil'),
       }} />
     </Tab.Navigator>
   );

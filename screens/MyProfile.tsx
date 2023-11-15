@@ -60,7 +60,7 @@ export const MyProfile = (props:any) => {
                 {editing ? (
                   <TextInput
                     style={styles.infoEdit}
-                    value={editedPerfil[field]}
+                    value={field === 'edad' ? editedPerfil[field].toString() : editedPerfil[field]}
                     onChangeText={(text) => {
                       const newEditedPerfil = { ...editedPerfil };
                       newEditedPerfil[field] = text;

@@ -64,7 +64,7 @@ useEffect(() => {
 // ...
 
 const renderItem = ({ item }) => (
-  <TouchableOpacity onPress={() => props.navigation.navigate('Hospital')}>
+  <TouchableOpacity onPress={() => props.navigation.navigate('HospitalParaDonar')}>
     <View style={styles.item}>
       <Text style={styles.itemTitle}>{item.name}</Text>
       <Text style={styles.itemAddress}>{item.address}</Text>

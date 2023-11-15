@@ -52,7 +52,7 @@ export const TiposHospital = (props: any) => {
 
 
   const renderItem = (item, index) => (
-    <TouchableOpacity onPress={() => props.navigation.navigate('Hospitales')}>
+    <TouchableOpacity onPress={() => props.navigation.navigate('ListaDeHospitales')}>
       <View style={[styles.item, { backgroundColor: colors[index % colors.length] }]}>
         <Text style={styles.itemTitle}>{item.name}</Text>
       </View>
