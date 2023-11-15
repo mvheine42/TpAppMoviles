@@ -58,7 +58,7 @@ export const Home = (props: any) => {
   const [showModal, setShowModal] = useState(true);
 
   // Establece la fecha en la que podrás donar (reemplaza con la fecha real)
-  const fechaDonacion = new Date('2023-11-10');
+  const fechaDonacion = new Date('2023-11-17');
   const fechaActual = new Date();
   const tiempoRestante = Math.ceil((fechaDonacion - fechaActual) / (1000 * 60 * 60 * 24)); // Diferencia en días
 
