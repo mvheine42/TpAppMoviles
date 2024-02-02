@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 
 const profileImage = require('./imagenes/icons8-circled-user-female-skin-type-4-100.png');
+const logOutImage = require('./imagenes/icons8-logout-100-2.png');
 
 export const MyProfile = (props:any) => {
   const [perfil, setPerfil] = useState({
@@ -14,6 +15,7 @@ export const MyProfile = (props:any) => {
   });
   const [editing, setEditing] = useState(false);
   const [editedPerfil, setEditedPerfil] = useState({ ...perfil });
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const handleEdit = () => {
     setEditing(true);
@@ -29,9 +31,25 @@ export const MyProfile = (props:any) => {
     setPerfil({ ...editedPerfil });
   };
 
+  const handleLogout = () => {
+    // Lógica de logout aquí
+    setLoggingOut(true); // Puedes mostrar un indicador de carga si es necesario
+    // Ejemplo: Redirigir al inicio de sesión o realizar otras acciones de logout
+
+    setLoggingOut(false);
+  };
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
+      <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => props.navigation.navigate('Login')}
+          disabled={loggingOut}
+        >
+          <Image source={logOutImage} style = {styles.logOutImage}/>
+        </TouchableOpacity>
         <View style={styles.iconContainer}>
           <View style={styles.imageWrapper}>
             <Image source={profileImage} style={styles.perfilImage} />
@@ -110,6 +128,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#A4161A',
+    position: 'relative', // Agrega esto para que el position: 'absolute' de logoutButton funcione correctamente
   },
   header: {
     flexDirection: 'column',
@@ -119,6 +138,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     marginBottom: 15,
+    position: 'relative', // Ajusta para que el position: 'absolute' de logoutButton funcione correctamente
   },
   iconContainer: {
     width: 50,
@@ -230,6 +250,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold', // Estilo de texto en negrita
     fontSize: 20, // Tamaño de fuente
   },   
+  logoutButton: {
+    position: 'absolute',
+    left: 10,
+    top: 10,
+    zIndex: 1,
+  },
+  logOutImage: {
+    width: 30, // Ajusta según tus preferencias
+    height: 30, // Ajusta según tus preferencias
+  },
 });
 
 export default MyProfile;

@@ -110,7 +110,7 @@ export const SignUpDonante = (props:any) => {
           <View style={styles.inputBlock}>
             <TextInput
               style={styles.input}
-              placeholder="Nombre del medicamento"
+              placeholder="Nombre de los medicamentos"
               placeholderTextColor="white"
             />
           </View>
