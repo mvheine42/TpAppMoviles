@@ -9,6 +9,7 @@ import {EligeFactorRH, EligeTipoDeSangre, Home, Login,
   VerificacionDeDatos, TabScreen, TipoDeUsuario, SignUpDonante, GraciasScreen, TiposHospital, HistoryDonation} from './screens';
 import { SignUpHospital, VerificacionDeDatosHospital } from './screens/SignUpHospital/IndexHospital';
 import { TabScreenHospital } from './screens/SignUpHospital/TabScreenHospital';
+import { HospitalProvider } from './screens/HospitalContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -18,7 +19,16 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="TabScreen" component={TabScreen} options={{ headerShown: false }} />
+        
+        <Stack.Screen name="TabScreen" options={{ headerShown: false }}>
+          {() => (
+            <HospitalProvider>
+              <TabScreen />
+            </HospitalProvider>
+          )}
+        </Stack.Screen>
+        
+        
         <Stack.Screen options={{ headerShown: false }} name='EligeTipoDeSangre' component={EligeTipoDeSangre}/>
         <Stack.Screen options={{ headerShown: false }} name='EligeFactorRH' component={EligeFactorRH}/>
         <Stack.Screen options={{ headerShown: false }} name='VerificacionDeDatos' component={VerificacionDeDatos}/>

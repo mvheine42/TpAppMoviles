@@ -1,21 +1,27 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text , Image, TouchableOpacity, StyleSheet} from 'react-native';
+import { useHospitalContext } from './HospitalContext';
 
-export const Hospital = (props: any) => {
+const Hospital = (props: any) => {
+  const { selectedHospital } = useHospitalContext();
+
+  if (!selectedHospital) {
+    return <Text>No hay hospital seleccionado</Text>;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      <Text style={styles.subtitle}>Hospital Británico</Text>
+      <Text style={styles.subtitle}>{selectedHospital.name}</Text>
       <Image
         source={require('./imagenes/Untitled.png')}
         style={styles.image}
       />
       <View style={styles.informacion}>
-        <Text style={styles.texto}>Arenales 1222</Text>
-        <Text style={styles.texto}>hospitalFernandez@hotmail.com</Text>
-        <Text style={styles.texto}>123456789</Text>
+        <Text style={styles.texto}>Dirección: {selectedHospital.address}</Text>
+        <Text style={styles.texto}>Distancia: {selectedHospital.distance.toFixed(2)} kilómetros</Text>
         <Text style={styles.texto}>Buscamos donantes de: Sangre 0+</Text>
       </View>
       <TouchableOpacity style={styles.donarButton} onPress={() => props.navigation.navigate('QuieroDonar')}>
@@ -83,7 +89,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   texto: {
-    fontSize: 18,  /* Aumenté el tamaño de la fuente a 18px */
+    fontSize: 18,
     color: 'grey',
     marginHorizontal: 10,
     justifyContent: 'center',

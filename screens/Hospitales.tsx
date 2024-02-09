@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import { useHospitalContext } from './HospitalContext';
 
 const fetchHospitales = async () => {
   try {
@@ -60,6 +61,8 @@ export const Hospitales = (props: any) => {
   const [userLocation, setUserLocation] = useState({ latitude: 40.7128, longitude: -74.0060 });
   const [filteredData, setFilteredData] = useState([]); // Lista filtrada de hospitales por distancia
   const [hospitales, setHospitales] = useState([]);
+  const { setHospital } = useHospitalContext(); 
+  
 
   useEffect(() => {
     const obtenerHospitales = async () => {
@@ -88,8 +91,13 @@ export const Hospitales = (props: any) => {
     obtenerHospitales();
   }, [userLocation]);
 
+  const handleHospitalPress = (hospital: any) => {
+    setHospital(hospital); // Almacena el hospital seleccionado en el contexto
+    props.navigation.navigate('HospitalParaDonar'); // Navega a la pantalla del hospital
+  };
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => props.navigation.navigate('HospitalParaDonar')}>
+    <TouchableOpacity onPress={() => handleHospitalPress(item)}>
       <View style={styles.item}>
         <Text style={styles.itemTitle}>{item.name}</Text>
         <Text style={styles.itemAddress}>{item.address}</Text>
