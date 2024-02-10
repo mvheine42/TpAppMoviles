@@ -24,7 +24,7 @@ export const Turnos = (props: any) => {
   ]);
 
   const openTurnDetails = (item) => {
-    
+    setSelectedTurn(item);
     };
 
   const closeTurnDetails = () => {
