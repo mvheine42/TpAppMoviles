@@ -3,10 +3,28 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity,Button } from 'react-native';
 
-const usuarioImage = require('./imagenes/usuario-2.png');
+const emailImage = require('./imagenes/usuario-2.png');
 const cerrarImage = require('./imagenes/candado.png');
 
 export const Login = (props:any) => {
+  const [email, setEmail] = React.useState("")
+  const [password, setPassword] = React.useState("")
+
+
+  const handleLogin = async (email: string, password: string) => {
+    try{
+      const reqLogin = await fetch('http://localhost:3000/users/login?email=' + email + '&password=' + password)
+      if (reqLogin.ok){
+        let data = await reqLogin.json()
+        props.loginFn(data)
+      }
+    }
+    catch(e){
+      console.log(e);
+    }
+    
+  }
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>DONAVIDA+</Text>
@@ -17,25 +35,21 @@ export const Login = (props:any) => {
       <Text style={styles.welcomeText}>¡BIENVENIDO!</Text>
       <View style={styles.inputContainer}>
         <View style={styles.inputIconContainer}>
-          <Image source={usuarioImage} style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Usuario"
-            placeholderTextColor="white"
+          <Image source={emailImage} style={styles.inputIcon} />
+          <TextInput style={styles.input} placeholderTextColor="white"
+            placeholder="Email"
+            onChangeText={setEmail}
           />
         </View>
         <View style={styles.inputIconContainer}>
           <Image source={cerrarImage} style={styles.inputIcon} />
-          <TextInput
-            style={[styles.input, { textAlign: 'left' }]}
+          <TextInput style={styles.input} secureTextEntry placeholderTextColor="white"
             placeholder="Contraseña"
-            secureTextEntry
-            placeholderTextColor="white"
+            onChangeText={setPassword}
           />
         </View>
   
-        <TouchableOpacity
-          onPress={() => props.navigation.navigate('TabScreen')}
+        <TouchableOpacity onPress={() => handleLogin(email, password)}
           style={styles.loginButton}>
           <Text style={styles.buttonText}>Iniciar Sesion</Text>
         </TouchableOpacity>
@@ -101,6 +115,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   input: {
+    textAlign: 'left',
     flex: 1,
     fontSize: 15,
     fontWeight: 'bold',
