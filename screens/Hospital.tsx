@@ -77,12 +77,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     textAlign: 'center',
   },
-  image: {
-    width: '85%',
-    height: '35%',
-    resizeMode: 'contain',
-    alignSelf: 'center',
-  },
   donarButton: {
     backgroundColor: '#A4161A',
     margin: 20,
@@ -105,10 +99,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   map: {
-  height: 400,
-   width: 400,
-   justifyContent: 'flex-end',
-   alignItems: 'center',
+    width: '95%',
+    height: '35%',
+    marginLeft: 10,
+    marginBottom: 20,
+    marginTop: 10,
   }  
 });
 
