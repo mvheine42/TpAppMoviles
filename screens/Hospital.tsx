@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text , Image, TouchableOpacity, StyleSheet} from 'react-native';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { useHospitalContext } from './HospitalContext';
+import Geolocation from '@react-native-community/geolocation';
+
 
 const Hospital = (props: any) => {
   const { selectedHospital } = useHospitalContext();
+  const [position, setPosition] = useState(null);
+  const [region, setRegion] = React.useState({latitude: selectedHospital.latitude,
+    longitude: selectedHospital.longitude,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.0121})
 
   if (!selectedHospital) {
     return <Text>No hay hospital seleccionado</Text>;
@@ -15,10 +23,12 @@ const Hospital = (props: any) => {
         <Text style={styles.title}>DonaVida+</Text>
       </View>
       <Text style={styles.subtitle}>{selectedHospital.name}</Text>
-      <Image
-        source={require('./imagenes/Untitled.png')}
-        style={styles.image}
-      />
+      <MapView
+      provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+       style={styles.map}
+       initialRegion={region}>
+        <Marker title = {selectedHospital.name} coordinate={{latitude: selectedHospital.latitude, longitude: selectedHospital.longitude}}></Marker>
+      </MapView>
       <View style={styles.informacion}>
         <Text style={styles.texto}>Dirección: {selectedHospital.address}</Text>
         <Text style={styles.texto}>Distancia: {selectedHospital.distance.toFixed(2)} kilómetros</Text>
@@ -93,6 +103,12 @@ const styles = StyleSheet.create({
     color: 'grey',
     marginHorizontal: 10,
     justifyContent: 'center',
+  },
+  map: {
+  height: 400,
+   width: 400,
+   justifyContent: 'flex-end',
+   alignItems: 'center',
   }  
 });
 
