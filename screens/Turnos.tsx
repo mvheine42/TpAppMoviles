@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal} from 'react-native';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import { useHospitalContext } from './HospitalContext';
 
 export const Turnos = (props: any) => {
+
+  const [region, setRegion] = React.useState({latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.0121})
+
   const [turnos, setTurnos] = useState([
     {
       id: '1',
@@ -13,22 +21,28 @@ export const Turnos = (props: any) => {
     },
   ]);
 
+  const openMap = (item) => {
+    setSelectedTurn(item);
+  };
+
+  const [selectedTurn, setSelectedTurn] = useState(null);
+
   const [cancelItemId, setCancelItemId] = useState(null);
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <View style={styles.itemInfo}>
-        <Text style={styles.itemTitle}>{item.fecha}</Text>
-        <Text style={styles.itemSubtitle}>{item.hora}</Text>
-        <Text style={styles.itemSubtitle}>{item.dona}</Text>
-        <Text style={styles.itemSubtitle}>{item.tipo}</Text>
-        <Text style={styles.itemSubtitle}>{item.hospital}</Text>
-      </View>
-      <TouchableOpacity
-        onPress={() => handleCancel(item.id)}
-      >
-        <Text style={styles.cancelButton}>Cancelar</Text>
-      </TouchableOpacity>
+      <TouchableOpacity onPress={() => openMap(item)}>
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemTitle}>{item.fecha}</Text>
+          <Text style={styles.itemSubtitle}>{item.hora}</Text>
+          <Text style={styles.itemSubtitle}>{item.dona}</Text>
+          <Text style={styles.itemSubtitle}>{item.tipo}</Text>
+          <Text style={styles.itemSubtitle}>{item.hospital}</Text>
+        </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleCancel(item.id)}>
+          <Text style={styles.cancelButton}>Cancelar</Text>
+        </TouchableOpacity>
     </View>
   );
 
@@ -66,6 +80,15 @@ export const Turnos = (props: any) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
+      <Modal visible={selectedTurn !== null} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+        <MapView
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        initialRegion={region}>
+        </MapView>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -126,6 +149,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  map: {
+    width: 100,
+    height: 100,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  }
 });
 
 export default Turnos;

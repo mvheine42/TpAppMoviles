@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text , Image, TouchableOpacity, StyleSheet} from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { useHospitalContext } from './HospitalContext';
-import Geolocation from '@react-native-community/geolocation';
 
 
 const Hospital = (props: any) => {
   const { selectedHospital } = useHospitalContext();
-  const [position, setPosition] = useState(null);
   const [region, setRegion] = React.useState({latitude: selectedHospital.latitude,
     longitude: selectedHospital.longitude,
     latitudeDelta: 0.015,
@@ -24,7 +22,7 @@ const Hospital = (props: any) => {
       </View>
       <Text style={styles.subtitle}>{selectedHospital.name}</Text>
       <MapView
-      provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+      provider={PROVIDER_GOOGLE}
        style={styles.map}
        initialRegion={region}>
         <Marker title = {selectedHospital.name} coordinate={{latitude: selectedHospital.latitude, longitude: selectedHospital.longitude}}></Marker>
