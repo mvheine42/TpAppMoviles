@@ -1,3 +1,5 @@
+import { LOG_USER_FAILURE, LOG_OUT, LOG_USER_SUCCESS, LOG_USER_PENDING } from "../actionTypes/userActionTypes"
+
 const initialState = {
     user: {},
     isFetching: false,
