@@ -1,4 +1,4 @@
-// Login.tsx
+//Login.tsx
 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity,Button } from 'react-native';

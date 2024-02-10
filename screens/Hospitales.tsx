@@ -95,20 +95,22 @@ export const Hospitales = (props: any) => {
       // Imprime la información de los hospitales por consola
       console.log('Hospitales:', hospitalesData);
 
-      // Calcular la distancia y ordenar hospitales por distancia
-      const hospitalsWithDistance = hospitalesData.map((hospital: { latitude: any; longitude: any; }) => ({
-        ...hospital,
-        distance: getDistanceInKilometers(
-          position.coords.latitude, position.coords.longitude,
-          hospital.latitude,
-          hospital.longitude
-        ),
-      }));
-
-      const sortedHospitals = hospitalsWithDistance.sort((a: { distance: number; }, b: { distance: number; }) => a.distance - b.distance);
-
-      setFilteredData(sortedHospitals);
-    };
+      if (position && position.coords) {
+        // Calcular la distancia y ordenar hospitales por distancia
+        const hospitalsWithDistance = hospitalesData.map((hospital: { latitude: any; longitude: any; }) => ({
+          ...hospital,
+          distance: getDistanceInKilometers(
+            position.coords.latitude, position.coords.longitude,
+            hospital.latitude,
+            hospital.longitude
+          ),
+        }));
+  
+        const sortedHospitals = hospitalsWithDistance.sort((a: { distance: number; }, b: { distance: number; }) => a.distance - b.distance);
+  
+        setFilteredData(sortedHospitals);
+      } else {
+        console.log('No se ha obtenido la ubicación del usuario.'); }}
 
     obtenerHospitales();
   }, [position]);

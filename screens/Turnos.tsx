@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { useHospitalContext } from './HospitalContext';
 
 export const Turnos = (props: any) => {
 
-  const [region, setRegion] = React.useState({latitude: 0,
-    longitude: 0,
+
+  const [region, setRegion] = React.useState({latitude:0,
+    longitude:0,
     latitudeDelta: 0.015,
     longitudeDelta: 0.0121})
 
@@ -21,8 +23,12 @@ export const Turnos = (props: any) => {
     },
   ]);
 
-  const openMap = (item) => {
-    setSelectedTurn(item);
+  const openTurnDetails = (item) => {
+    
+    };
+
+  const closeTurnDetails = () => {
+    setSelectedTurn(null);
   };
 
   const [selectedTurn, setSelectedTurn] = useState(null);
@@ -31,7 +37,7 @@ export const Turnos = (props: any) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <TouchableOpacity onPress={() => openMap(item)}>
+      <TouchableOpacity onPress={() => openTurnDetails(item)}>
         <View style={styles.itemInfo}>
           <Text style={styles.itemTitle}>{item.fecha}</Text>
           <Text style={styles.itemSubtitle}>{item.hora}</Text>
@@ -81,12 +87,18 @@ export const Turnos = (props: any) => {
         keyExtractor={(item) => item.id}
       />
       <Modal visible={selectedTurn !== null} animationType="slide" transparent>
-        <View style={styles.modalContainer}>
-        <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        initialRegion={region}>
-        </MapView>
+      <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalHeading}>{selectedTurn?.hospital}</Text>
+            <Text>Fecha: {selectedTurn?.fecha}</Text>
+            <Text>Hora: {selectedTurn?.hora}</Text>
+            <Text>Dona: {selectedTurn?.dona}</Text>
+            <Text>Tipo: {selectedTurn?.tipo}</Text>
+            <MapView provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={region}></MapView>
+            <TouchableOpacity onPress={closeTurnDetails}>
+              <Text style={styles.closeButton}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>
@@ -150,15 +162,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   map: {
-    width: 100,
-    height: 100,
+    width: '100%',
+    height: '60%',
+    marginTop: 10,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  }
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 8,
+    width: '80%',
+    height: '50%',
+  },
+  modalHeading: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  closeButton: {
+    color: 'blue',
+    marginTop: 10,
+    textAlign: 'right',
+  },
 });
 
 export default Turnos;
