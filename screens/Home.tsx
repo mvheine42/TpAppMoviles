@@ -1,5 +1,41 @@
+import Geolocation from '@react-native-community/geolocation';
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, Modal, TouchableWithoutFeedback } from 'react-native';
+import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
+
+function calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const degreesToRadians = (degrees: number) => {
+      return degrees * (Math.PI / 180);
+  }
+
+  const EARTH_RADIUS = 6371; // Radio de la Tierra en kilómetros
+
+  const dLat = degreesToRadians(lat2 - lat1);
+  const dLon = degreesToRadians(lon2 - lon1);
+
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.sin(dLon / 2) * Math.sin(dLon / 2) * 
+            Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2));
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distancia = EARTH_RADIUS * c; // Distancia en kilómetros
+
+  return distancia;
+}
+
+requestMultiple([PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION])
+.then((status) => {
+  console.log('Location', status[PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION])
+})
+
+
+Geolocation.setRNConfiguration({
+  skipPermissionRequests: true,
+  authorizationLevel: 'whenInUse',
+  locationProvider: 'auto' 
+
+})
+
 
 const data = [
   { id: '1', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
@@ -22,6 +58,36 @@ interface Item {
 }
 
 export const Home = (props: any) => {
+  const [position, setPosition] = useState(null);
+  const [distancia, setDistancia] = useState(null);
+
+  useEffect(() => {
+    const handleGetCurrentPosition = () => {
+      Geolocation.getCurrentPosition(
+        (pos) => {
+          console.log(pos);
+          setPosition(pos);
+        },
+        (error) => {
+          console.log(error);
+        },
+        { enableHighAccuracy: true, maximumAge: 100 }
+      );
+    };
+
+    handleGetCurrentPosition();
+
+  }, []); // Se ejecuta solo al montar el componente
+
+  useEffect(() => {
+    // Calcular la distancia cuando la posición y la posición del destino estén disponibles
+    if (position) {
+      const destino = { latitude: 40.7128, longitude: -74.0060 }; // esto es lo q necesitamos de los htales. 
+      const distanciaCalculada = calcularDistancia(position.coords.latitude, position.coords.longitude, destino.latitude, destino.longitude);
+      setDistancia(distanciaCalculada);
+    }
+  }, [position]);
+
   const [selectedCategories, setSelectedCategories] = useState(['Sangre']);
 
   const toggleCategory = (category: string) => {
@@ -47,7 +113,7 @@ export const Home = (props: any) => {
         <View style={styles.itemContent}>
           <View style={styles.itemTextContainer}>
             <Text style= {styles.itemInfoText}>Hospital Británico</Text>
-            <Text style= {styles.itemInfoText}>Ubicado a 5km de tu ubicación actual</Text>
+            <Text style= {styles.itemInfoText}>Ubicado a {distancia ? distancia.toFixed(2) : 'Cargando...'} de tu ubicación actual</Text>
           </View>
           <Image source={{ uri: item.image }} style={styles.itemImage} />
         </View>

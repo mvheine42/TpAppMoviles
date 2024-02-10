@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Geolocation from '@react-native-community/geolocation';
 import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
 import { useHospitalContext } from './HospitalContext';
 
@@ -42,26 +43,48 @@ const fetchHospitales = async () => {
 };
 
 const getDistanceInKilometers = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-  const radlat1 = (Math.PI * lat1) / 180;
-  const radlat2 = (Math.PI * lat2) / 180;
-  const radlon1 = (Math.PI * lon1) / 180;
-  const radlon2 = (Math.PI * lon2) / 180;
-  const theta = lon1 - lon2;
-  const radtheta = (Math.PI * theta) / 180;
-  let dist =
-    Math.sin(radlat1) * Math.sin(radlat2) +
-    Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-  dist = Math.acos(dist);
-  dist = (dist * 180) / Math.PI;
-  dist = dist * 60 * 1.1515 * 1.60934; // En kilómetros
-  return dist;
+        const degreesToRadians = (degrees: number) => {
+          return degrees * (Math.PI / 180);
+      }
+
+      const EARTH_RADIUS = 6371; // Radio de la Tierra en kilómetros
+
+      const dLat = degreesToRadians(lat2 - lat1);
+      const dLon = degreesToRadians(lon2 - lon1);
+
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.sin(dLon / 2) * Math.sin(dLon / 2) * 
+                Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2));
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distancia = EARTH_RADIUS * c; // Distancia en kilómetros
+
+      return distancia;
 };
 
 export const Hospitales = (props: any) => {
-  const [userLocation, setUserLocation] = useState({ latitude: 40.7128, longitude: -74.0060 });
+  const [position, setPosition] = useState(null);
   const [filteredData, setFilteredData] = useState([]); // Lista filtrada de hospitales por distancia
   const [hospitales, setHospitales] = useState([]);
   const { setHospital } = useHospitalContext(); 
+
+  useEffect(() => {
+    const handleGetCurrentPosition = () => {
+      Geolocation.getCurrentPosition(
+        (pos) => {
+          console.log(pos);
+          setPosition(pos);
+        },
+        (error) => {
+          console.log(error);
+        },
+        { enableHighAccuracy: true, maximumAge: 100 }
+      );
+    };
+
+    handleGetCurrentPosition();
+
+  }, []); // Se ejecuta solo al montar el componente
   
 
   useEffect(() => {
@@ -76,8 +99,7 @@ export const Hospitales = (props: any) => {
       const hospitalsWithDistance = hospitalesData.map((hospital: { latitude: any; longitude: any; }) => ({
         ...hospital,
         distance: getDistanceInKilometers(
-          userLocation.latitude,
-          userLocation.longitude,
+          position.coords.latitude, position.coords.longitude,
           hospital.latitude,
           hospital.longitude
         ),
@@ -89,7 +111,7 @@ export const Hospitales = (props: any) => {
     };
 
     obtenerHospitales();
-  }, [userLocation]);
+  }, [position]);
 
   const handleHospitalPress = (hospital: any) => {
     setHospital(hospital); // Almacena el hospital seleccionado en el contexto
@@ -101,7 +123,7 @@ export const Hospitales = (props: any) => {
       <View style={styles.item}>
         <Text style={styles.itemTitle}>{item.name}</Text>
         <Text style={styles.itemAddress}>{item.address}</Text>
-        <Text style={styles.itemDistancia}>Distancia: {item.distance.toFixed(2)} kilómetros</Text>
+        <Text style={styles.itemDistancia}>Distancia: {item.distance.toFixed(0)} kilómetros</Text>
       </View>
     </TouchableOpacity>
   );  
