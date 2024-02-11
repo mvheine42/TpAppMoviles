@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "679462390944",
+    "project_id": "tpappmoviles-7835c",
+    "storage_bucket": "tpappmoviles-7835c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:679462390944:android:706cf0ca813378d636cdc5",
+        "android_client_info": {
+          "package_name": "com.tpappmoviles"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBI8kOxrRAUrkMozEvGmpsXb01V7KJ6-VU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -49,11 +49,11 @@ export const Login = (props:any) => {
           />
         </View>
   
-        <TouchableOpacity onPress={() => handleLogin(email, password)}
+        <TouchableOpacity onPress={() => props.handleLogin({email, password})}
           style={styles.loginButton}>
           <Text style={styles.buttonText}>Iniciar Sesion</Text>
         </TouchableOpacity>
-        
+        <Text>{JSON.stringify(props.user)}</Text>
         <View style={styles.textContainer}>
           <Text style={styles.forgotPasswordText}>Olvidé mi contraseña</Text>
           <Text style={styles.createAccountText} onPress={() => props.navigation.navigate('TipoDeUsuario')}>Crea tu cuenta</Text>

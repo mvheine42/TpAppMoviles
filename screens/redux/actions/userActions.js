@@ -6,7 +6,7 @@ async function handleLogin(credentials){
     return async (dispatch) => {
     try{
         const {email, password} = credentials
-        const loginCheck = await fetch()
+        const loginCheck = await fetch("http://localhost:3000/users/login?email=" + email + "&password=" + password)
         if (loginCheck.ok) {
             let data = await loginCheck.json()
             dispatch(logUserSuccess(data))

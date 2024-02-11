@@ -10,84 +10,40 @@ import {EligeFactorRH, EligeTipoDeSangre, Home, Login,
 import { SignUpHospital, VerificacionDeDatosHospital } from './screens/SignUpHospital/IndexHospital';
 import { TabScreenHospital } from './screens/SignUpHospital/TabScreenHospital';
 import { HospitalProvider } from './screens/HospitalContext';
+import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
+import messaging from '@react-native-firebase/messaging';
+import { Provider } from "react-redux";
+import store from "./screens/redux/store";
+import { connectScreen } from "./screens/redux/helpers";
+
+const LoginScreen = connectScreen(Login);
+
+
+messaging().getToken().then(t => console.log(t));
+
+requestMultiple([PERMISSIONS.ANDROID.POST_NOTIFICATIONS]).then((statuses) => {
+  console.log('Notifs permissions:', statuses[PERMISSIONS.ANDROID.POST_NOTIFICATIONS])
+})
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const App = () => {
-
-  const [loggedInUser, setLoggedInUser] = React.useState(null)
+const App = (props: any) => {
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!loggedInUser ? (
-          <Stack.Screen name="Login">
-            {(props: any) => <Login {...props} loginFn={setLoggedInUser} />}
-          </Stack.Screen>
-        ) : (
-             <>
-            <Stack.Screen name="TabScreen">
-              {(props: any) => (
-                <HospitalProvider {...props} user={loggedInUser}>
-                  <TabScreen {...props} user={loggedInUser} />
-                </HospitalProvider>
-              )}
-            </Stack.Screen>
-  
-            <Stack.Screen name="EligeTipoDeSangre">
-              {(props: any) => <EligeTipoDeSangre {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="EligeFactorRH">
-              {(props: any) => <EligeFactorRH {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="VerificacionDeDatos">
-              {(props: any) => <VerificacionDeDatos {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="SignUpDonante">
-              {(props: any) => <SignUpDonante {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="Home">
-              {(props: any) => <Home {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="TipoDeUsuario">
-              {(props: any) => <TipoDeUsuario {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="SignUpHospital">
-              {(props: any) => <SignUpHospital {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="VerificacionDeDatosHospital">
-              {(props: any) => (
-                <VerificacionDeDatosHospital {...props} user={loggedInUser} />
-              )}
-            </Stack.Screen>
-  
-            <Stack.Screen name="GraciasScreen">
-              {(props: any) => <GraciasScreen {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="TiposHospital">
-              {(props: any) => <TiposHospital {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="TabScreenHospital">
-              {(props: any) => <TabScreenHospital {...props} user={loggedInUser} />}
-            </Stack.Screen>
-  
-            <Stack.Screen name="HistoryDonation">
-              {(props: any) => <HistoryDonation {...props} user={loggedInUser} />}
-            </Stack.Screen>
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+    <Provider store={store}>
+         <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+    {!props.loggedInUser ?
+      <Stack.Screen name="LoginScreen" component={LoginScreen} /> // Using connected Login component
+      :
+      <>
+      <Stack.Screen name="HomeScreen" component={Home} />
+      </>
+    }
+  </Stack.Navigator>
+</NavigationContainer>
+    </Provider>
+);
 };
 export default App;
