@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 
-const profileImage = require('./imagenes/icons8-circled-user-female-skin-type-4-100.png');
-const logOutImage = require('./imagenes/icons8-logout-100-2.png');
+const profileImage = require('../../imagenes/icons8-circled-user-female-skin-type-4-100.png');
+const logOutImage = require('../../imagenes/icons8-logout-100-2.png');
 
-export const MyProfile = (props:any) => {
+export const MyProfile = (props) => {
   const [perfil, setPerfil] = useState({
     name: 'Victoria Heine',
     correo: 'mvheine42@gmail.com',

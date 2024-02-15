@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
-export const Proceso = (props: any) => {
+export const Proceso = (props) => {
 
     const [activeButton, setActiveButton] = useState(0);
 

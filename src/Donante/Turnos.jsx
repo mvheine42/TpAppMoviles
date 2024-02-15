@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal} from 
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { useHospitalContext } from './HospitalContext';
 
-export const Turnos = (props: any) => {
+export const Turnos = (props) => {
 
 
   const [region, setRegion] = React.useState({latitude:0,

@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-export const TipoDeUsuario = (props: any) => {
+export const TipoDeUsuario = (props) => {
   const options = ['Donante', 'Hospital'];
   const [selectedOption, setSelectedOption] = useState(null);
   const navigation = useNavigation();

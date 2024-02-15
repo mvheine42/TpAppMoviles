@@ -47,7 +47,7 @@ const GraciasScreen = () => {
       <View style={styles.animation}>
         <Animated.View style={[styles.circle, animatedCircleStyle]} />
         <Animated.Image
-          source={require('./imagenes/icons8-check-100.png')}
+          source={require('../../imagenes/icons8-check-100.png')}
           style={[styles.image, animatedImageStyle]}
         />
       </View>

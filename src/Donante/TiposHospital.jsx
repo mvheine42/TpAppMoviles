@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import Hospitales from './Hospitales';
 
-export const TiposHospital = (props: any) => {
+export const TiposHospital = (props) => {
   const data = [
     {
       id: '1',

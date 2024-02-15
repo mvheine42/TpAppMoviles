@@ -16,7 +16,7 @@ const fetchHospitales = async () => {
     const data = await response.json();
 
     if (data && data.features) {
-      const hospitalesData = data.features.map((feature: { properties: { ID: any; NOMBRE: any; DOM_NORMA: any; TELEFONO: any; }; geometry: { coordinates: any; }; }) => {
+      const hospitalesData = data.features.map(() => {
         const { ID, NOMBRE, DOM_NORMA, TELEFONO } = feature.properties;
         const { coordinates } = feature.geometry;
         const [longitude, latitude] = coordinates;
@@ -42,8 +42,8 @@ const fetchHospitales = async () => {
   }
 };
 
-const getDistanceInKilometers = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-        const degreesToRadians = (degrees: number) => {
+const getDistanceInKilometers = (lat1, lon1, lat2, lon2) => {
+        const degreesToRadians = (degrees) => {
           return degrees * (Math.PI / 180);
       }
 
@@ -62,7 +62,7 @@ const getDistanceInKilometers = (lat1: number, lon1: number, lat2: number, lon2:
       return distancia;
 };
 
-export const Hospitales = (props: any) => {
+export const Hospitales = (props) => {
   const [position, setPosition] = useState(null);
   const [filteredData, setFilteredData] = useState([]); // Lista filtrada de hospitales por distancia
   const [hospitales, setHospitales] = useState([]);
@@ -97,7 +97,7 @@ export const Hospitales = (props: any) => {
 
       if (position && position.coords) {
         // Calcular la distancia y ordenar hospitales por distancia
-        const hospitalsWithDistance = hospitalesData.map((hospital: { latitude: any; longitude: any; }) => ({
+        const hospitalsWithDistance = hospitalesData.map((hospital) => ({
           ...hospital,
           distance: getDistanceInKilometers(
             position.coords.latitude, position.coords.longitude,
@@ -106,7 +106,7 @@ export const Hospitales = (props: any) => {
           ),
         }));
   
-        const sortedHospitals = hospitalsWithDistance.sort((a: { distance: number; }, b: { distance: number; }) => a.distance - b.distance);
+        const sortedHospitals = hospitalsWithDistance.sort((a,b) => a.distance - b.distance);
   
         setFilteredData(sortedHospitals);
       } else {
@@ -115,7 +115,7 @@ export const Hospitales = (props: any) => {
     obtenerHospitales();
   }, [position]);
 
-  const handleHospitalPress = (hospital: any) => {
+  const handleHospitalPress = (hospital) => {
     setHospital(hospital); // Almacena el hospital seleccionado en el contexto
     props.navigation.navigate('HospitalParaDonar'); // Navega a la pantalla del hospital
   };

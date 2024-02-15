@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 
-export const CargarTurnos = (props: any) => {
+export const CargarTurnos = (props) => {
   const [fecha, setFecha] = useState(new Date()); // Cambia el estado inicial a una fecha
   const [hora, setHora] = useState('');
   const [tipo, setTipo] = useState('Sangre');

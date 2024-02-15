@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 // Función para obtener la fecha de hoy en formato "dd/mm/yyyy"
-const getFormattedDate = () => {
+const getFormattedDateToday = () => {
   const today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
   const mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
@@ -10,57 +10,60 @@ const getFormattedDate = () => {
   return `${dd}/${mm}/${yyyy}`;
 };
 
-// Mock data for turns
-const turnsData = [
-  {
-    id: 1,
-    patient: 'Juan Perez',
-    donation: 'Sangre A+',
-    time: '10:00 AM',
-  },
-  {
-    id: 2,
-    patient: 'María García',
-    donation: 'Plaquetas',
-    time: '11:30 AM',
-  },
-  {
-    id: 3,
-    patient: 'Carlos Sánchez',
-    donation: 'Sangre B-',
-    time: '12:45 PM',
-  },
-  // Add more turn data here
-];
+const formatDate = (dateString) => {
+  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  const formattedDate = new Date(dateString).toLocaleDateString('es-AR', options);
+  return formattedDate;
+};
 
-// Mock data for current requests
-const currentRequests = [
-  { id: '1', type: 'Sangre A+', minAge: 18, maxAge: 60, expirationTime: 30 },
-  { id: '2', type: 'Médula', minAge: 20, maxAge: 50, expirationTime: 15 },
-  { id: '3', type: 'Sangre B-', minAge: 18, maxAge: 60, expirationTime: 25 },
-  // Add more request data here
-];
+const API_URL = "http://localhost:3000"
 
-export const HomeHospital = () => {
+export const HomeHospital = (props) => {
+  const [pedidos, setPedidos] = React.useState([])
+  const [turnos, setTurnos] = React.useState([])
+
+
+  React.useEffect(() => {
+    fetchTurnos()
+    fetchPedidos()
+    console.log('fetch')
+}, [])
+
+  const fetchPedidos = async () => {
+    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.userId.id}`)
+    pedidos = await pedidos.json()
+    setPedidos(pedidos)
+  }
+
+  const fetchTurnos = async () => {
+    let turnos = await fetch(`${API_URL}/hospital/getTurnosByHospitalId/${props.userId.id}`)
+    turnos = await turnos.json()
+    setTurnos(turnos)
+    console.log(turnos)
+  }
+
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
           <Text style={styles.welcomeText}>Bienvenido!</Text>
-          <Text style={styles.dateText}>Fecha de Hoy: {getFormattedDate()}</Text>
+          <Text style={styles.dateText}>Fecha de Hoy: {getFormattedDateToday()}</Text>
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Turnos de hoy:</Text>
+      <Text style={styles.sectionTitle}>Turnos:</Text>
       <FlatList
         horizontal={true}
-        data={turnsData}
+        data={turnos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.turnBlock}>
-            <Text style={styles.turnInfoText}>Paciente: {item.patient}</Text>
-            <Text style={styles.turnInfoText}>Donación: {item.donation}</Text>
-            <Text style={styles.turnInfoText}>Hora: {item.time}</Text>
+            <Text style={styles.turnInfoText}>Número de pedido: {item.idPedidoHospital}</Text>
+            <Text style={styles.turnInfoText}>Fecha: {formatDate(item.fecha)}</Text>
+            <Text style={styles.turnInfoText}>Hora: {item.hora}hs</Text>
+            <Text style={styles.turnInfoText}>Paciente: {item.donante.nombre} {item.donante.apellido}</Text>
+            <Text style={styles.turnInfoText}>Tipo de Sangre: {item.donante.tipoSangre} {item.donante.factorRH}</Text>
           </View>
         )}
       />
@@ -68,15 +71,14 @@ export const HomeHospital = () => {
       <Text style={styles.sectionTitle}>Pedidos activos:</Text>
       <FlatList
         horizontal={true}
-        data={currentRequests}
+        data={pedidos}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.requestBlock}>
-            <Text style={styles.requestText}>Tipo: {item.type}</Text>
-            <Text style={styles.requestText}>Edad mínima: {item.minAge} años</Text>
-            <Text style={styles.requestText}>Edad máxima: {item.maxAge} años</Text>
+            <Text style={styles.requestText}>{item.tipoDonacion}</Text>
+            <Text style={styles.requestText}>Tipo de Sangre: {item.tipoSangre} </Text>
             <Text style={styles.requestText}>
-              Expira en: {item.expirationTime} {item.expirationTime > 1 ? 'meses' : 'mes'}
+              Expira el: {formatDate(item.fechaHasta)}
             </Text>
           </View>
         )}

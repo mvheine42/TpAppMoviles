@@ -12,9 +12,9 @@ const DonationsScreen = () => {
   ]);
 
   const [discounts, setDiscounts] = useState([
-    { id: 1, name: 'La Parolaccia', image: require('./imagenes/468c5d82ce5a6d1c23a90a3c3a6c0996.jpg'), discount: '30%', details: '30% de descuento en toda la carta', discountCode: 'A2WER34' },
-    { id: 2, name: 'Megatlon', image: require('./imagenes/logo-01-e1507801775879.jpg.webp'), discount: '20%', details: '20% de descuento en la membresía mensual', discountCode: 'B1CDF45' },
-    { id: 3, name: 'La Bisteca', image: require('./imagenes/images.png'), discount: '30%', details: '30% de descuento en toda la carta', discountCode: 'A2WER34' },
+    { id: 1, name: 'La Parolaccia', image: require('../../imagenes/468c5d82ce5a6d1c23a90a3c3a6c0996.jpg'), discount: '30%', details: '30% de descuento en toda la carta', discountCode: 'A2WER34' },
+    { id: 2, name: 'Megatlon', image: require('../../imagenes/logo-01-e1507801775879.jpg.webp'), discount: '20%', details: '20% de descuento en la membresía mensual', discountCode: 'B1CDF45' },
+    { id: 3, name: 'La Bisteca', image: require('../../imagenes/images.png'), discount: '30%', details: '30% de descuento en toda la carta', discountCode: 'A2WER34' },
     // Agrega más datos según sea necesario
   ]);
 
