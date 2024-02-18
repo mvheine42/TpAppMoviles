@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
-export const RequestHospital = (props: any) => {
+export const RequestHospital = (props) => {
   const [donationType, setDonationType] = useState('');
   const [selectedBloodType, setSelectedBloodType] = useState('');
   const [minAge, setMinAge] = useState('');

@@ -3,65 +3,65 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
 
-const trashImage = require('../imagenes/basura.png');
+const trashImage = require('../../../imagenes/basura.png');
 
-const mockSolicitudesEnCurso = [
-  { id: '1', tipo: 'Sangre A+', edadMinima: 18, edadMaxima: 60, tiempoExpiracion: 30 },
-  { id: '2', tipo: 'Médula', edadMinima: 20, edadMaxima: 50, tiempoExpiracion: 15 },
-  { id: '3', tipo: 'Sangre B-', edadMinima: 18, edadMaxima: 60, tiempoExpiracion: 25 },
-  { id: '4', tipo: 'Plaquetas AB+', edadMinima: 25, edadMaxima: 65, tiempoExpiracion: 20 },
-  { id: '5', tipo: 'Sangre O+', edadMinima: 20, edadMaxima: 50, tiempoExpiracion: 10 },
-  { id: '6', tipo: 'Plaquetas A-', edadMinima: 30, edadMaxima: 70, tiempoExpiracion: 40 },
-  { id: '7', tipo: 'Médula', edadMinima: 18, edadMaxima: 60, tiempoExpiracion: 35 },
-  { id: '8', tipo: 'Sangre AB+', edadMinima: 25, edadMaxima: 65, tiempoExpiracion: 18 },
-  { id: '9', tipo: 'Sangre B+', edadMinima: 20, edadMaxima: 50, tiempoExpiracion: 22 },
-  { id: '10', tipo: 'Médula', edadMinima: 18, edadMaxima: 60, tiempoExpiracion: 30 },
-];
+const API_URL = "http://localhost:3000";
 
-export const PedidosEnCurso = () => {
-  const [solicitudes, setSolicitudes] = useState(mockSolicitudesEnCurso);
-  const [selectedSolicitud, setSelectedSolicitud] = useState(null);
+const formatDate = (dateString) => {
+  const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  const formattedDate = new Date(dateString).toLocaleDateString('es-AR', options);
+  return formattedDate;
+};
+
+export const PedidosEnCurso = (props) => {
+  const [selectedPedido, setSelectedPedido] = useState(null);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
+  const [pedidos, setPedidos] = React.useState([])
 
+  React.useEffect(() => {
+    fetchPedidos()
+    console.log('fetch')
+  }, [])
+
+  const fetchPedidos = async () => {
+    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.userId.id}`)
+    pedidos = await pedidos.json()
+    setPedidos(pedidos)
+  }
+  
   const navigation = useNavigation();
 
-  const cancelarSolicitud = (id: any) => {
-    setSelectedSolicitud(id);
+  const cancelarPedido = (id) => {
+    setSelectedPedido(id);
     setConfirmationVisible(true);
   };
 
   const confirmCancellation = () => {
-    setSolicitudes((prevSolicitudes) => prevSolicitudes.filter((solicitud) => solicitud.id !== selectedSolicitud));
-    setSelectedSolicitud(null);
+    setPedidos((prevPedidos) => prevPedidos.filter((pedido) => pedido.id !== selectedPedido));
+    setSelectedPedido(null);
     setConfirmationVisible(false);
   };
 
   const cancelCancellation = () => {
-    setSelectedSolicitud(null);
+    setSelectedPedido(null);
     setConfirmationVisible(false);
   };
 
-  const renderSolicitud = ({ item }) => {
-    const { id, tipo, edadMinima, edadMaxima, tiempoExpiracion } = item;
-    const titulo = `${id}: ${tipo}`;
-    const tiempoExpiracionTexto = tiempoExpiracion > 1 ? 'meses' : 'mes';
-
+  const renderPedido = ({ item }) => {
+    const { id, tipoDonacion, fechaDesde, fechaHasta, tipoSangre } = item;
+    const fechaDesdeFormateada = formatDate(fechaDesde);
+    const fechaHastaFormateada = formatDate(fechaHasta);
+  
     return (
-      <View style={styles.solicitudContainer}>
-        <View style={styles.solicitudInfo}>
-          <Text style={styles.solicitudTitle}>{titulo}</Text>
-          <TouchableOpacity onPress={() => cancelarSolicitud(id)}>
+      <View style={styles.pedidoContainer}>
+        <View style={styles.pedidoInfo}>
+          <Text style={styles.pedidoTitle}>{id + ": "}{tipoDonacion}</Text>
+          <TouchableOpacity onPress={() => cancelarPedido(id)}>
             <Image source={trashImage} style={styles.trashIcon} />
           </TouchableOpacity>
         </View>
-        <Text style={styles.solicitudText}>
-          Edad mínima: {edadMinima} años
-        </Text>
-        <Text style={styles.solicitudText}>
-          Edad máxima: {edadMaxima} años
-        </Text>
-        <Text style={styles.solicitudText}>
-          Tiempo de expiración: {tiempoExpiracion} {tiempoExpiracionTexto}
+        <Text style={styles.pedidoText}>
+          {fechaDesdeFormateada + ' - '}{fechaHastaFormateada}
         </Text>
       </View>
     );
@@ -80,14 +80,14 @@ export const PedidosEnCurso = () => {
       </TouchableOpacity>
       <Text style={styles.subtitle}>Pedidos Activos</Text>
       <FlatList
-        data={solicitudes}
+        data={pedidos}
         keyExtractor={(item) => item.id}
-        renderItem={renderSolicitud}
+        renderItem={renderPedido}
       />
 
       <Modal isVisible={isConfirmationVisible}>
         <View style={styles.confirmationModal}>
-          <Text style={styles.confirmationQuestion}>¿Estás seguro de cancelar esta solicitud?</Text>
+          <Text style={styles.confirmationQuestion}>¿Estás seguro de cancelar este pedido?</Text>
           <View style={styles.confirmationButtons}>
             <TouchableOpacity onPress={cancelCancellation} style={styles.confirmationButton}>
               <Text style={styles.confirmationButtonText}>Cancelar</Text>
@@ -133,28 +133,30 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-  solicitudContainer: {
+  pedidoContainer: {
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 20,
     marginBottom: 20,
     borderRadius: 10,
   },
-  solicitudInfo: {
+  pedidoInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
   },
-  solicitudTitle: {
+  pedidoTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#A4161A',
   },
-  solicitudText: {
+  pedidoText: {
+    alignItems: 'center',
     marginBottom: 5,
     fontSize: 18,
     color: '#333',
+    textAlign: 'center',
   },
   trashIcon: {
     width: 20,

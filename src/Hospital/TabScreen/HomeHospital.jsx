@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 // Función para obtener la fecha de hoy en formato "dd/mm/yyyy"
 const getFormattedDateToday = () => {
@@ -18,10 +19,15 @@ const formatDate = (dateString) => {
 
 const API_URL = "http://localhost:3000"
 
+
 export const HomeHospital = (props) => {
   const [pedidos, setPedidos] = React.useState([])
   const [turnos, setTurnos] = React.useState([])
+  const navigation = useNavigation();
 
+  const goToMyProfile = () => {
+    navigation.navigate('PedidosEnCurso');
+  };
 
   React.useEffect(() => {
     fetchTurnos()
@@ -39,13 +45,16 @@ export const HomeHospital = (props) => {
     let turnos = await fetch(`${API_URL}/hospital/getTurnosByHospitalId/${props.userId.id}`)
     turnos = await turnos.json()
     setTurnos(turnos)
-    console.log(turnos)
+    //console.log(turnos)
   }
 
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={goToMyProfile}>
+          <Text>BOTON</Text>
+        </TouchableOpacity>
         <View>
           <Text style={styles.welcomeText}>Bienvenido!</Text>
           <Text style={styles.dateText}>Fecha de Hoy: {getFormattedDateToday()}</Text>

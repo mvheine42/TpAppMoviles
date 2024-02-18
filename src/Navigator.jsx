@@ -2,7 +2,10 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import {TabScreen} from "./Donante/TabScreen";
-import {HomeHospital} from "./Hospital/HomeHospital";
+import {HomeHospital} from "./Hospital/TabScreen/HomeHospital";
+import Home from "./Donante/HomeDonante";
+import MyProfileHospital from "./Hospital/TabScreen/MyProfileHospital";
+import PedidosEnCurso from "./Hospital/TabScreen/PedidosEnCurso";
 import Login from "./Login";
 
 const Stack = createStackNavigator();
@@ -14,9 +17,20 @@ export default function StackNavigator() {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {loggedInUser ? (
                     loggedInUser.tipoDeUser === 'Hospital' ? (
-                        <Stack.Screen name="HomeHospital">
-                            {props => <HomeHospital {...props} userId={loggedInUser} />}
-                        </Stack.Screen>
+                        <>
+                            <Stack.Screen name="HomeHospital">
+                                {props => <HomeHospital {...props} userId={loggedInUser} />}
+                            </Stack.Screen>
+                            <Stack.Screen name="MyProfileHospital">
+                                {props => <MyProfileHospital {...props} userId={loggedInUser} />}
+                            </Stack.Screen>
+                            <Stack.Screen name="PedidosEnCurso">
+                                {props => <PedidosEnCurso {...props} userId={loggedInUser} />}
+                            </Stack.Screen>
+                            <Stack.Screen name="RequestHospital">
+                                {props => <RequestHospital {...props} userId={loggedInUser} />}
+                            </Stack.Screen>
+                        </>
                     ) : (   //Si es Donante:
                         <Stack.Screen name="TabScreen">
                             {props => <TabScreen {...props} userId={loggedInUser} />}

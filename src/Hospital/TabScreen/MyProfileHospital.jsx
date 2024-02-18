@@ -1,20 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 
-const hospitalImage = require('../imagenes/hospital.png');
+const hospitalImage = require('../../../imagenes/hospital.png');
 
-export const MyProfileHospital = () => {
-  const [hospital, setHospital] = useState({
-    name: 'Hospital San Juan',
-    direccion: '123 Calle Principal',
-    correo: 'hospital@sanjuan.com',
-    telefono: '123-456-7890',
-    responsableName: 'Dr. John Doe',
-    responsableCorreo: 'john.doe@sanjuan.com',
-    horario: 'Lunes a Viernes, 8:00 AM - 5:00 PM',
-  });
+export const MyProfileHospital = (props) => {
   const [editing, setEditing] = useState(false);
-  const [editedHospital, setEditedHospital] = useState({ ...hospital });
+  const [editedHospital, setEditedHospital] = useState({ ...props.userId });
 
   const handleEdit = () => {
     setEditing(true);
@@ -22,12 +13,12 @@ export const MyProfileHospital = () => {
 
   const handleCancel = () => {
     setEditing(false);
-    setEditedHospital({ ...hospital });
+    setEditedHospital({ ...props.userId });
   };
 
   const handleSave = () => {
     setEditing(false);
-    setHospital({ ...editedHospital });
+    setEditedHospital({ ...editedHospital });
   };
 
   return (
@@ -38,43 +29,61 @@ export const MyProfileHospital = () => {
             <Image source={hospitalImage} style={styles.hospitalImage} />
           </View>
         </View>
-        <Text style={styles.hospitalName}>{hospital.name}</Text>
+        <Text style={styles.hospitalName}>{editedHospital.nombre}</Text>
       </View>
       <View style={styles.content}>
-        {Object.keys(hospital).map((field) => (
-          <View key={field} style={styles.fieldContainer}>
-            {field !== 'name' && (
-              <>
-                <Text style={styles.label}>
-                  {field === 'direccion'
-                    ? 'Dirección'
-                    : field === 'correo'
-                    ? 'Correo'
-                    : field === 'telefono'
-                    ? 'Teléfono'
-                    : field === 'responsableName'
-                    ? 'Responsable'
-                    : field === 'responsableCorreo'
-                    ? 'Correo del Responsable'
-                    : 'Horario de Atención'}
-                </Text>
-                {editing ? (
-                  <TextInput
-                    style={styles.infoEdit}
-                    value={editedHospital[field]}
-                    onChangeText={(text) => {
-                      const newEditedHospital = { ...editedHospital };
-                      newEditedHospital[field] = text;
-                      setEditedHospital(newEditedHospital);
-                    }}
-                  />
-                ) : (
-                  <Text style={styles.info}>{hospital[field]}</Text>
-                )}
-              </>
-            )}
-          </View>
-        ))}
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Dirección</Text>
+          {editing ? (
+            <TextInput
+              style={styles.infoEdit}
+              value={editedHospital.direccion}
+              onChangeText={(text) => setEditedHospital({ ...editedHospital, direccion: text })}
+            />
+          ) : (
+            <Text style={styles.info}>{editedHospital.direccion}</Text>
+          )}
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Teléfono</Text>
+          {editing ? (
+            <TextInput
+              style={styles.infoEdit}
+              value={editedHospital.nombre}
+              onChangeText={(text) => setEditedHospital({ ...editedHospital, nombre: text })}
+            />
+          ) : (
+            <Text style={styles.info}>{editedHospital.nombre}</Text>
+          )}
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Correo</Text>
+          {editing ? (
+            <TextInput
+              style={styles.infoEdit}
+              value={editedHospital.email}
+              onChangeText={(text) => setEditedHospital({ ...editedHospital, email: text })}
+            />
+          ) : (
+            <Text style={styles.info}>{editedHospital.email}</Text>
+          )}
+        </View>
+
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Responsable</Text>
+          {editing ? (
+            <TextInput
+              style={styles.infoEdit}
+              value={editedHospital.nomResp}
+              onChangeText={(text) => setEditedHospital({ ...editedHospital, nomResp: text })}
+            />
+          ) : (
+            <Text style={styles.info}>{editedHospital.nomResp}</Text>
+          )}
+        </View>
+
         {editing ? (
           <View style={styles.editButtons}>
             <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
@@ -93,6 +102,7 @@ export const MyProfileHospital = () => {
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
