@@ -1,28 +1,20 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Platform,
-  Alert,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Platform, Alert} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
 
-const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+const bloodTypes = ['A', 'B', 'AB', 'O'];
+const rhFactors = ['+', '-'];
 
 export const RequestHospital = (props) => {
   const [donationType, setDonationType] = useState('');
-  const [selectedBloodType, setSelectedBloodType] = useState('');
-  const [minAge, setMinAge] = useState('');
-  const [maxAge, setMaxAge] = useState('');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [description, setDescription] = useState('');
+  const [selectedBloodType, setSelectedBloodType] = useState('');
+  const [selectedRhFactor, setSelectedRhFactor] = useState('');
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
@@ -34,22 +26,47 @@ export const RequestHospital = (props) => {
     setModalVisible(!isModalVisible);
   };
 
-  const handleConfirm = () => {
-    setIsConfirmed(true);
-    toggleModal();
-    Alert.alert('Solicitud Confirmada', 'La solicitud se realizó con éxito.', [
-      { text: 'OK', onPress: () => navigation.navigate('HomeHospital') },
-    ]);
+  const handleConfirm = async () => {
+    try {
+      const pedidoData = {
+        idHospital: props.userId.id,
+        fechaDesde: startDate.toISOString(),
+        fechaHasta: endDate.toISOString(),
+        tipoDonacion: donationType,
+        tipoSangre: selectedBloodType,
+        factorRh: selectedRhFactor,
+        descripcion: description,
+      };
+  
+      // Realiza la solicitud POST al backend
+      const response = await fetch('http://localhost:3000/hospital/postPedido', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pedidoData),
+      });
+  
+      if (response.ok) {
+        setIsConfirmed(true);
+        toggleModal();
+        Alert.alert('Solicitud Confirmada', 'La solicitud se realizó con éxito.', [
+          { text: 'OK', onPress: () => navigation.navigate('HomeHospital') },
+        ]);
+      } else {
+        console.error('Error al realizar la solicitud POST al backend');
+      }
+    } catch (error) {
+      console.error('Error inesperado:', error);
+    }
   };
+  
 
   const handleCancel = () => {
     toggleModal();
   };
 
-  const isFormValid =
-  (donationType === 'Sangre' && selectedBloodType !== '') ||
-  (donationType === 'Plaquetas' && minAge !== '' && maxAge !== '') ||
-  (donationType === 'Médula' && minAge !== '' && maxAge !== '');
+  const isFormValid = donationType && (selectedBloodType || selectedRhFactor) && description;
 
   const onChangeStartDate = (event, selectedDate) => {
     setShowStartDatePicker(Platform.OS === 'ios');
@@ -86,45 +103,31 @@ export const RequestHospital = (props) => {
         <Picker.Item label="Plaquetas" value="Plaquetas" />
       </Picker>
 
-      {donationType === 'Sangre' && (
-        <>
-          <Text style={styles.label}>Tipo de sangre</Text>
-          <Picker
-            selectedValue={selectedBloodType}
-            onValueChange={(itemValue) => setSelectedBloodType(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Seleccione" value="" />
-            {bloodTypes.map((type) => (
-              <Picker.Item label={type} value={type} key={type} />
-            ))}
-          </Picker>
-        </>
-      )}
+      <Text style={styles.label}>Tipo de sangre</Text>
+      <Picker
+        selectedValue={selectedBloodType}
+        onValueChange={(itemValue) => setSelectedBloodType(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Seleccione" value="" />
+        {bloodTypes.map((type) => (
+          <Picker.Item label={type} value={type} key={type} />
+        ))}
+      </Picker>
 
-      {(donationType === 'Médula' || donationType === 'Plaquetas') && (
-        <>
-          <Text style={styles.label}>De qué edad a qué edad</Text>
-          <View style={styles.ageContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Mínima"
-              keyboardType="numeric"
-              value={minAge}
-              onChangeText={(text) => setMinAge(text)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Máxima"
-              keyboardType="numeric"
-              value={maxAge}
-              onChangeText={(text) => setMaxAge(text)}
-            />
-          </View>
-        </>
-      )}
+      <Text style={styles.label}>Factor RH</Text>
+      <Picker
+        selectedValue={selectedRhFactor}
+        onValueChange={(itemValue) => setSelectedRhFactor(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Seleccione" value="" />
+        {rhFactors.map((factor) => (
+          <Picker.Item label={factor} value={factor} key={factor} />
+        ))}
+      </Picker>
 
-      <Text style={styles.label}>A partir de cuando</Text>
+      <Text style={styles.label}>Desde cuando</Text>
       <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
         <Text style={styles.dateInput}>{startDate.toDateString()}</Text>
       </TouchableOpacity>
@@ -134,6 +137,7 @@ export const RequestHospital = (props) => {
           mode="date"
           display="spinner"
           onChange={onChangeStartDate}
+          minimumDate={new Date()}
         />
       )}
 
@@ -147,9 +151,18 @@ export const RequestHospital = (props) => {
           mode="date"
           display="spinner"
           onChange={onChangeEndDate}
-          minimumDate={startDate}
+          minimumDate={new Date(startDate.getTime() + 24 * 60 * 60 * 1000)}
         />
       )}
+
+      <Text style={styles.label}>Descripcion</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Ingrese..."
+        placeholderTextColor="black"
+        value={description}
+        onChangeText={(text) => setDescription(text)}
+      />
 
       <TouchableOpacity
         style={[
@@ -168,22 +181,15 @@ export const RequestHospital = (props) => {
       <Modal isVisible={isModalVisible}>
         <View style={styles.modalContainer}>
           <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>x</Text>
+            <Text style={styles.closeButtonText}>    x</Text>
           </TouchableOpacity>
 
           <Text style={styles.modalTitle}>Datos Confirmados</Text>
-          {donationType === 'Sangre' && selectedBloodType && (
-            <Text style={styles.modalText}>Tipo de donación: Sangre {selectedBloodType}</Text>
-          )}
-          {(donationType === 'Médula' || donationType === 'Plaquetas') && (
-            <>
-              <Text style={styles.modalText}>Tipo de donación: {donationType}</Text>
-              <Text style={styles.modalText}>Edad mínima: {minAge}</Text>
-              <Text style={styles.modalText}>Edad máxima: {maxAge}</Text>
-            </>
-          )}
-          <Text style={styles.modalText}>Fecha de inicio: {startDate.toDateString()}</Text>
-          <Text style={styles.modalText}>Fecha de fin: {endDate.toDateString()}</Text>
+          <Text style={styles.modalText}>Tipo de Donación: {donationType}</Text>
+          <Text style={styles.modalText}>Tipo de Sangre: {selectedBloodType} {selectedRhFactor}</Text>
+          <Text style={styles.modalText}>Desde: {startDate.toDateString()}</Text>
+          <Text style={styles.modalText}>Hasta: {endDate.toDateString()}</Text>
+          <Text style={styles.modalText}>Descripción: {description}</Text>
 
           <TouchableOpacity onPress={handleConfirm} style={styles.modalCloseButton}>
             <Text style={styles.modalCloseButtonText}>Solicitar</Text>
@@ -197,9 +203,9 @@ export const RequestHospital = (props) => {
 
 const styles = StyleSheet.create({
   title: {
-    marginTop: 30,
-    fontSize: 30,
-    marginBottom: 40,
+    marginTop: 25,
+    fontSize: 35,
+    marginBottom: 25,
     color: '#A4161A',
     textAlign: 'center',
     fontWeight: 'bold',
@@ -208,21 +214,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#F5F5F5',
+    color: 'black',
   },
   picker: {
     height: 50,
     width: '100%',
-    marginBottom: 20,
+    color: 'black',
+    marginBottom: 0,
   },
   label: {
     fontSize: 20,
-    marginBottom: 10,
     color: '#A4161A',
-  },
-  ageContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
   },
   input: {
     flex: 1,
@@ -230,18 +232,20 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     paddingHorizontal: 10,
-    marginBottom: 10,
+    marginBottom: 2,
     fontSize: 15,
+    color: 'black',
   },
   dateInput: {
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
     paddingHorizontal: 10,
-    marginBottom: 10,
+    marginBottom: 15,
     textAlign: 'center',
     fontSize: 18,
     lineHeight: 40,
+    color: 'black',
   },
   button: {
     backgroundColor: '#3498db',
@@ -249,8 +253,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: '100%',
     alignItems: 'center',
-    marginTop: 95,
-    marginBottom:20,
+    marginTop: 30,
+    marginBottom: 20,
   },
   buttonText: {
     color: 'white',
@@ -266,6 +270,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
+    color: 'black',
   },
   modalTitle: {
     fontSize: 25,
@@ -275,6 +280,7 @@ const styles = StyleSheet.create({
   },
   modalText:{
     fontSize: 18,
+    color: 'black'
   },
   modalCloseButton: {
     marginTop: 20,
@@ -287,7 +293,7 @@ const styles = StyleSheet.create({
     color: '#A4161A',
   },
   validationError: {
-    color: 'red',  // Puedes personalizar este estilo según tus preferencias
+    color: 'red',
     fontSize: 16,
     marginBottom: 10,
   },

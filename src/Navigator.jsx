@@ -3,9 +3,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import {TabScreen} from "./Donante/TabScreen";
 import {HomeHospital} from "./Hospital/TabScreen/HomeHospital";
-import Home from "./Donante/HomeDonante";
 import MyProfileHospital from "./Hospital/TabScreen/MyProfileHospital";
 import PedidosEnCurso from "./Hospital/TabScreen/PedidosEnCurso";
+import RequestHospital from "./Hospital/TabScreen/RequestHospital";
 import Login from "./Login";
 
 const Stack = createStackNavigator();

@@ -48,7 +48,7 @@ export const PedidosEnCurso = (props) => {
   };
 
   const renderPedido = ({ item }) => {
-    const { id, tipoDonacion, fechaDesde, fechaHasta, tipoSangre } = item;
+    const { id, tipoDonacion, fechaDesde, fechaHasta, tipoSangre, factorRh, descripcion} = item;
     const fechaDesdeFormateada = formatDate(fechaDesde);
     const fechaHastaFormateada = formatDate(fechaHasta);
   
@@ -60,9 +60,11 @@ export const PedidosEnCurso = (props) => {
             <Image source={trashImage} style={styles.trashIcon} />
           </TouchableOpacity>
         </View>
-        <Text style={styles.pedidoText}>
+        <Text style={styles.pedidoFechaText}>
           {fechaDesdeFormateada + ' - '}{fechaHastaFormateada}
         </Text>
+        <Text style={styles.pedidoText}>Tipo de Sangre: {tipoSangre} {factorRh}</Text>
+        <Text style={styles.descripcionText}>{descripcion}</Text>
       </View>
     );
   };
@@ -156,7 +158,20 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize: 18,
     color: '#333',
-    textAlign: 'center',
+  },
+  pedidoFechaText: {
+    alignItems: 'center',
+    marginBottom: 5,
+    fontSize: 18,
+    color: '#333',
+    fontWeight: 'bold'
+  },
+  descripcionText: {
+    alignItems: 'center',
+    marginBottom: 5,
+    fontSize: 18,
+    color: '#333',
+    fontStyle: 'italic',
   },
   trashIcon: {
     width: 20,
