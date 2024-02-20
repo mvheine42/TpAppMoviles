@@ -1,62 +1,84 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import Modal from 'react-native-modal';
 
-const trashImage = require('../../../imagenes/basura.png');
+const trashImage = require('../imagenes/basura.png');
 
-const API_URL = "http://localhost:3000";
-
-const getFormattedDate = (offset) => {
+const getFormattedDate = (offset: any) => {
   const today = new Date();
   today.setDate(today.getDate() + offset);
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
   const dd = String(today.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yyyy = today.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
 };
 
-export const TurnosHospital = (props) => {
-  const [turns, setTurns] = useState([]);
+const initialTurnsData = [
+  {
+    id: 1,
+    patient: 'Juan Perez',
+    donation: 'Sangre A+',
+    time: '10:00 AM',
+  },
+  {
+    id: 2,
+    patient: 'María García',
+    donation: 'Plaquetas',
+    time: '11:30 AM',
+  },
+  {
+    id: 3,
+    patient: 'Carlos Sánchez',
+    donation: 'Sangre B-',
+    time: '12:45 PM',
+  },
+  {
+    id: 4,
+    patient: 'Laura López',
+    donation: 'Médula',
+    time: '2:00 PM',
+  },
+  {
+    id: 5,
+    patient: 'Pedro Rodríguez',
+    donation: 'Plaquetas',
+    time: '3:15 PM',
+  },
+  {
+    id: 6,
+    patient: 'Elena Martinez',
+    donation: 'Sangre A+',
+    time: '9:30 AM',
+  },
+  {
+    id: 7,
+    patient: 'Luis Rodriguez',
+    donation: 'Médula',
+    time: '10:45 AM',
+  },
+  {
+    id: 8,
+    patient: 'Ana Silva',
+    donation: 'Sangre B-',
+    time: '1:00 PM',
+  },
+];
+
+
+export const TurnosHospital = (props: any) => {
+  const [turns, setTurns] = useState(initialTurnsData);
   const [selectedTurn, setSelectedTurn] = useState(null);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
 
-  useEffect(() => {
-    fetchTurns();
-  }, []);
-
-  const fetchTurns = async () => {
-    try {
-      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalId/${props.userId.id}`);
-      const data = await response.json();
-      setTurns(data);
-      console.log(data);
-    } catch (error) {
-      console.error('Error fetching turns:', error);
-    }
-  };
-
-  const deleteTurn = (id) => {
+  const deleteTurn = (id: any) => {
     setSelectedTurn(id);
     setConfirmationVisible(true);
   };
 
-  const confirmDeletion = async () => {
-    try {
-      // Hacer la solicitud DELETE a la API para eliminar el turno
-      await fetch(`${API_URL}/donante/deleteTurno/${selectedTurn}`, {
-        method: 'DELETE',
-      });
-
-      // Actualizar la lista de turnos llamando a fetchTurns nuevamente
-      await fetchTurns();
-
-      // Limpiar el estado local y cerrar el modal de confirmación
-      setSelectedTurn(null);
-      setConfirmationVisible(false);
-    } catch (error) {
-      console.error('Error deleting turn:', error);
-      // Manejar el error aquí (por ejemplo, mostrar un mensaje al usuario)
-    }
+  const confirmDeletion = () => {
+    setTurns((prevTurns) => prevTurns.filter((turn) => turn.id !== selectedTurn));
+    setSelectedTurn(null);
+    setConfirmationVisible(false);
   };
 
   const cancelDeletion = () => {
@@ -64,9 +86,9 @@ export const TurnosHospital = (props) => {
     setConfirmationVisible(false);
   };
 
-  const todayTurns = turns.filter((turn) => turn.fecha.includes(getFormattedDate(0)));
-  const tomorrowTurns = turns.filter((turn) => turn.fecha.includes(getFormattedDate(1)));
-  const dayAfterTomorrowTurns = turns.filter((turn) => turn.fecha.includes(getFormattedDate(2)));
+  const todayTurns = turns.filter((turn) => turn.id <= 3);
+  const tomorrowTurns = turns.filter((turn) => turn.id > 3 && turn.id <= 5);
+  const dayAfterTomorrowTurns = turns.filter((turn) => turn.id > 5);
 
   return (
     <View style={styles.container}>
@@ -84,9 +106,9 @@ export const TurnosHospital = (props) => {
           {todayTurns.map((turn) => (
             <View key={turn.id} style={styles.turnBlock}>
               <View style={styles.turnInfo}>
-                <Text style={styles.turnText}>Paciente: {turn.donante.nombre} {turn.donante.apellido}</Text>
-                <Text style={styles.turnText}>Nro de Pedido: {turn.pedidoHospital.id} {turn.pedidoHospital.tipoDonacion}</Text>
-                <Text style={styles.turnText}>Hora: {turn.hora}hs</Text>
+                <Text style={styles.turnText}>Paciente: {turn.patient}</Text>
+                <Text style={styles.turnText}>Donación: {turn.donation}</Text>
+                <Text style={styles.turnText}>Hora: {turn.time}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => deleteTurn(turn.id)}
@@ -103,9 +125,9 @@ export const TurnosHospital = (props) => {
           {tomorrowTurns.map((turn) => (
             <View key={turn.id} style={styles.turnBlock}>
               <View style={styles.turnInfo}>
-                <Text style={styles.turnText}>Paciente: {turn.donante.nombre} {turn.donante.apellido}</Text>
-                <Text style={styles.turnText}>Nro de Pedido: {turn.pedidoHospital.id} {turn.pedidoHospital.tipoDonacion}</Text>
-                <Text style={styles.turnText}>Hora: {turn.hora}hs</Text>
+                <Text style={styles.turnText}>Paciente: {turn.patient}</Text>
+                <Text style={styles.turnText}>Donación: {turn.donation}</Text>
+                <Text style={styles.turnText}>Hora: {turn.time}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => deleteTurn(turn.id)}
@@ -122,9 +144,9 @@ export const TurnosHospital = (props) => {
           {dayAfterTomorrowTurns.map((turn) => (
             <View key={turn.id} style={styles.turnBlock}>
               <View style={styles.turnInfo}>
-                <Text style={styles.turnText}>Paciente: {turn.donante.nombre} {turn.donante.apellido}</Text>
-                <Text style={styles.turnText}>Nro de Pedido: {turn.pedidoHospital.id} {turn.pedidoHospital.tipoDonacion}</Text>
-                <Text style={styles.turnText}>Hora: {turn.hora}hs</Text>
+                <Text style={styles.turnText}>Paciente: {turn.patient}</Text>
+                <Text style={styles.turnText}>Donación: {turn.donation}</Text>
+                <Text style={styles.turnText}>Hora: {turn.time}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => deleteTurn(turn.id)}
@@ -189,7 +211,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 10,
     marginBottom: 10,
     color: '#A4161A',
   },

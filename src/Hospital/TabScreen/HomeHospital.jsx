@@ -26,7 +26,7 @@ export const HomeHospital = (props) => {
   const navigation = useNavigation();
 
   const goToMyProfile = () => {
-    navigation.navigate('TurnosHospital');
+    navigation.navigate('PedidosEnCurso');
   };
 
   React.useEffect(() => {
