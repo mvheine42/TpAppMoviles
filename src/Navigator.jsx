@@ -7,6 +7,7 @@ import MyProfileHospital from "./Hospital/TabScreen/MyProfileHospital";
 import PedidosEnCurso from "./Hospital/TabScreen/PedidosEnCurso";
 import RequestHospital from "./Hospital/TabScreen/RequestHospital";
 import TurnosHospital from "./Hospital/TabScreen/TurnosHospital";
+import HistorialTurnosHospital from "./Hospital/TabScreen/HistorialTurnosHospital";
 import Login from "./Login";
 
 const Stack = createStackNavigator();
@@ -33,6 +34,9 @@ export default function StackNavigator() {
                             </Stack.Screen>
                             <Stack.Screen name="TurnosHospital">
                                 {props => <TurnosHospital {...props} userId={loggedInUser} />}
+                            </Stack.Screen>
+                            <Stack.Screen name="HistorialTurnosHospital">
+                                {props => <HistorialTurnosHospital {...props} userId={loggedInUser} />}
                             </Stack.Screen>
                         </>
                     ) : (   //Si es Donante:

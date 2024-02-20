@@ -29,7 +29,6 @@ export const TurnosHospital = (props) => {
       const response = await fetch(`${API_URL}/donante/getTurnosByHospitalId/${props.userId.id}`);
       const data = await response.json();
       setTurns(data);
-      console.log(data);
     } catch (error) {
       console.error('Error fetching turns:', error);
     }
