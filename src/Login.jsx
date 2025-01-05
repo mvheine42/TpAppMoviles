@@ -9,20 +9,6 @@ const cerrarImage = require('../imagenes/candado.png');
 const Login = (props) => {
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
-    console.log(JSON.stringify(props))
-
-    async function handleLogin(email, password, loginFunction) {
-        const loginCheck = await fetch("http://localhost:3000/users/login?email=" + email + "&password=" + password)
-        if (loginCheck.ok) {
-            let data = await loginCheck.json()
-            loginFunction(data)
-        }
-        else {
-            Alert.alert("No se encontró el usuario")
-            console.log(loginCheck.status)
-        }
-    }
-
     return (
         <ScrollView style={styles.container}>
           <Text style={styles.header}>DONAVIDA+</Text>
@@ -46,8 +32,8 @@ const Login = (props) => {
                 onChangeText={setPassword}
               />
             </View>
-      
-            <TouchableOpacity onPress={() => handleLogin(email, password, props.loginFn)}
+            <Text> </Text>
+            <TouchableOpacity onPress={() => props.handleLogin({email, password})}
               style={styles.loginButton}>
               <Text style={styles.buttonText}>Iniciar Sesion</Text>
             </TouchableOpacity>

@@ -4,50 +4,61 @@ import { View, Text, TextInput, Button, StyleSheet, Image, ScrollView, Touchable
 const profileImage = require('../../imagenes/icons8-circled-user-female-skin-type-4-100.png');
 const logOutImage = require('../../imagenes/icons8-logout-100-2.png');
 
+const API_URL = "http://localhost:3000"
+
+
 export const MyProfile = (props) => {
-  const [perfil, setPerfil] = useState({
-    name: 'Victoria Heine',
-    correo: 'mvheine42@gmail.com',
-    edad: 23,
-    peso: '60kg',
-    medicacion: 'anticonceptivos',
-    embarazo: 'no',
-  });
+
   const [editing, setEditing] = useState(false);
-  const [editedPerfil, setEditedPerfil] = useState({ ...perfil });
   const [loggingOut, setLoggingOut] = useState(false);
+  const [post, setPost] = React.useState("");
+
+
+  const handleUpdatePost = async () => {
+    try {
+        const response = await fetch(API_URL + "/donantes/" + postId, { // Especifica el ID del post que deseas actualizar
+            method: "PUT", // Utiliza el método PUT para actualizar el post existente
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                content: newPostContent, // Nuevo contenido del post
+                authorId: userId,
+                groupId: groupId
+            })
+        });
+
+        if (response.ok) {
+            const updatedPost = await response.json();
+            console.log("Post actualizado:", updatedPost);
+            // Aquí puedes realizar cualquier acción adicional después de la actualización exitosa
+        } else {
+            console.error("Error al actualizar el post:", response.status);
+        }
+    } catch (error) {
+        console.error("Error en la solicitud de actualización:", error);
+    }
+};
+
+
+  const fieldsToShow = ['nombre', 'apellido', 'email', 'edad', 'peso', 'medicaciones', 'embarazo'];
+
 
   const handleEdit = () => {
     setEditing(true);
   };
 
-  const handleCancel = () => {
-    setEditing(false);
-    setEditedPerfil({ ...perfil });
-  };
-
-  const handleSave = () => {
-    setEditing(false);
-    setPerfil({ ...editedPerfil });
-  };
-
-  const handleLogout = () => {
-    // Lógica de logout aquí
-    setLoggingOut(true); // Puedes mostrar un indicador de carga si es necesario
-    // Ejemplo: Redirigir al inicio de sesión o realizar otras acciones de logout
-
-    setLoggingOut(false);
-  };
-
-
+  console.log(props.user.user);
+  const userFields = props.user.user ? Object.keys(props.user.user) : [];
+  console.log(userFields);
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      
       <View style={styles.header}>
       <TouchableOpacity
           style={styles.logoutButton}
           onPress={() => props.navigation.navigate('Login')}
-          disabled={loggingOut}
-        >
+          disabled={loggingOut}>
           <Image source={logOutImage} style = {styles.logOutImage}/>
         </TouchableOpacity>
         <View style={styles.iconContainer}>
@@ -55,72 +66,36 @@ export const MyProfile = (props) => {
             <Image source={profileImage} style={styles.perfilImage} />
           </View>
         </View>
-        <Text style={styles.perfilName}>{perfil.name}</Text>
+        <Text style={styles.perfilName}>{props.user.user.nombre} {props.user.user.apellido}</Text>
       </View>
-      <View style={styles.content}>
-        {Object.keys(perfil).map((field) => (
-          <View key={field} style={styles.fieldContainer}>
-            {field !== 'name' && (
-              <>
-                <Text style={styles.label}>
-                  {field === 'correo'
-                    ? 'Correo'
-                    : field === 'edad'
-                    ? 'Edad'
-                    : field === 'peso'
-                    ? 'Peso'
-                    : field === 'medicacion'
-                    ? 'Medicacion'
-                    : field === 'embarazo'
-                    ? 'Probabilidad de embarazo'
-                    : 'Horario de Atención'}
-                </Text>
-                {editing ? (
-                  <TextInput
-                    style={styles.infoEdit}
-                    value={field === 'edad' ? editedPerfil[field].toString() : editedPerfil[field]}
-                    onChangeText={(text) => {
-                      const newEditedPerfil = { ...editedPerfil };
-                      newEditedPerfil[field] = text;
-                      setEditedPerfil(newEditedPerfil);
-                    }}
-                  />
-                ) : (
-                  <Text style={styles.info}>{perfil[field]}</Text>
-                )}
-              </>
-            )}
-          </View>
-        ))}
-        {editing ? (
-          <View style={styles.editButtons}>
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.buttonText}>Guardar</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Text style={styles.buttonText}>Editar</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      <ScrollView style={styles.content}>
+        {fieldsToShow.map(field => (
+          props.user.user[field] !== undefined && props.user.user[field]  !== null && (
+            <View key={field} style={styles.fieldContainer}>
+              <Text style={styles.label}>
+                {field === 'nombre' ? 'Nombre' :
+                 field === 'apellido' ? 'Apellido' :
+                 field === 'email' ? 'Correo' :
+                 field === 'edad' ? 'Edad' :
+                 field === 'peso' ? 'Peso' :
+                 field === 'medicaciones' ? 'Medicación' :
+                 field === 'embarazo' ? 'Probabilidad de embarazo' : ''}:
+              </Text>
+              <Text>{props.user.user[field]}</Text>
+            </View>)))}
+            </ScrollView>
       <View style={styles.timeSinceDonation}>
         <Text style={styles.label}>Tiempo desde la última donación: 6 meses y 6 días</Text>
       </View>
       <TouchableOpacity
-  onPress={() => props.navigation.navigate('HistoryDonation')}
->
+  onPress={() => props.navigation.navigate('HistoryDonation')}>
   <View style={styles.historyBenefits}>
     <Text style={styles.historyBenefitsText}>Historial y Beneficios</Text>
   </View>
 </TouchableOpacity>
+  </ScrollView>
 
-    </ScrollView>
-  );
-};
+)};
 
 const styles = StyleSheet.create({
   container: {
@@ -263,3 +238,22 @@ const styles = StyleSheet.create({
 });
 
 export default MyProfile;
+
+
+//const handleCancel = () => {
+    //setEditing(false);
+    //setEditedPerfil({ ...perfil });
+  //};
+
+  //const handleSave = () => {
+    //setEditing(false);
+    //setPerfil({ ...editedPerfil });
+  //};
+
+  //const handleLogout = () => {
+    // Lógica de logout aquí
+    //setLoggingOut(true); // Puedes mostrar un indicador de carga si es necesario
+    // Ejemplo: Redirigir al inicio de sesión o realizar otras acciones de logout
+
+    //setLoggingOut(false);
+  //};

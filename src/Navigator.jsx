@@ -8,17 +8,21 @@ import PedidosEnCurso from "./Hospital/TabScreen/PedidosEnCurso";
 import RequestHospital from "./Hospital/TabScreen/RequestHospital";
 import TurnosHospital from "./Hospital/TabScreen/TurnosHospital";
 import HistorialTurnosHospital from "./Hospital/TabScreen/HistorialTurnosHospital";
-import Login from "./Login";
+import LoginScreen from "./Login";
+import { connectScreen } from "./redux/helpers";
 
 const Stack = createStackNavigator();
 
-export default function StackNavigator() {
-    const [loggedInUser, setLoggedInUser] = React.useState(null);
+const BottTab = connectScreen(TabScreen);
+const Login = connectScreen(LoginScreen);
+
+export default function StackNavigator(props) {
+    //const [loggedInUser, setLoggedInUser] = React.useState(null);
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {loggedInUser ? (
-                    loggedInUser.tipoDeUser === 'Hospital' ? (
+                {props.user.isLoggedIn ? (
+                    props.user.tipoDeUser === 'Hospital' ? (
                         <>
                             <Stack.Screen name="HomeHospital">
                                 {props => <HomeHospital {...props} userId={loggedInUser} />}
@@ -40,14 +44,11 @@ export default function StackNavigator() {
                             </Stack.Screen>
                         </>
                     ) : (   //Si es Donante:
-                        <Stack.Screen name="TabScreen">
-                            {props => <TabScreen {...props} userId={loggedInUser} />}
+                        <Stack.Screen name="TabScreen" component={BottTab}>
                         </Stack.Screen>
                     )
                 ) : (
-                    <Stack.Screen name="Login">
-                        {props => <Login {...props} loginFn={setLoggedInUser} />}
-                    </Stack.Screen>
+                    <Stack.Screen name="Login" component={Login}/>
                 )}
             </Stack.Navigator>
         </NavigationContainer>

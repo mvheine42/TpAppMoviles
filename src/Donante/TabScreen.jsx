@@ -39,10 +39,12 @@ function StackNavigation(props) {
 }
 
 
-function MyProfileStackNavigation() {
+function MyProfileStackNavigation(props) {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="PerfilDonante" component={MyProfile} options={{ headerShown: false }} />
+      <Stack.Screen name='PerfilDonante' options={{ headerShown: false }} {...props}>
+        {() => <MyProfile {...props} />}
+      </Stack.Screen>
       <Stack.Screen name='MisTurnos' component={Turnos} options={{ headerShown: false }} />
       <Stack.Screen name='HistoryDonation' component={HistoryDonation} options={{ headerShown: false }} />
     </Stack.Navigator>
@@ -100,7 +102,7 @@ export const TabScreen = (props) => {
       >
         {() => <StackNavigation {...props} />}
       </Tab.Screen>
-      <Tab.Screen name="Turnos" component={Turnos} options={{
+      <Tab.Screen name='Turnos' options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
           <Image
@@ -113,7 +115,9 @@ export const TabScreen = (props) => {
           />
         ),
         tabBarOnPress: () => changeTab('Turnos'),
-      }} />
+      }} >
+        {() => <Turnos {...props} />}
+      </Tab.Screen>
       <Tab.Screen name="Hospitales" component={HospitalesStackNavigation} options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
@@ -128,7 +132,7 @@ export const TabScreen = (props) => {
         ),
         tabBarOnPress: () => changeTab('Hospitales'),
       }} />
-      <Tab.Screen name="Perfil" component={MyProfileStackNavigation} options={{
+      <Tab.Screen name="Perfil" options={{
         headerShown: false,
         tabBarIcon: ({ focused }) => (
           <Image
@@ -141,7 +145,9 @@ export const TabScreen = (props) => {
           />
         ),
         tabBarOnPress: () => changeTab('Perfil'),
-      }} />
+      }}>
+         {() => <MyProfileStackNavigation {...props} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }

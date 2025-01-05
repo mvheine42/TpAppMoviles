@@ -77,7 +77,7 @@ const Home = (props) => {
             </View>
             <View style={styles.tituloNoticias}>
                 <Text style={styles.noticiasText}>DONACIONES</Text>
-                <Text style={styles.noticiaSubBText}>Hecho especialmente para {props.userId.nombre}</Text>
+                <Text style={styles.noticiaSubBText}>Hecho especialmente para {props.user.user.nombre}</Text>
             </View>
             <View style={styles.informacion}>
                 <Text style={styles.informacionText}>Información</Text>

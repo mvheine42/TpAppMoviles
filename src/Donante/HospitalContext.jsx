@@ -1,26 +1,23 @@
 import React, { createContext, useContext, useState } from 'react';
+import PropTypes from 'prop-types';
 
-interface HospitalContextProps {
-  selectedHospital: any;
-  setHospital: (hospital: any) => void;
-}
+const HospitalContext = createContext({
+  selectedHospital: null,
+  setSelectedHospital: () => {}, // Noop function for default
+});
 
-const HospitalContext = createContext<HospitalContextProps>({ selectedHospital: null, setHospital: (hospital) => {} });
-
-export const HospitalProvider: React.FC = ({ children }) => {
+export const HospitalProvider = ({ children }) => {
   const [selectedHospital, setSelectedHospital] = useState(null);
 
-  const setHospital = (hospital) => {
-    setSelectedHospital(hospital);
-  };
-
   return (
-    <HospitalContext.Provider value={{ selectedHospital, setHospital }}>
+    <HospitalContext.Provider value={{ selectedHospital, setSelectedHospital }}>
       {children}
     </HospitalContext.Provider>
   );
 };
 
-export const useHospitalContext = () => {
-  return useContext(HospitalContext);
+HospitalProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
+
+export const useHospitalContext = () => useContext(HospitalContext);

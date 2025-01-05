@@ -4,7 +4,7 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { useHospitalContext } from './HospitalContext';
 
 
-const Hospital = (props: any) => {
+const Hospital = (props) => {
   const { selectedHospital } = useHospitalContext();
   const [region, setRegion] = React.useState({latitude: selectedHospital.latitude,
     longitude: selectedHospital.longitude,
