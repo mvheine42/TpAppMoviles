@@ -10,6 +10,7 @@ import TiposHospital from './TiposHospital';
 import Hospitales from './Hospitales';
 import Hospital from './Hospital';
 import QuieroDonar from './QuieroDonar';
+import { HospitalProvider } from './HospitalContext'; // Asegúrate de importar correctamente el HospitalProvider
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
@@ -64,7 +65,7 @@ function ListaDeHospitales() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="HospitalesDonante" component={Hospitales} options={{ headerShown: false }} />
-      <Stack.Screen name="HospitalParaDonar" component={HospitalStackNavigation} options={{ headerShown: false }} />
+      <Stack.Screen name="Hospital" component={HospitalStackNavigation} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -85,6 +86,7 @@ export const TabScreen = (props) => {
   };
 
   return (
+    <HospitalProvider>
     <Tab.Navigator
       shifting={true}
       activeColor="#FFFFFF"
@@ -149,5 +151,6 @@ export const TabScreen = (props) => {
          {() => <MyProfileStackNavigation {...props} />}
       </Tab.Screen>
     </Tab.Navigator>
+    </HospitalProvider>
   );
 }

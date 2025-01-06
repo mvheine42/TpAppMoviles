@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Geolocation from '@react-native-community/geolocation';
 import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
-import { useHospitalContext } from './HospitalContext';
+import { useHospitalContext } from './HospitalContext'; // Importamos el contexto
+import { Hospital } from "./Hospital"
 
 const fetchHospitales = async () => {
   try {
@@ -16,10 +17,9 @@ const fetchHospitales = async () => {
     const data = await response.json();
 
     if (data && data.features) {
-      const hospitalesData = data.features.map(() => {
+      const hospitalesData = data.features.map((feature) => {
         const { ID, NOMBRE, DOM_NORMA, TELEFONO } = feature.properties;
-        const { coordinates } = feature.geometry;
-        const [longitude, latitude] = coordinates;
+        const [longitude, latitude] = feature.geometry.coordinates;
 
         return {
           id: ID,
@@ -63,10 +63,10 @@ const getDistanceInKilometers = (lat1, lon1, lat2, lon2) => {
 };
 
 export const Hospitales = (props) => {
+  const { setHospital } = useHospitalContext(); // Usamos el setHospital del contexto
   const [position, setPosition] = useState(null);
   const [filteredData, setFilteredData] = useState([]); // Lista filtrada de hospitales por distancia
   const [hospitales, setHospitales] = useState([]);
-  const { setHospital } = useHospitalContext(); 
 
   useEffect(() => {
     const handleGetCurrentPosition = () => {
@@ -86,7 +86,6 @@ export const Hospitales = (props) => {
 
   }, []); // Se ejecuta solo al montar el componente
   
-
   useEffect(() => {
     const obtenerHospitales = async () => {
       const hospitalesData = await fetchHospitales();
@@ -116,8 +115,9 @@ export const Hospitales = (props) => {
   }, [position]);
 
   const handleHospitalPress = (hospital) => {
-    setHospital(hospital); // Almacena el hospital seleccionado en el contexto
-    props.navigation.navigate('HospitalParaDonar'); // Navega a la pantalla del hospital
+    console.log('Hospital seleccionado:', hospital);  // Verifica que el hospital es el correcto
+    setHospital(hospital);  // Aquí estamos actualizando el contexto con el hospital seleccionado
+    props.navigation.navigate('Hospital', { hospital });  // Navega a la pantalla 'Hospital'
   };
 
   const renderItem = ({ item }) => (
@@ -149,7 +149,6 @@ export const Hospitales = (props) => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -204,19 +203,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'gray',
   },
-  itemDescriptionContainer: {
-    marginTop: 10,
-    maxHeight: 100,
-  },
-  itemDescription: {
-    fontSize: 14,
-    color: 'gray'
-  },
   itemDistancia: {
     fontSize: 14,
     color: 'gray'
   },
 });
-
 
 export default Hospitales;
