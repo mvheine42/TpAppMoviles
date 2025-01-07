@@ -95,8 +95,7 @@ export const TabScreenHosp = (props) => {
         </Tab.Screen>
 
         <Tab.Screen 
-          name="Turnos" 
-          component={TurnosHospitalStackNavigator}
+          name="Turnos"
           options={{
             headerShown: false,
             tabBarIcon: ({ focused }) => (
@@ -104,11 +103,12 @@ export const TabScreenHosp = (props) => {
             ),
             tabBarOnPress: () => changeTab('TurnosHospital'),
           }}
-        />
+          >
+            {() => <TurnosHospitalStackNavigator {...props} />}
+        </Tab.Screen>
 
         <Tab.Screen 
-          name="Pedidos" 
-          component={PedidosHospitalStackNavigator} 
+          name="Pedidos"
           options={{
             headerShown: false,
             tabBarIcon: ({ focused }) => (
@@ -116,7 +116,9 @@ export const TabScreenHosp = (props) => {
             ),
             tabBarOnPress: () => changeTab('PedidosEnCurso'),
           }}
-        />
+          >
+            {() => <PedidosHospitalStackNavigator {...props} />}
+        </Tab.Screen>
 
         <Tab.Screen 
           name="Perfil" 

@@ -16,7 +16,6 @@ const getFormattedDate = (offset) => {
 };
 
 export const TurnosHospital = (props) => {
-  console.log('TURNOS HOSPITAL PROPS: ', props);
   const [turns, setTurns] = useState([]);
   const [selectedTurn, setSelectedTurn] = useState(null);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
@@ -42,20 +41,14 @@ export const TurnosHospital = (props) => {
 
   const confirmDeletion = async () => {
     try {
-      // Hacer la solicitud DELETE a la API para eliminar el turno
       await fetch(`${API_URL}/donante/deleteTurno/${selectedTurn}`, {
         method: 'DELETE',
       });
-
-      // Actualizar la lista de turnos llamando a fetchTurns nuevamente
       await fetchTurns();
-
-      // Limpiar el estado local y cerrar el modal de confirmación
       setSelectedTurn(null);
       setConfirmationVisible(false);
     } catch (error) {
       console.error('Error deleting turn:', error);
-      // Manejar el error aquí (por ejemplo, mostrar un mensaje al usuario)
     }
   };
 

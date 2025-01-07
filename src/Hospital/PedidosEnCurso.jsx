@@ -19,7 +19,7 @@ export const PedidosEnCurso = (props) => {
   const [pedidos, setPedidos] = React.useState([])
 
   React.useEffect(() => {
-    fetchPedidos()
+    fetchPedidos();
     console.log('${props.user.user.id}', props.user.user.id);
   }, [])
 
