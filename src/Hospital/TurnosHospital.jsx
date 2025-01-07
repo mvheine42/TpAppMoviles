@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import Modal from 'react-native-modal';
 
-const trashImage = require('../../../imagenes/basura.png');
+const trashImage = require('../../imagenes/basura.png');
 
 const API_URL = "http://localhost:3000";
 

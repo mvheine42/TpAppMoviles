@@ -20,7 +20,7 @@ const formatDate = (dateString) => {
 const API_URL = "http://localhost:3000"
 
 
-export const HomeHospital = (props) => {
+const HomeHospital = (props) => {
   const [pedidos, setPedidos] = React.useState([])
   const [turnos, setTurnos] = React.useState([])
   const navigation = useNavigation();
@@ -29,11 +29,11 @@ export const HomeHospital = (props) => {
     navigation.navigate('TurnosHospital');
   };
 
-  React.useEffect(() => {
-    fetchTurnos()
-    fetchPedidos()
-    console.log('fetch')
-}, [])
+    React.useEffect(() => {
+      fetchTurnos()
+      fetchPedidos()
+      console.log('fetch')
+  }, [])
 
   const fetchPedidos = async () => {
     let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.userId.id}`)

@@ -10,7 +10,7 @@ import TiposHospital from './TiposHospital';
 import Hospitales from './Hospitales';
 import Hospital from './Hospital';
 import QuieroDonar from './QuieroDonar';
-import { HospitalProvider } from './HospitalContext'; // Asegúrate de importar correctamente el HospitalProvider
+import { HospitalProvider } from './HospitalContext';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import GraciasScreen from './GraciasScreen';
@@ -85,7 +85,7 @@ function HospitalStackNavigation() {
   );
 }
 
-export const TabScreen = (props) => {
+export const TabScreenDon = (props) => {
   const [activeTab, setActiveTab] = React.useState(null);
 
   const changeTab = (tabName) => {

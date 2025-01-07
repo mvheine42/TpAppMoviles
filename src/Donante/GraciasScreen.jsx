@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Image, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { TabScreen } from './TabScreenDon';
 
 const GraciasScreen = () => {
   const navigation = useNavigation();

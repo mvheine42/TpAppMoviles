@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
 
-const trashImage = require('../../../imagenes/basura.png');
+const trashImage = require('../../imagenes/basura.png');
 
 const API_URL = "http://localhost:3000";
 

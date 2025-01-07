@@ -5,7 +5,7 @@ import { format, parseISO } from 'date-fns';
 
 const API_URL = "http://localhost:3000";
 
-export const HistorialTurnosHospital = (props) => {
+const HistorialTurnosHospital = (props) => {
   const [historialTurnosData, setHistorialTurnosData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(getFormattedCurrentDate);
   const [selectedTurn, setSelectedTurn] = useState(null);

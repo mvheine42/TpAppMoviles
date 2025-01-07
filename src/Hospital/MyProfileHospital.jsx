@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 
-const hospitalImage = require('../../../imagenes/hospital.png');
+const hospitalImage = require('../../imagenes/hospital.png');
 
 export const MyProfileHospital = (props) => {
   const [editing, setEditing] = useState(false);

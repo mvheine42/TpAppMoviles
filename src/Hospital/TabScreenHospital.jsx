@@ -43,10 +43,10 @@ function PedidosHospitalStackNavigator(){
   );
 }
 
-export const TabScreenHospital = (props: any) => {
+export const TabScreenHospital = () => {
   const [activeTab, setActiveTab] = useState('Home');
 
-  const changeTab = (tabName: any) => {
+  const changeTab = (tabName) => {
     setActiveTab(tabName);
   };
 
