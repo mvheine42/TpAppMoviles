@@ -16,6 +16,7 @@ const getFormattedDate = (offset) => {
 };
 
 export const TurnosHospital = (props) => {
+  console.log('TURNOS HOSPITAL PROPS: ', props);
   const [turns, setTurns] = useState([]);
   const [selectedTurn, setSelectedTurn] = useState(null);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
@@ -26,7 +27,7 @@ export const TurnosHospital = (props) => {
 
   const fetchTurns = async () => {
     try {
-      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalId/${props.userId.id}`);
+      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalId/${props.user.user.id}`);
       const data = await response.json();
       setTurns(data);
     } catch (error) {

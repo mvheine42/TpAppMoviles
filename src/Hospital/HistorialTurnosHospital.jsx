@@ -28,7 +28,7 @@ const HistorialTurnosHospital = (props) => {
 
   const fetchTurnsFromServer = async () => {
     try {
-      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalId/${props.userId.id}`);
+      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalId/${props.user.user.id}`);
       const data = await response.json();
       setHistorialTurnosData(data);
     } catch (error) {

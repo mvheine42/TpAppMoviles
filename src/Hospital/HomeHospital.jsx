@@ -21,8 +21,8 @@ const API_URL = "http://localhost:3000"
 
 
 const HomeHospital = (props) => {
-  const [pedidos, setPedidos] = React.useState([])
-  const [turnos, setTurnos] = React.useState([])
+  const [pedidos, setPedidos] = React.useState([]);
+  const [turnos, setTurnos] = React.useState([]);
   const navigation = useNavigation();
 
   const goToMyProfile = () => {
@@ -30,22 +30,20 @@ const HomeHospital = (props) => {
   };
 
     React.useEffect(() => {
-      fetchTurnos()
-      fetchPedidos()
-      console.log('fetch')
+      fetchTurnos();
+      fetchPedidos();
   }, [])
 
   const fetchPedidos = async () => {
-    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.userId.id}`)
-    pedidos = await pedidos.json()
-    setPedidos(pedidos)
+    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
+    pedidos = await pedidos.json();
+    setPedidos(pedidos);
   }
 
   const fetchTurnos = async () => {
-    let turnos = await fetch(`${API_URL}/hospital/getTurnosByHospitalId/${props.userId.id}`)
-    turnos = await turnos.json()
-    setTurnos(turnos)
-    //console.log(turnos)
+    let turnos = await fetch(`${API_URL}/hospital/getTurnosByHospitalId/${props.user.user.id}`);
+    turnos = await turnos.json();
+    setTurnos(turnos);
   }
 
 

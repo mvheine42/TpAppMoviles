@@ -20,11 +20,11 @@ export const PedidosEnCurso = (props) => {
 
   React.useEffect(() => {
     fetchPedidos()
-    console.log('fetch')
+    console.log('${props.user.user.id}', props.user.user.id);
   }, [])
 
   const fetchPedidos = async () => {
-    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.userId.id}`)
+    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`)
     pedidos = await pedidos.json()
     setPedidos(pedidos)
   }
