@@ -13,6 +13,7 @@ import QuieroDonar from './QuieroDonar';
 import { HospitalProvider } from './HospitalContext'; // Asegúrate de importar correctamente el HospitalProvider
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import GraciasScreen from './GraciasScreen';
 
 
 const Stack = createStackNavigator();
@@ -75,11 +76,17 @@ function HospitalStackNavigation() {
     <Stack.Navigator>
       <Stack.Screen name="Hospital" component={Hospital} options={{ headerShown: false }} />
       <Stack.Screen name="QuieroDonar" component={QuieroDonar} options={{ headerShown: false }} />
+      <Stack.Screen 
+        name="GraciasScreen" 
+        component={GraciasScreen} 
+        options={{ tabBarStyle: { display: 'none' }, tabBarVisible: false, headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
 
 export const TabScreen = (props) => {
+  const [activeTab, setActiveTab] = React.useState(null);
 
   const changeTab = (tabName) => {
     setActiveTab(tabName);
@@ -87,70 +94,83 @@ export const TabScreen = (props) => {
 
   return (
     <HospitalProvider>
-    <Tab.Navigator
-      shifting={true}
-      activeColor="#FFFFFF"
-      barStyle={{ backgroundColor: '#A4161A', height: 65 }}
-    >
-      <Tab.Screen 
-        name='Home' 
-        options={{
-          headerShown: false, 
-          tabBarIcon: ({ focused }) => (
-            <Image source={require('../../imagenes//icons8-home-48.png')} style={{ width: 30, height: 30, tintColor: focused ? '#A4161A' : 'white' }}/>
-          ),
-          tabBarOnPress: () => changeTab('HomeDelDonante'),
-        }} 
+      <Tab.Navigator
+        shifting={true}
+        activeColor="#FFFFFF"
+        barStyle={{ backgroundColor: '#A4161A', height: 65 }}
       >
-        {() => <StackNavigation {...props} />}
-      </Tab.Screen>
-      <Tab.Screen name='Turnos' options={{
-        headerShown: false,
-        tabBarIcon: ({ focused }) => (
-          <Image
-            source={require('../../imagenes/icons8-calendar-48.png')}
-            style={{
-              width: 30,
-              height: 30,
-              tintColor: focused ? '#A4161A' : 'white', // Cambiar el color del icono según la pestaña activa
-            }}
-          />
-        ),
-        tabBarOnPress: () => changeTab('Turnos'),
-      }} >
-        {() => <Turnos {...props} />}
-      </Tab.Screen>
-      <Tab.Screen name="Hospitales" component={HospitalesStackNavigation} options={{
-        headerShown: false,
-        tabBarIcon: ({ focused }) => (
-          <Image
-            source={require('../../imagenes/icons8-hospital-64.png')}
-            style={{
-              width: 33,
-              height: 33,
-              tintColor: focused ? '#A4161A' : 'white', // Cambiar el color del icono según la pestaña activa
-            }}
-          />
-        ),
-        tabBarOnPress: () => changeTab('Hospitales'),
-      }} />
-      <Tab.Screen name="Perfil" options={{
-        headerShown: false,
-        tabBarIcon: ({ focused }) => (
-          <Image
-            source={require('../../imagenes/usuario.png')}
-            style={{
-              width: 25,
-              height: 25,
-              tintColor: focused ? '#A4161A' : 'white', // Cambiar el color del icono según la pestaña activa
-            }}
-          />
-        ),
-        tabBarOnPress: () => changeTab('Perfil'),
-      }}>
-         {() => <MyProfileStackNavigation {...props} />}
-      </Tab.Screen>
-    </Tab.Navigator>
+        <Tab.Screen 
+          name="Home" 
+          options={{
+            headerShown: false, 
+            tabBarIcon: ({ focused }) => (
+              <Image source={require('../../imagenes/icons8-home-48.png')} style={{ width: 30, height: 30, tintColor: focused ? '#A4161A' : 'white' }}/>
+            ),
+            tabBarOnPress: () => changeTab('HomeDelDonante'),
+          }}
+        >
+          {() => <StackNavigation {...props} />}
+        </Tab.Screen>
+
+        <Tab.Screen 
+          name="Turnos" 
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={require('../../imagenes/icons8-calendar-48.png')}
+                style={{
+                  width: 30,
+                  height: 30,
+                  tintColor: focused ? '#A4161A' : 'white',
+                }}
+              />
+            ),
+            tabBarOnPress: () => changeTab('Turnos'),
+          }}
+        >
+          {() => <Turnos {...props} />}
+        </Tab.Screen>
+
+        <Tab.Screen 
+          name="Hospitales" 
+          component={HospitalesStackNavigation} 
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={require('../../imagenes/icons8-hospital-64.png')}
+                style={{
+                  width: 33,
+                  height: 33,
+                  tintColor: focused ? '#A4161A' : 'white',
+                }}
+              />
+            ),
+            tabBarOnPress: () => changeTab('Hospitales'),
+          }}
+        />
+
+        <Tab.Screen 
+          name="Perfil" 
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={require('../../imagenes/usuario.png')}
+                style={{
+                  width: 25,
+                  height: 25,
+                  tintColor: focused ? '#A4161A' : 'white',
+                }}
+              />
+            ),
+            tabBarOnPress: () => changeTab('Perfil'),
+          }}
+        >
+          {() => <MyProfileStackNavigation {...props} />}
+        </Tab.Screen>
+      </Tab.Navigator>
     </HospitalProvider>
   );
-}
+};

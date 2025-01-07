@@ -12,11 +12,6 @@ export const CargarTurnos = (props) => {
   const [hospital, setHospital] = useState('');
 
   const handleCargarTurno = () => {
-    // Aquí puedes agregar la lógica para cargar los datos del turno en tu sistema
-    // Puedes enviar los datos a un servidor o almacenarlos localmente.
-
-    // Después de cargar el turno, puedes mostrar un mensaje de éxito o navegar a otra pantalla.
-    alert('Turno cargado exitosamente');
   };
 
   return (

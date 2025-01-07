@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
-
 const profileImage = require('../../imagenes/icons8-circled-user-female-skin-type-4-100.png');
 const logOutImage = require('../../imagenes/icons8-logout-100-2.png');
 
@@ -12,7 +11,6 @@ export const MyProfile = (props) => {
   const [editing, setEditing] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [post, setPost] = React.useState("");
-
 
   const handleUpdatePost = async () => {
     try {
@@ -57,9 +55,9 @@ export const MyProfile = (props) => {
       <View style={styles.header}>
       <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => props.navigation.navigate('Login')}
+          onPress={() => props.logOut()} // Trigger the logout function
           disabled={loggingOut}>
-          <Image source={logOutImage} style = {styles.logOutImage}/>
+          <Image source={logOutImage} style={styles.logOutImage} />
         </TouchableOpacity>
         <View style={styles.iconContainer}>
           <View style={styles.imageWrapper}>

@@ -36,7 +36,7 @@ function logUserPending(){
         type: LOG_USER_PENDING,
     }
 }
-function logOut(){
+export function logOut(){
     return {
         type: LOG_OUT,
     }
