@@ -5,7 +5,7 @@ const hospitalImage = require('../../imagenes/hospital.png');
 
 export const MyProfileHospital = (props) => {
   const [editing, setEditing] = useState(false);
-  const [editedHospital, setEditedHospital] = useState({ ...props.userId });
+  const [editedHospital, setEditedHospital] = useState({ ...props.user.user });
 
   const handleEdit = () => {
     setEditing(true);
@@ -13,13 +13,14 @@ export const MyProfileHospital = (props) => {
 
   const handleCancel = () => {
     setEditing(false);
-    setEditedHospital({ ...props.userId });
+    setEditedHospital({ ...props.user.user.id });
   };
 
   const handleSave = () => {
     setEditing(false);
     setEditedHospital({ ...editedHospital });
   };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

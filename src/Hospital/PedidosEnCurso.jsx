@@ -20,7 +20,6 @@ export const PedidosEnCurso = (props) => {
 
   React.useEffect(() => {
     fetchPedidos();
-    console.log('${props.user.user.id}', props.user.user.id);
   }, [])
 
   const fetchPedidos = async () => {

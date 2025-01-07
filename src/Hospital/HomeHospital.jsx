@@ -50,9 +50,6 @@ const HomeHospital = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={goToMyProfile}>
-          <Text>BOTON</Text>
-        </TouchableOpacity>
         <View>
           <Text style={styles.welcomeText}>Bienvenido!</Text>
           <Text style={styles.dateText}>Fecha de Hoy: {getFormattedDateToday()}</Text>
