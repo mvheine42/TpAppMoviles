@@ -76,9 +76,7 @@
       <Stack.Navigator>
         <Stack.Screen name="Hospital" component={Hospital} options={{ headerShown: false }} />
         <Stack.Screen name="QuieroDonar" component={QuieroDonar} options={{ headerShown: false }} />
-        <Stack.Screen 
-          name="GraciasScreen" 
-          component={GraciasScreen} 
+        <Stack.Screen name="GraciasScreen" component={GraciasScreen} 
           options={{ tabBarStyle: { display: 'none' }, tabBarVisible: false, headerShown: false }}
         />
       </Stack.Navigator>

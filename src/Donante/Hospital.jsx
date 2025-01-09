@@ -5,11 +5,12 @@ import { useHospitalContext } from './HospitalContext';
 
 
 const Hospital = (props) => {
+  console.log(props);
   const { selectedHospital } = useHospitalContext();
   const [region, setRegion] = React.useState({latitude: selectedHospital.latitude,
     longitude: selectedHospital.longitude,
     latitudeDelta: 0.015,
-    longitudeDelta: 0.0121})
+    longitudeDelta: 0.0121});
 
   if (!selectedHospital) {
     return <Text>No hay hospital seleccionado</Text>;

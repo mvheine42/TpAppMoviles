@@ -96,13 +96,14 @@ const Home = (props) => {
     const filteredData = data.filter((item) =>
       selectedCategories.includes(item.category)
     );
-  
-    const navigateToAnotherScreen = (itemId) => {
-      props.navigation.navigate('Hospital', { itemId });
+
+    const handleHospitalPress = (hospital) => {
+      console.log('Hospital seleccionado:', hospital); 
+      props.navigation.navigate('Hospital', { hospital });
     };
-  
+
     const renderItem = ({ item }) => (
-      <TouchableOpacity onPress={() => navigateToAnotherScreen(item.id)}>
+      <TouchableOpacity onPress={() => handleHospitalPress(item)}>
         <View style={styles.item}>
           <Text style={styles.itemText}>{item.text}</Text>
             <View style={styles.itemContent}>
@@ -138,6 +139,7 @@ const Home = (props) => {
         };
       }
     }, [showModal, tiempoRestante]);
+
 
     
 
