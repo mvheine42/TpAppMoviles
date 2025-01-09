@@ -1,28 +1,104 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert   } from 'react-native';
 
 export const VerificacionDeDatos = (props) => {
+  const usuarioData = props.route.params.usuarioData;
+
   const [isChecked, setIsChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const toggleCheckbox = () => {
     setIsChecked((prevChecked) => !prevChecked);
   };
 
-  const nombre = 'Camila Plaza';
-  const tipoSangre = 'A+';
+  const crearCuenta = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:3000/donante/postDonante', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(usuarioData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        Alert.alert('Error', errorData.message || 'Error al crear la cuenta');
+      } else {
+        const data = await response.json();
+        Alert.alert('Éxito', 'Cuenta creada correctamente');
+        props.navigation.navigate('TabScreen');
+      }
+    } catch (error) {
+      console.error('Error al hacer el POST:', error);
+      Alert.alert('Error', 'Error interno del servidor');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.mainText}>Información</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.mainText}>Información de Verificación</Text>
 
       <View style={styles.infoBlock}>
         <Text style={styles.infoLabel}>Nombre:</Text>
-        <Text style={styles.infoValue}>{nombre}</Text>
+        <Text style={styles.infoValue}>{usuarioData.nombre + ' ' + usuarioData.apellido || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>DNI:</Text>
+        <Text style={styles.infoValue}>{usuarioData.dni || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Correo Electrónico:</Text>
+        <Text style={styles.infoValue}>{usuarioData.email || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Género:</Text>
+        <Text style={styles.infoValue}>{usuarioData.genero || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Edad:</Text>
+        <Text style={styles.infoValue}>{usuarioData.edad || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Peso:</Text>
+        <Text style={styles.infoValue}>{usuarioData.peso || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Medicaciones:</Text>
+        <Text style={styles.infoValue}>{usuarioData.medicacion || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Embarazo:</Text>
+        <Text style={styles.infoValue}>{usuarioData.embarazo || 'N/A'}</Text>
+      </View>          
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Opciones de Donación:</Text>
+        <Text style={styles.infoValue}>
+          {usuarioData.puedeDonar && usuarioData.puedeDonar.length > 0
+            ? usuarioData.puedeDonar.join(', ')
+            : 'N/A'}
+        </Text>
       </View>
 
       <View style={styles.infoBlock}>
         <Text style={styles.infoLabel}>Tipo de Sangre:</Text>
-        <Text style={styles.infoValue}>{tipoSangre}</Text>
+        <Text style={styles.infoValue}>{usuarioData.tipoSangre || 'N/A'}</Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Tipo de Factor RH:</Text>
+        <Text style={styles.infoValue}>{usuarioData.factorRH || 'N/A'}</Text>
       </View>
 
       <View style={styles.checkboxContainer}>
@@ -32,20 +108,20 @@ export const VerificacionDeDatos = (props) => {
         <Text style={styles.checkboxLabel}>Verifiqué los datos</Text>
       </View>
 
-      <TouchableOpacity
-        onPress={() => props.navigation.navigate('TabScreen')}
-        style={[styles.continueButton, !isChecked && styles.disabledButton]}
-        disabled={!isChecked}
+       <TouchableOpacity
+        onPress={crearCuenta}
+        style={[styles.continueButton, (!isChecked || loading) && styles.disabledButton]}
+        disabled={!isChecked || loading}
       >
-        <Text style={styles.buttonText}>Crear Cuenta</Text>
+        <Text style={styles.buttonText}>{loading ? 'Cargando...' : 'Crear Cuenta'}</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     alignItems: 'center',
     backgroundColor: '#A4161A',

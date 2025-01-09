@@ -7,6 +7,7 @@ import Requerimientos from './Requerimientos';
 import { ScrollView } from 'react-native-gesture-handler';
 
 export const QuieroDonar = (props) => {
+  
   const greenStyle = {
     selectedDayBackgroundColor: 'green',
     selectedDayTextColor: 'white',

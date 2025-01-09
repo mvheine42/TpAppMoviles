@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, ScrollView, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 
-const hospitalImage = require('../imagenes/hospital.png');
-const correoImage = require('../imagenes/correo-electronico.png');
-const ubicacionImage = require('../imagenes/ubicacion.png');
-const usuarioImage = require('../imagenes/usuario-2.png');
-const candadoImage = require('../imagenes/candado.png');
+const hospitalImage = require('../../../imagenes/hospital.png');
+const correoImage = require('../../../imagenes/correo-electronico.png');
+const ubicacionImage = require('../../../imagenes/ubicacion.png');
+const usuarioImage = require('../../../imagenes/usuario-2.png');
+const candadoImage = require('../../../imagenes/candado.png');
 
 
 export const SignUpHospital = (props) => {

@@ -1,11 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 export const TipoDeUsuario = (props) => {
   const options = ['Donante', 'Hospital'];
   const [selectedOption, setSelectedOption] = useState(null);
-  const navigation = useNavigation();
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -17,9 +15,9 @@ export const TipoDeUsuario = (props) => {
 
   const handleContinue = () => {
     if (selectedOption === 'Donante') {
-      navigation.navigate('SignUpDonante');
+      props.navigation.navigate('SignUpDonante', { tipoDeUsuario: selectedOption });
     } else if (selectedOption === 'Hospital') {
-      navigation.navigate('SignUpHospital');
+      props.navigation.navigate('SignUpHospital', { tipoDeUsuario: selectedOption });
     }
   };
 
@@ -27,6 +25,7 @@ export const TipoDeUsuario = (props) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.header}>DONAVIDA+</Text>
       <Text style={styles.mainText}>Tipo de Usuario</Text>
 
       {options.map((option) => (
@@ -59,16 +58,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    alignItems: 'center',
-    backgroundColor: '#A4161A',
+    alignItems: 'left',
+    backgroundColor: '#fff',
+  },
+  header: {
+    fontSize: 46,
+    fontWeight: 'bold',
+    color: '#A4161A',
+    textAlign: 'center',
+    marginTop: 40,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 4,
   },
   mainText: {
-    marginTop: 25,
-    fontSize: 40,
+    marginTop: 40,
+    fontSize: 30,
     fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
+    color: '#A4161A',
+    textAlign: 'left',
     marginBottom: 30,
+    marginLeft: 10,
     textShadowColor: 'white',
     textShadowOffset: { width: 1, height: 1 },
   },
@@ -79,23 +89,24 @@ const styles = StyleSheet.create({
     height: 215,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    marginBottom: 20,
+    marginHorizontal: 40,
+    backgroundColor: 'rgb(164, 22, 27)',
+    marginBottom: 25,
   },
   optionText: {
     fontSize: 45,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#fff',
     textAlign: 'center',
   },
   selectedOption: {
-    backgroundColor: 'white',
+    backgroundColor: '#660708',
   },
   selectedOptionText: {
-    color: '#A4161A',
+    color: '#fff',
   },
   continueButton: {
-    backgroundColor: 'white',
+    backgroundColor: '#660708',
     borderRadius: 25,
     padding: 15,
     alignItems: 'center',
@@ -109,7 +120,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#660708',
+    color: 'white',
     textAlign: 'center',
   },
   disabledButton: {

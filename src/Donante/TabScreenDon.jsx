@@ -14,6 +14,11 @@
   import { createStackNavigator } from '@react-navigation/stack';
   import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
   import GraciasScreen from './GraciasScreen';
+import { SignUpDonante } from './SignUp/SignUpDonante';
+import EligeTipoDeSangre from './SignUp/EligeTipoDeSangre';
+import { EligeFactorRH } from './SignUp/EligeFactorRH';
+import { VerificacionDeDatos } from './SignUp/VerificacionDeDatos';
+import { EligeQueDonar } from './SignUp/EligeQueDonar';
 
 
   const Stack = createStackNavigator();
@@ -36,6 +41,29 @@
         <Stack.Screen name='HospitalDonante' options={{ headerShown: false }} {...props}>
           {() => <HospitalStackNavigation {...props} />}
         </Stack.Screen>
+      </Stack.Navigator>
+    );
+  }
+
+  function SignUpDonStackNavigation(props) {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name='SignUpDonante' options={{ headerShown: false }} {...props}>
+          {() => <SignUpDonante {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name='EligeQueDonar' options={{ headerShown: false }} {...props}>
+          {() => <EligeQueDonar {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name='EligeTipoDeSangre' options={{ headerShown: false }} {...props}>
+          {() => <EligeTipoDeSangre {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name='EligeFactorRH' options={{ headerShown: false }} {...props}>
+          {() => <EligeFactorRH {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name='VerificacionDeDatos' options={{ headerShown: false }} {...props}>
+          {() => <VerificacionDeDatos {...props} />}
+        </Stack.Screen>
+
       </Stack.Navigator>
     );
   }

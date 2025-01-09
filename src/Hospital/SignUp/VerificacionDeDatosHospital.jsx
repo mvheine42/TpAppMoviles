@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
-export const VerificacionDeDatosHospital = (props: any) => {
+export const VerificacionDeDatosHospital = (props) => {
   const [isChecked, setIsChecked] = useState(false);
 
   const toggleCheckbox = () => {

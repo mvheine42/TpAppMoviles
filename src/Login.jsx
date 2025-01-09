@@ -7,6 +7,7 @@ const cerrarImage = require('../imagenes/candado.png');
 
 
 const Login = (props) => {
+  console.log('PROPS', props.navigation);
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
     return (

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 export const EligeTipoDeSangre = (props) => {
+
+  const usuarioData = props.route.params.usuarioData;
+
   const options = ['A', 'B', 'AB', 'O'];
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -11,6 +14,15 @@ export const EligeTipoDeSangre = (props) => {
 
   const isOptionSelected = (option) => {
     return selectedOption === option;
+  };
+
+
+  const handleContinue = () => {
+    const updatedData = {
+      ...usuarioData,
+      tipoSangre: selectedOption,
+    };
+    props.navigation.navigate('EligeFactorRH', { usuarioData: updatedData });
   };
 
   return (
@@ -52,7 +64,7 @@ export const EligeTipoDeSangre = (props) => {
       </View>
 
       <TouchableOpacity
-        onPress={() => props.navigation.navigate('EligeFactorRH')} // Movido el onPress a esta View
+        onPress={handleContinue}
         style={styles.continueButton}>
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>

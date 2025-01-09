@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 
-const plaquetaImage = require('../imagenes/plaqueta.png');
-const sangreImage = require('../imagenes/gota-de-sangre.png');
-const medulaImage = require('../imagenes/medula-osea.png');
+const plaquetaImage = require('../../../imagenes/plaqueta.png');
+const sangreImage = require('../../../imagenes/gota-de-sangre.png');
+const medulaImage = require('../../../imagenes/medula-osea.png');
 
 export const EligeQueDonar = (props) => {
+
+  const usuarioData = props.route.params.usuarioData;
+
   const options = [
     { label: 'Sangre', image: sangreImage },
     { label: 'Médula', image: medulaImage },
@@ -23,6 +26,15 @@ export const EligeQueDonar = (props) => {
 
   const isOptionSelected = (option) => {
     return selectedOptions.includes(option.label);
+  };
+
+
+  const handleContinue = () => {
+    const updatedData = {
+      ...usuarioData,
+      puedeDonar: selectedOptions,
+    };
+    props.navigation.navigate('EligeTipoDeSangre', { usuarioData: updatedData });
   };
 
   return (
@@ -55,7 +67,7 @@ export const EligeQueDonar = (props) => {
       ))}
 
     <TouchableOpacity
-      onPress={() => props.navigation.navigate('EligeTipoDeSangre')} // Movido el onPress a esta View
+      onPress={handleContinue}
       style={styles.continueButton} >
       <Text style={styles.buttonText}>Continuar</Text>
     </TouchableOpacity>

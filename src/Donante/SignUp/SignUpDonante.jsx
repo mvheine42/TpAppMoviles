@@ -1,28 +1,84 @@
 import React, { useState } from 'react';
 import { View, ScrollView, TextInput, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 
-const usuarioImage = require('../imagenes/usuario-2.png');
-const candadoImage = require('../imagenes/candado.png');
-const correoImage = require('../imagenes/correo-electronico.png');
-const infoImage = require('../imagenes/informacion.png');
+const usuarioImage = require('../../../imagenes/usuario-2.png');
+const candadoImage = require('../../../imagenes/candado.png');
+const correoImage = require('../../../imagenes/correo-electronico.png');
+const infoImage = require('../../../imagenes/informacion.png');
 
 export const SignUpDonante = (props) => {
-  const [selectedEmbarazo, setSelectedEmbarazo] = useState(null);
+
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [email, setEmail] = useState('');
+  const [dni, setDni] = useState('');
+  const [genero, setGenero] = useState('');
+  const [edad, setEdad] = useState('');
+  const [peso, setPeso] = useState('');
+  const [medicacion, setMedicacion] = useState('');
+  const [embarazo, setEmbarazo] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
   const [selectedMedicacion, setSelectedMedicacion] = useState(null);
+  const [selectedEmbarazo, setSelectedEmbarazo] = useState(null);
   const [showMedicationInput, setShowMedicationInput] = useState(false);
+  const [selectedGenero, setSelectedGenero] = useState(null);
 
   const handleOptionSelect = (option, question) => {
     if (question === 'embarazo') {
       setSelectedEmbarazo(option);
+      setEmbarazo(option);
     } else if (question === 'medicacion') {
       setSelectedMedicacion(option);
       setShowMedicationInput(option === 'Si');
+      setMedicacion(option === 'Si' ? medicacion : 'No');
+    } else if (question === 'genero') {
+      setSelectedGenero(option);
+      setGenero(option);
+      if (option !== 'Femenino') {
+        setSelectedEmbarazo(null);
+        setEmbarazo('');
+      }
     }
+  };
+
+  const isFormComplete = () => {
+    return (
+      nombre &&
+      apellido &&
+      email &&
+      genero &&
+      dni &&
+      edad &&
+      peso &&
+      (selectedMedicacion === 'No' || (selectedMedicacion === 'Si' && medicacion)) &&
+      (genero !== 'Femenino' || (selectedEmbarazo !== null)) &&
+      password &&
+      repeatPassword &&
+      password === repeatPassword
+    );
+  };
+
+  const handleContinue = () => {
+    const usuarioData = {
+      tipoDeUsuario: props.route.params.tipoDeUsuario,
+      nombre,
+      apellido,
+      dni,
+      email,
+      genero,
+      edad,
+      peso,
+      medicacion,
+      embarazo,
+    };
+  
+    props.navigation.navigate('EligeQueDonar', { usuarioData });
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.welcomeText}>Sing Up</Text>
+      <Text style={styles.welcomeText}>Sign Up</Text>
 
       <View style={styles.block}>
         <Image source={usuarioImage} style={styles.inputIcon} />
@@ -30,6 +86,7 @@ export const SignUpDonante = (props) => {
           style={styles.input}
           placeholder="Nombre"
           placeholderTextColor="white"
+          onChangeText={setNombre}
         />
       </View>
 
@@ -39,6 +96,7 @@ export const SignUpDonante = (props) => {
           style={styles.input}
           placeholder="Apellido"
           placeholderTextColor="white"
+          onChangeText={setApellido}
         />
       </View>
 
@@ -48,6 +106,7 @@ export const SignUpDonante = (props) => {
           style={styles.input}
           placeholder="Email"
           placeholderTextColor="white"
+          onChangeText={setEmail}
         />
       </View>
 
@@ -55,9 +114,39 @@ export const SignUpDonante = (props) => {
         <Image source={usuarioImage} style={styles.inputIcon} />
         <TextInput
           style={styles.input}
-          placeholder="Género"
+          placeholder="DNI"
           placeholderTextColor="white"
+          keyboardType="numeric"
+          onChangeText={setDni}
         />
+      </View>
+
+      <View style={styles.blockPregunta}>
+        <View style={styles.questionContainer}>
+          <Image source={usuarioImage} style={styles.inputIcon} />
+          <Text style={styles.pregunta}>Género</Text>
+        </View>
+
+        <View style={styles.optionsContainer}>
+          <TouchableOpacity
+            style={[styles.optionButton, selectedGenero === 'Femenino' && styles.selectedOption]}
+            onPress={() => handleOptionSelect('Femenino', 'genero')}
+          >
+            <Text style={styles.optionText}>Femenino</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.optionButton, selectedGenero === 'Masculino' && styles.selectedOption]}
+            onPress={() => handleOptionSelect('Masculino', 'genero')}
+          >
+            <Text style={styles.optionText}>Masculino</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.optionButton, selectedGenero === 'Otro' && styles.selectedOption]}
+            onPress={() => handleOptionSelect('Otro', 'genero')}
+          >
+            <Text style={styles.optionText}>Otro</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.block}>
@@ -66,6 +155,8 @@ export const SignUpDonante = (props) => {
           style={styles.input}
           placeholder="Edad"
           placeholderTextColor="white"
+          keyboardType="numeric"
+          onChangeText={setEdad}
         />
       </View>
 
@@ -75,6 +166,8 @@ export const SignUpDonante = (props) => {
           style={styles.input}
           placeholder="Peso"
           placeholderTextColor="white"
+          keyboardType="numeric"
+          onChangeText={setPeso}
         />
       </View>
 
@@ -86,20 +179,13 @@ export const SignUpDonante = (props) => {
 
         <View style={styles.optionsContainer}>
           <TouchableOpacity
-            style={[
-              styles.optionButton,
-              selectedMedicacion === 'Si' && styles.selectedOption,
-            ]}
+            style={[styles.optionButton, selectedMedicacion === 'Si' && styles.selectedOption]}
             onPress={() => handleOptionSelect('Si', 'medicacion')}
           >
             <Text style={styles.optionText}>Sí</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            style={[
-              styles.optionButton,
-              selectedMedicacion === 'No' && styles.selectedOption,
-            ]}
+            style={[styles.optionButton, selectedMedicacion === 'No' && styles.selectedOption]}
             onPress={() => handleOptionSelect('No', 'medicacion')}
           >
             <Text style={styles.optionText}>No</Text>
@@ -107,44 +193,38 @@ export const SignUpDonante = (props) => {
         </View>
 
         {showMedicationInput && (
-          <View style={styles.inputBlock}>
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre de los medicamentos"
-              placeholderTextColor="white"
-            />
-          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre de los medicamentos"
+            placeholderTextColor="white"
+            onChangeText={setMedicacion}
+          />
         )}
       </View>
 
-      <View style={styles.blockPregunta}>
-        <View style={styles.questionContainer}>
-          <Image source={infoImage} style={styles.inputIcon} />
-          <Text style={styles.pregunta}>Posibilidad de Embarazo</Text>
-        </View>
+      {genero === 'Femenino' && (
+        <View style={styles.blockPregunta}>
+          <View style={styles.questionContainer}>
+            <Image source={infoImage} style={styles.inputIcon} />
+            <Text style={styles.pregunta}>¿Está embarazada?</Text>
+          </View>
 
-        <View style={styles.optionsContainer}>
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              selectedEmbarazo === 'Si' && styles.selectedOption,
-            ]}
-            onPress={() => handleOptionSelect('Si', 'embarazo')}
-          >
-            <Text style={styles.optionText}>Sí</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.optionButton,
-              selectedEmbarazo === 'No' && styles.selectedOption,
-            ]}
-            onPress={() => handleOptionSelect('No', 'embarazo')}
-          >
-            <Text style={styles.optionText}>No</Text>
-          </TouchableOpacity>
+          <View style={styles.optionsContainer}>
+            <TouchableOpacity
+              style={[styles.optionButton, selectedEmbarazo === 'Si' && styles.selectedOption]}
+              onPress={() => handleOptionSelect('Si', 'embarazo')}
+            >
+              <Text style={styles.optionText}>Sí</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.optionButton, selectedEmbarazo === 'No' && styles.selectedOption]}
+              onPress={() => handleOptionSelect('No', 'embarazo')}
+            >
+              <Text style={styles.optionText}>No</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
 
       <View style={styles.block}>
         <Image source={candadoImage} style={styles.inputIcon} />
@@ -152,6 +232,8 @@ export const SignUpDonante = (props) => {
           style={styles.input}
           placeholder="Contraseña"
           placeholderTextColor="white"
+          secureTextEntry
+          onChangeText={setPassword}
         />
       </View>
 
@@ -161,17 +243,22 @@ export const SignUpDonante = (props) => {
           style={styles.input}
           placeholder="Repetir Contraseña"
           placeholderTextColor="white"
+          secureTextEntry
+          onChangeText={setRepeatPassword}
         />
       </View>
 
       <TouchableOpacity
-        onPress={() => props.navigation.navigate('EligeTipoDeSangre')}
-        style={styles.continueButton}>
+        onPress={handleContinue}
+        style={[styles.continueButton, !isFormComplete() && styles.disabledButton]}
+        disabled={!isFormComplete()}
+      >
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   welcomeText: {
@@ -193,7 +280,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#BA181B',
-    borderRadius: 35,
+    borderRadius: 15,
     padding: 10,
     marginBottom: 15,
     width: 310,
@@ -203,7 +290,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#BA181B',
-    borderRadius: 45,
+    borderRadius: 15,
     padding: 10,
     marginBottom: 15,
     width: 310,
@@ -234,6 +321,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 35
   },
+  disabledButton: {
+    backgroundColor: '#A8A8A880',
+  },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -252,14 +342,14 @@ const styles = StyleSheet.create({
   optionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: 200,
+    width: '100%',
     marginTop: 12,
   },
   optionButton: {
     backgroundColor: '#A4161A',
-    padding: 10,
+    padding: 5,
     borderRadius: 8,
-    width: 80,
+    width: 90,
     color: 'white',
   },
   optionText: {

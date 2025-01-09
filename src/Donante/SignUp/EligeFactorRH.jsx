@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const masImage = require('../imagenes/mas.png');
-const menosImage = require('../imagenes/menos.png');
-
 export const EligeFactorRH = (props) => {
+
+  const usuarioData = props.route.params.usuarioData;
+
   const options = ['+', '-'];
   const [selectedOption, setSelectedOption] = useState(null);
 
@@ -15,6 +15,15 @@ export const EligeFactorRH = (props) => {
   const isOptionSelected = (option) => {
     return selectedOption === option;
   };
+
+  const handleContinue = () => {
+    const updatedData = {
+      ...usuarioData,
+      factorRH: selectedOption,
+    };
+    props.navigation.navigate('VerificacionDeDatos', { usuarioData: updatedData });
+  };
+
 
   return (
     <View style={styles.container}>
@@ -36,7 +45,7 @@ export const EligeFactorRH = (props) => {
       ))}
 
       <TouchableOpacity
-        onPress={() => props.navigation.navigate('VerificacionDeDatos')}
+        onPress={handleContinue}
         style={styles.continueButton}
       >
         <Text style={styles.buttonText}>Continuar</Text>
