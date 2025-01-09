@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, FlatList, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 
 const DonationsScreen = () => {
   const [donationHistory, setDonationHistory] = useState([
     { id: 1, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
     { id: 2, date: '02/15/2023', location: 'Clinica B', donationType: 'Plaquetas' },
-    { id: 3, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
-    { id: 4, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
-    { id: 5, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
-    // Agrega más datos según sea necesario
   ]);
 
-  const [discounts, setDiscounts] = useState([
-    { id: 1, name: 'La Parolaccia', image: require('../../imagenes/468c5d82ce5a6d1c23a90a3c3a6c0996.jpg'), discount: '30%', details: '30% de descuento en toda la carta', discountCode: 'A2WER34' },
-    { id: 2, name: 'Megatlon', image: require('../../imagenes/logo-01-e1507801775879.jpg.webp'), discount: '20%', details: '20% de descuento en la membresía mensual', discountCode: 'B1CDF45' },
-    { id: 3, name: 'La Bisteca', image: require('../../imagenes/images.png'), discount: '30%', details: '30% de descuento en toda la carta', discountCode: 'A2WER34' },
-    // Agrega más datos según sea necesario
-  ]);
-
+  const [discounts, setDiscounts] = useState([]);
   const [selectedDiscount, setSelectedDiscount] = useState(null);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/donante/getAllBenefits')
+      .then((response) => response.json())
+      .then((data) => {
+        setDiscounts(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching benefits:', error);
+      });
+  }, []);
 
   const openDiscountDetails = (item) => {
     setSelectedDiscount(item);
@@ -53,9 +54,9 @@ const DonationsScreen = () => {
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => openDiscountDetails(item)}>
               <View style={styles.discountItem}>
-                <Image source={item.image} style={styles.discountImage} />
+                <Image source={{ uri: item.imagen }} style={styles.discountImage} />
                 <View style={styles.discountOverlay}>
-                  <Text style={styles.discountText}>{item.discount}</Text>
+                  <Text style={styles.discountText}>{item.tipoDescuento}</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -66,9 +67,10 @@ const DonationsScreen = () => {
       <Modal visible={selectedDiscount !== null} animationType="slide" transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalHeading}>{selectedDiscount?.name}</Text>
+            <Text style={styles.modalHeading}>{selectedDiscount?.nombre}</Text>
+            <Text>{selectedDiscount?.tipoDescuento}</Text>
             <Text>{selectedDiscount?.details}</Text>
-            <Text>{`Código de descuento: ${selectedDiscount?.discountCode || 'N/A'}`}</Text>
+            <Text>{`Código de descuento: ${selectedDiscount?.codigo}`}</Text>
             <TouchableOpacity onPress={closeDiscountDetails}>
               <Text style={styles.closeButton}>Cerrar</Text>
             </TouchableOpacity>
@@ -104,6 +106,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 5,
     marginLeft: 16,
+    color: '#A4161A',
   },
   donationItem: {
     borderBottomWidth: 1,
@@ -115,11 +118,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   discountImage: {
-    width: 200,
+    width: 300,
     height: 100,
     resizeMode: 'cover',
     borderRadius: 8,
     marginBottom: 8,
+    marginTop: 8,
   },
   discountOverlay: {
     ...StyleSheet.absoluteFillObject,
