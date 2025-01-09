@@ -25,10 +25,6 @@ const HomeHospital = (props) => {
   const [turnos, setTurnos] = React.useState([]);
   const navigation = useNavigation();
 
-  const goToMyProfile = () => {
-    navigation.navigate('TurnosHospital');
-  };
-
     React.useEffect(() => {
       fetchTurnos();
       fetchPedidos();

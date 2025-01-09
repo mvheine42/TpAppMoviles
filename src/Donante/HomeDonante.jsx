@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet } from "react-native"
+import { View, Text, TouchableOpacity, Image, TouchableWithoutFeedback, Modal, SafeAreaView, StyleSheet, FlatList } from "react-native"
 import { useState, useEffect } from 'react';
 import Geolocation from '@react-native-community/geolocation';
 import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
@@ -38,58 +38,184 @@ Geolocation.setRNConfiguration({
 
 })
 
+const data = [
+  { id: '1', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '2', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '3', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '4', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '5', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '6', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '7', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '8', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+  { id: '9', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
+];
+
+const categories = Array.from(new Set(data.map((item) => item.category)));
+
 
 const Home = (props) => {
     const [position, setPosition] = useState(null);
     const [distancia, setDistancia] = useState(null);
-
+  
     useEffect(() => {
-        const handleGetCurrentPosition = () => {
-          Geolocation.getCurrentPosition(
-            (pos) => {
-              console.log(pos);
-              setPosition(pos);
-            },
-            (error) => {
-              console.log(error);
-            },
-            { enableHighAccuracy: true, maximumAge: 100 }
-          );
+      const handleGetCurrentPosition = () => {
+        Geolocation.getCurrentPosition(
+          (pos) => {
+            console.log(pos);
+            setPosition(pos);
+          },
+          (error) => {
+            console.log(error);
+          },
+          { enableHighAccuracy: true, maximumAge: 100 }
+        );
+      };
+  
+      handleGetCurrentPosition();
+  
+    }, []);
+  
+    useEffect(() => {
+      if (position) {
+        const destino = { latitude: 40.7128, longitude: -74.0060 }; // esto es lo q necesitamos de los htales. 
+        const distanciaCalculada = calcularDistancia(position.coords.latitude, position.coords.longitude, destino.latitude, destino.longitude);
+        setDistancia(distanciaCalculada);
+      }
+    }, [position]);
+
+    const [selectedCategories, setSelectedCategories] = useState(['Sangre']);
+
+    const toggleCategory = (category) => {
+      setSelectedCategories((prevCategories) =>
+        prevCategories.includes(category)
+          ? prevCategories.filter((c) => c !== category)
+          : [...prevCategories, category]
+      );
+    };
+  
+    const filteredData = data.filter((item) =>
+      selectedCategories.includes(item.category)
+    );
+  
+    const navigateToAnotherScreen = (itemId) => {
+      props.navigation.navigate('Hospital', { itemId });
+    };
+  
+    const renderItem = ({ item }) => (
+      <TouchableOpacity onPress={() => navigateToAnotherScreen(item.id)}>
+        <View style={styles.item}>
+          <Text style={styles.itemText}>{item.text}</Text>
+            <View style={styles.itemContent}>
+              <View style={styles.itemTextContainer}>
+                <Text style= {styles.itemInfoTextHospital}>Hospital Británico</Text>
+                <Image source={{ uri: item.image }} style={styles.itemImage} />
+                <Text style= {styles.itemInfoText}>Ubicado a {distancia ? distancia.toFixed(2) : 'Cargando...'}km de tu ubicación actual</Text>
+              </View>
+             
+            </View>
+        </View>
+      </TouchableOpacity>
+    );
+  
+    const [showModal, setShowModal] = useState(false);
+  
+    const fechaDonacion = new Date('2023-11-17');
+    const fechaActual = new Date();
+    const tiempoRestante = Math.ceil((fechaDonacion - fechaActual) / (1000 * 60 * 60 * 24)); // Diferencia en días
+  
+    const closeCountdown = () => {
+      setShowModal(false);
+    };
+  
+    useEffect(() => {
+      if (showModal) {
+        const timer = setInterval(() => {
+          closeCountdown();
+        }, tiempoRestante * 24 * 60 * 60 * 1000);
+  
+        return () => {
+          clearInterval(timer);
         };
+      }
+    }, [showModal, tiempoRestante]);
+
     
-        handleGetCurrentPosition();
-    
-      }, []); // Se ejecuta solo al montar el componente
-    
-      useEffect(() => {
-        // Calcular la distancia cuando la posición y la posición del destino estén disponibles
-        if (position) {
-          const destino = { latitude: 40.7128, longitude: -74.0060 }; // esto es lo q necesitamos de los htales. 
-          const distanciaCalculada = calcularDistancia(position.coords.latitude, position.coords.longitude, destino.latitude, destino.longitude);
-          setDistancia(distanciaCalculada);
-        }
-      }, [position]);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>DonaVida+</Text>
+      <View style={styles.container}>
+        <Modal
+          visible={showModal}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={closeCountdown}
+        >
+          <TouchableWithoutFeedback onPress={closeCountdown}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>¡Bienvenido!</Text>
+                <Text style={styles.countdownText}>{`Faltan ${tiempoRestante} días para poder donar`}</Text>
+              </View>
             </View>
-            <View style={styles.tituloNoticias}>
-                <Text style={styles.noticiasText}>DONACIONES</Text>
-                <Text style={styles.noticiaSubBText}>Hecho especialmente para {props.user.user.nombre}</Text>
-            </View>
-            <View style={styles.informacion}>
-                <Text style={styles.informacionText}>Información</Text>
-                <TouchableOpacity style={styles.button} onPress={() => props.navigation.navigate('Requerimientos')}>
-                    <Text style={styles.buttonText}>Requerimientos para donar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => props.navigation.navigate('Proceso')}>
-                    <Text style={styles.buttonText}>Cómo es el proceso</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
-    )
+          </TouchableWithoutFeedback>
+
+        </Modal>
+        
+        <View style={styles.header}>
+          <Text style={styles.title}>DonaVida+</Text>
+        </View>
+        <View style={styles.tituloNoticias}>
+          <Text style={styles.noticiasText}>DONACIONES</Text>
+          <Text style={styles.noticiaSubBText}>Hecho especialmente para tí</Text>
+        </View>
+        <View style={styles.categoryButtons}>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category}
+              style={
+                selectedCategories.includes(category)
+                  ? styles.selectedCategoryButton
+                  : styles.categoryButton
+              }
+              onPress={() => toggleCategory(category)}
+            >
+              <Text
+                style={
+                  selectedCategories.includes(category)
+                    ? styles.selectedCategoryButtonText
+                    : styles.categoryButtonText
+                }
+                >
+                  {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={styles.content}>
+          <FlatList
+            data={filteredData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            contentContainerStyle={styles.flatlistContent}
+          />
+        </View>
+        <View style={styles.informacion}>
+          <Text style={styles.informacionText}>Información</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => props.navigation.navigate('Requerimientos')}
+          >
+            <Text style={styles.buttonText}>Requerimientos para donar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => props.navigation.navigate('Proceso')}
+          >
+            <Text style={styles.buttonText}>Cómo es el proceso</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
 };
 
  const styles = StyleSheet.create({
@@ -123,47 +249,52 @@ const Home = (props) => {
       textShadowRadius: 4,
     },
     tituloNoticias: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '3%',
-  
+      alignItems: 'left',
+      justifyContent: 'left',
+      padding: '3%',
+      marginHorizontal: '2%'
     },
     noticiasText: {
       fontSize: 32,
       fontWeight: 'bold',
       color: '#A4161A',
-      textShadowColor: 'rgba(164, 22, 26, 0.75)',
+      textShadowColor: 'rgba(164, 22, 27, 0.4)',
       textShadowOffset: {width: -1, height: 1},
       textShadowRadius: 10
     },
     categoryButtons: {
       flexDirection: 'row',
-      justifyContent: 'center',
+      justifyContent: 'space-between',
       alignItems: 'center',
       marginVertical: 10,
+      marginHorizontal: '3%'
     },
     categoryButton: {
-      backgroundColor: '#BA181B',
+      backgroundColor: '#fff', 
       borderRadius: 10,
       paddingVertical: 15,
-      paddingHorizontal: 20,
+      flex: 1,
       marginHorizontal: 5,
       alignItems: 'center',
       borderWidth: 3,
       borderColor: 'darkred',
     },
     selectedCategoryButton: {
-      backgroundColor: 'darkred',
+      backgroundColor: '#BA181B', 
       borderRadius: 10,
       paddingVertical: 15,
-      paddingHorizontal: 20,
+      flex: 1, 
       marginHorizontal: 5,
       alignItems: 'center',
       borderWidth: 3,
-      borderColor: 'darkred',
+      borderColor: 'darkred', 
     },
     categoryButtonText: {
-      color: '#fff',
+      color: '#BA181B', 
+      fontWeight: 'bold',
+    },
+    selectedCategoryButtonText: {
+      color: '#fff', 
       fontWeight: 'bold',
     },
     content: {
@@ -172,6 +303,7 @@ const Home = (props) => {
       flexWrap: 'wrap',
       justifyContent: 'center',
       alignItems: 'center',
+      marginBottom: '2%'
     },
     informacion: {
       alignItems: 'center',
@@ -183,13 +315,14 @@ const Home = (props) => {
       color: '#A4161A',
       fontSize: 24,
       fontWeight: 'bold',
+      marginBottom: '2%'
     },
     item: {
       width: 190,
-      height: 200,
+      height: 270,
       backgroundColor: '#A4161A',
       margin: 10,
-      borderRadius: 20,
+      borderRadius: 8,
       borderWidth: 3,
       borderColor: 'darkred',
       shadowColor: "#000",
@@ -200,7 +333,7 @@ const Home = (props) => {
       shadowOpacity: 0.34,
       shadowRadius: 6.27,
       elevation: 5,
-      alignItems: 'center',
+      alignItems: 'left',
     },
     itemContent: {
       alignItems: 'center',
@@ -215,10 +348,11 @@ const Home = (props) => {
       fontSize: 20,
       fontWeight: 'bold',
       color: '#fff',
-      textShadowColor: 'rgba(0, 0, 0, 0.75)',
+      textShadowColor: 'rgba(0, 0, 0, 0.32)',
       textShadowOffset: { width: -1, height: 1 },
       textShadowRadius: 10,
-      margin: 3,
+      padding: 10,
+      marginLeft: '3%'
     },
     flatlistContent: {
       flexGrow: 1,
@@ -231,7 +365,7 @@ const Home = (props) => {
       marginVertical: 5,
       width: '90%',
       alignItems: 'center',
-      borderWidth: 3,
+      borderWidth: 1.5,
       borderColor: 'darkred',
     },
     buttonText: {
@@ -239,11 +373,10 @@ const Home = (props) => {
       fontWeight: 'bold',
     },
     itemImage: {
-      width: 100,
-      height: 100,
-      borderRadius: 10,
-      borderWidth: 2,
-      borderColor: '#660708',
+      width: '100%',     
+      aspectRatio: 1.5, 
+      marginVertical: 5,
+      resizeMode: 'cover', 
     },
     noticiaSubBText:{
       fontSize: 22,
@@ -251,10 +384,15 @@ const Home = (props) => {
       color: '#A4161A'
     },
     itemInfoText:{
-      marginHorizontal:20,
+      color: 'white',
+      textAlign: 'left',
+      fontSize: 14,
+      margin: 8
+    },
+    itemInfoTextHospital:{
       color: 'white',
       textAlign: 'center',
-      fontSize: 14,
+      fontSize: 18,
     },
     modalContainer: {
       flex: 1,
