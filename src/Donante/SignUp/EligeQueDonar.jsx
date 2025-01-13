@@ -9,30 +9,33 @@ export const EligeQueDonar = (props) => {
 
   const usuarioData = props.route.params.usuarioData;
 
-  const options = [
-    { label: 'Sangre', image: sangreImage },
-    { label: 'Médula', image: medulaImage },
-    { label: 'Plaquetas', image: plaquetaImage },
-  ];
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [donaSangre, setDonaSangre] = useState(false);
+  const [donaMedula, setDonaMedula] = useState(false);
+  const [donaPlaquetas, setDonaPlaquetas] = useState(false);
 
   const toggleOption = (option) => {
-    if (selectedOptions.includes(option.label)) {
-      setSelectedOptions(selectedOptions.filter((item) => item !== option.label));
-    } else {
-      setSelectedOptions([...selectedOptions, option.label]);
+    switch (option) {
+      case 'donaSangre':
+        setDonaSangre(!donaSangre);
+        break;
+      case 'donaMedula':
+        setDonaMedula(!donaMedula);
+        break;
+      case 'donaPlaquetas':
+        setDonaPlaquetas(!donaPlaquetas);
+        break;
+      default:
+        break;
     }
   };
 
-  const isOptionSelected = (option) => {
-    return selectedOptions.includes(option.label);
-  };
-
-
   const handleContinue = () => {
+    
     const updatedData = {
       ...usuarioData,
-      puedeDonar: selectedOptions,
+      donaSangre,
+      donaMedula,
+      donaPlaquetas,
     };
     props.navigation.navigate('EligeTipoDeSangre', { usuarioData: updatedData });
   };
@@ -41,38 +44,61 @@ export const EligeQueDonar = (props) => {
     <View style={styles.container}>
       <Text style={styles.mainText}>¿Qué quieres donar?</Text>
 
-      {options.map((option) => (
-        <TouchableOpacity
-          key={option.label}
-          style={[
-            styles.option,
-            {
-              backgroundColor: isOptionSelected(option) ? 'white' : 'rgba(255, 255, 255, 0.5)',
-            },
-          ]}
-          onPress={() => toggleOption(option)}
-        >
-          <View style={styles.optionContent}>
-            <Image source={option.image} style={styles.optionIcon} />
-            <Text
-              style={[
-                styles.optionText,
-                { color: isOptionSelected(option) ? '#A4161A' : 'white' },
-              ]}
-            >
-              {option.label}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+      {/* Opción de donar sangre */}
+      <TouchableOpacity
+        style={[
+          styles.option,
+          { backgroundColor: donaSangre ? 'white' : 'rgba(255, 255, 255, 0.5)' },
+        ]}
+        onPress={() => toggleOption('donaSangre')}
+      >
+        <View style={styles.optionContent}>
+          <Image source={sangreImage} style={styles.optionIcon} />
+          <Text style={[styles.optionText, { color: donaSangre ? '#A4161A' : 'white' }]}>
+            Sangre
+          </Text>
+        </View>
+      </TouchableOpacity>
 
-    <TouchableOpacity
-      onPress={handleContinue}
-      style={styles.continueButton} >
-      <Text style={styles.buttonText}>Continuar</Text>
-    </TouchableOpacity>
+      {/* Opción de donar médula */}
+      <TouchableOpacity
+        style={[
+          styles.option,
+          { backgroundColor: donaMedula ? 'white' : 'rgba(255, 255, 255, 0.5)' },
+        ]}
+        onPress={() => toggleOption('donaMedula')}
+      >
+        <View style={styles.optionContent}>
+          <Image source={medulaImage} style={styles.optionIcon} />
+          <Text style={[styles.optionText, { color: donaMedula ? '#A4161A' : 'white' }]}>
+            Médula
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Opción de donar plaquetas */}
+      <TouchableOpacity
+        style={[
+          styles.option,
+          { backgroundColor: donaPlaquetas ? 'white' : 'rgba(255, 255, 255, 0.5)' },
+        ]}
+        onPress={() => toggleOption('donaPlaquetas')}
+      >
+        <View style={styles.optionContent}>
+          <Image source={plaquetaImage} style={styles.optionIcon} />
+          <Text style={[styles.optionText, { color: donaPlaquetas ? '#A4161A' : 'white' }]}>
+            Plaquetas
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Botón para continuar */}
+      <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
+        <Text style={styles.buttonText}>Continuar</Text>
+      </TouchableOpacity>
     </View>
   );
+
 };
 
 const styles = StyleSheet.create({

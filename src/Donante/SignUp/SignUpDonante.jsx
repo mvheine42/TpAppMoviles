@@ -13,10 +13,10 @@ export const SignUpDonante = (props) => {
   const [email, setEmail] = useState('');
   const [dni, setDni] = useState('');
   const [genero, setGenero] = useState('');
-  const [edad, setEdad] = useState('');
-  const [peso, setPeso] = useState('');
+  const [edad, setEdad] = useState(0);
+  const [peso, setPeso] = useState(0);
   const [medicacion, setMedicacion] = useState('');
-  const [embarazo, setEmbarazo] = useState('');
+  const [embarazo, setEmbarazo] = useState(false);
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [selectedMedicacion, setSelectedMedicacion] = useState(null);
@@ -49,33 +49,34 @@ export const SignUpDonante = (props) => {
       email &&
       genero &&
       dni &&
-      edad &&
-      peso &&
+      edad > 0 && // Asegurarse de que la edad es un número válido
+      peso > 0 && // Asegurarse de que el peso es un número válido
       (selectedMedicacion === 'No' || (selectedMedicacion === 'Si' && medicacion)) &&
-      (genero !== 'Femenino' || (selectedEmbarazo !== null)) &&
+      (genero !== 'Femenino' || selectedEmbarazo !== null) &&
       password &&
       repeatPassword &&
       password === repeatPassword
     );
   };
+  
 
   const handleContinue = () => {
     const usuarioData = {
-      tipoDeUsuario: props.route.params.tipoDeUsuario,
       nombre,
       apellido,
       dni,
       email,
       genero,
-      edad,
-      peso,
-      medicacion,
-      embarazo,
+      edad: parseInt(edad, 10), // Convertir edad a número
+      peso: parseFloat(peso), // Convertir peso a número
+      medicaciones: selectedMedicacion === 'Si' ? medicacion : 'Ninguna', // Enviar medicaciones correctamente
+      embarazo: selectedEmbarazo === 'Si', // Convertir embarazo a booleano
+      password,
     };
   
     props.navigation.navigate('EligeQueDonar', { usuarioData });
   };
-
+  
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.welcomeText}>Sign Up</Text>

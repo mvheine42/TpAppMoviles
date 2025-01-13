@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert   } from 'react-native';
 
 export const VerificacionDeDatos = (props) => {
+  
   const usuarioData = props.route.params.usuarioData;
 
   const [isChecked, setIsChecked] = useState(false);
@@ -13,6 +14,7 @@ export const VerificacionDeDatos = (props) => {
 
   const crearCuenta = async () => {
     setLoading(true);
+    console.log('USUARIO: ', JSON.stringify(usuarioData));
     try {
       const response = await fetch('http://localhost:3000/donante/postDonante', {
         method: 'POST',
@@ -28,7 +30,7 @@ export const VerificacionDeDatos = (props) => {
       } else {
         const data = await response.json();
         Alert.alert('Éxito', 'Cuenta creada correctamente');
-        props.navigation.navigate('TabScreen');
+        props.navigation.navigate('TabScreenDon');
       }
     } catch (error) {
       console.error('Error al hacer el POST:', error);
@@ -74,22 +76,37 @@ export const VerificacionDeDatos = (props) => {
 
       <View style={styles.infoBlock}>
         <Text style={styles.infoLabel}>Medicaciones:</Text>
-        <Text style={styles.infoValue}>{usuarioData.medicacion || 'N/A'}</Text>
+        <Text style={styles.infoValue}>{usuarioData.medicaciones || 'N/A'}</Text>
       </View>
 
       <View style={styles.infoBlock}>
         <Text style={styles.infoLabel}>Embarazo:</Text>
-        <Text style={styles.infoValue}>{usuarioData.embarazo || 'N/A'}</Text>
+        <Text style={styles.infoValue}>
+          {usuarioData.embarazo === true ? 'Sí' : usuarioData.embarazo === false ? 'No' : 'N/A'}
+        </Text>
       </View>          
 
       <View style={styles.infoBlock}>
-        <Text style={styles.infoLabel}>Opciones de Donación:</Text>
+        <Text style={styles.infoLabel}>Dona Sangre:</Text>
         <Text style={styles.infoValue}>
-          {usuarioData.puedeDonar && usuarioData.puedeDonar.length > 0
-            ? usuarioData.puedeDonar.join(', ')
-            : 'N/A'}
+          {usuarioData.donaSangre === true ? 'Sí' : usuarioData.donaSangre === false ? 'No' : 'N/A'}
         </Text>
       </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Dona Plaquetas:</Text>
+        <Text style={styles.infoValue}>
+          {usuarioData.donaPlaquetas === true ? 'Sí' : usuarioData.donaPlaquetas === false ? 'No' : 'N/A'}
+        </Text>
+      </View>
+
+      <View style={styles.infoBlock}>
+        <Text style={styles.infoLabel}>Dona Médula:</Text>
+        <Text style={styles.infoValue}>
+          {usuarioData.donaMedula === true ? 'Sí' : usuarioData.donaMedula === false ? 'No' : 'N/A'}
+        </Text>
+      </View>
+  
 
       <View style={styles.infoBlock}>
         <Text style={styles.infoLabel}>Tipo de Sangre:</Text>

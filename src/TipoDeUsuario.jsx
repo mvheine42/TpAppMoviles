@@ -15,9 +15,9 @@ export const TipoDeUsuario = (props) => {
 
   const handleContinue = () => {
     if (selectedOption === 'Donante') {
-      props.navigation.navigate('SignUpDonante', { tipoDeUsuario: selectedOption });
+      props.navigation.navigate('SignUpDonante');
     } else if (selectedOption === 'Hospital') {
-      props.navigation.navigate('SignUpHospital', { tipoDeUsuario: selectedOption });
+      props.navigation.navigate('SignUpHospital');
     }
   };
 
