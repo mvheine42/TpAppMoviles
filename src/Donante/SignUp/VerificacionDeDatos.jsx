@@ -30,8 +30,8 @@ export const VerificacionDeDatos = (props) => {
       } else {
         const data = await response.json();
         Alert.alert('Éxito', 'Cuenta creada correctamente');
-        props.navigation.navigate('TabScreenDon');
-      }
+        props.navigation.navigate('Login');
+        }
     } catch (error) {
       console.error('Error al hacer el POST:', error);
       Alert.alert('Error', 'Error interno del servidor');

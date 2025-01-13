@@ -29,6 +29,14 @@ export const EligeQueDonar = (props) => {
     }
   };
 
+  const isFormComplete = () => {
+    return (
+      donaSangre ||
+      donaPlaquetas ||
+      donaMedula
+    );
+  };
+
   const handleContinue = () => {
     
     const updatedData = {
@@ -92,9 +100,12 @@ export const EligeQueDonar = (props) => {
         </View>
       </TouchableOpacity>
 
-      {/* Botón para continuar */}
-      <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
-        <Text style={styles.buttonText}>Continuar</Text>
+       <TouchableOpacity
+              onPress={handleContinue}
+              style={[styles.continueButton, !isFormComplete() && styles.disabledButton]}
+              disabled={!isFormComplete()}
+            >
+              <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -160,5 +171,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#660708',
     textAlign: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#A8A8A880',
   },  
 });

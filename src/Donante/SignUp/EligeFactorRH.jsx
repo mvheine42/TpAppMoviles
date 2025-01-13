@@ -24,6 +24,11 @@ export const EligeFactorRH = (props) => {
     props.navigation.navigate('VerificacionDeDatos', { usuarioData: updatedData });
   };
 
+  const isFormComplete = () => {
+    return (
+      selectedOption
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -44,12 +49,13 @@ export const EligeFactorRH = (props) => {
         </TouchableOpacity>
       ))}
 
-      <TouchableOpacity
-        onPress={handleContinue}
-        style={styles.continueButton}
-      >
-        <Text style={styles.buttonText}>Continuar</Text>
-      </TouchableOpacity>
+       <TouchableOpacity
+              onPress={handleContinue}
+              style={[styles.continueButton, !isFormComplete() && styles.disabledButton]}
+              disabled={!isFormComplete()}
+            >
+              <Text style={styles.buttonText}>Continuar</Text>
+        </TouchableOpacity>
     </View>
   );
 };
@@ -110,5 +116,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#660708',
     textAlign: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#A8A8A880',
   },
 });

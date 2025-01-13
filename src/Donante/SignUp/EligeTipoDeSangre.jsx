@@ -16,6 +16,12 @@ export const EligeTipoDeSangre = (props) => {
     return selectedOption === option;
   };
 
+  const isFormComplete = () => {
+    return (
+     selectedOption
+    );
+  };
+
 
   const handleContinue = () => {
     const updatedData = {
@@ -65,7 +71,9 @@ export const EligeTipoDeSangre = (props) => {
 
       <TouchableOpacity
         onPress={handleContinue}
-        style={styles.continueButton}>
+        style={[styles.continueButton, !isFormComplete() && styles.disabledButton]}
+        disabled={!isFormComplete()}
+      >
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>
     </View>
@@ -132,6 +140,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#660708',
     textAlign: 'center', // Centra el texto horizontalmente
+  },
+  disabledButton: {
+    backgroundColor: '#A8A8A880',
   },  
 });
 
