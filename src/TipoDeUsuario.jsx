@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 export const TipoDeUsuario = (props) => {
-  const options = ['Donante', 'Hospital'];
+  const options = ['Donante', 'Centro de Salud'];
   const [selectedOption, setSelectedOption] = useState(null);
 
   const handleOptionSelect = (option) => {
@@ -16,12 +16,12 @@ export const TipoDeUsuario = (props) => {
   const handleContinue = () => {
     if (selectedOption === 'Donante') {
       props.navigation.navigate('SignUpDonante');
-    } else if (selectedOption === 'Hospital') {
+    } else if (selectedOption === 'Centro de Salud') {
       props.navigation.navigate('SignUpHospital');
     }
   };
 
-  const isContinueDisabled = selectedOption === null; // Si no hay opción seleccionada, el botón estará deshabilitado
+  const isContinueDisabled = selectedOption === null;
 
   return (
     <View style={styles.container}>

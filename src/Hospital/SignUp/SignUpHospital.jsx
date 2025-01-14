@@ -6,15 +6,60 @@ const correoImage = require('../../../imagenes/correo-electronico.png');
 const ubicacionImage = require('../../../imagenes/ubicacion.png');
 const usuarioImage = require('../../../imagenes/usuario-2.png');
 const candadoImage = require('../../../imagenes/candado.png');
+const telephoneImage = require('../../../imagenes/telephone.png');
+
 
 
 export const SignUpHospital = (props) => {
-  const [hospitalName, setHospitalName] = useState('');
-  const [location, setLocation] = useState('');
-  const [contactInfo, setContactInfo] = useState('');
+  
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefono, setTelefono] = useState('');
   const [responsibleName, setResponsibleName] = useState('');
-  const [position, setPosition] = useState('');
   const [responsibleContact, setResponsibleContact] = useState('');
+  const [pais, setPais] = useState('');
+  const [provincia, setProvincia] = useState('');
+  const [ciudad, setCiudad] = useState('');
+  const [calle, setCalle] = useState('');
+  const [numero, setNumero] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+
+  const handleContinue = () => {
+    const usuarioData = {
+      nombre,
+      telefono,
+      email,
+      responsibleName,
+      responsibleContact,
+      pais,
+      provincia,
+      ciudad,
+      calle,
+      numero,
+      password
+    };
+  
+    props.navigation.navigate('VerificacionDeDatosHospital', { usuarioData });
+  };
+
+  const isFormComplete = () => {
+    return (
+      nombre &&
+      telefono &&
+      pais &&
+      provincia &&
+      ciudad &&
+      calle &&
+      numero &&
+      email &&
+      responsibleName &&
+      responsibleContact &&
+      password &&
+      repeatPassword &&
+      password === repeatPassword
+    );
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -24,32 +69,30 @@ export const SignUpHospital = (props) => {
         <Image source={hospitalImage} style={styles.inputIcon} />
         <TextInput
           style={styles.input}
-          placeholder="Nombre del Hospital"
+          placeholder="Nombre"
           placeholderTextColor="white"
-          value={hospitalName}
-          onChangeText={(text) => setHospitalName(text)}
+          onChangeText={setNombre}
         />
       </View>
 
       <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
+        <Image source={telephoneImage} style={styles.inputIcon} />
         <TextInput
           style={styles.input}
-          placeholder="Dirección"
+          placeholder="Teléfono"
           placeholderTextColor="white"
-          value={location}
-          onChangeText={(text) => setLocation(text)}
+          keyboardType="numeric"
+          onChangeText={setTelefono}
         />
       </View>
-
+      
       <View style={styles.block}>
         <Image source={correoImage} style={styles.inputIcon} />
         <TextInput
           style={styles.input}
           placeholder="Correo"
           placeholderTextColor="white"
-          value={contactInfo}
-          onChangeText={(text) => setContactInfo(text)}
+          onChangeText={setEmail}
         />
       </View>
 
@@ -59,19 +102,7 @@ export const SignUpHospital = (props) => {
           style={styles.input}
           placeholder="Nombre del Responsable"
           placeholderTextColor="white"
-          value={responsibleName}
-          onChangeText={(text) => setResponsibleName(text)}
-        />
-      </View>
-
-      <View style={styles.block}>
-        <Image source={usuarioImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Puesto del Responsable"
-          placeholderTextColor="white"
-          value={position}
-          onChangeText={(text) => setPosition(text)}
+          onChangeText={setResponsibleName}
         />
       </View>
 
@@ -81,8 +112,58 @@ export const SignUpHospital = (props) => {
           style={styles.input}
           placeholder="Correo del Responsable"
           placeholderTextColor="white"
-          value={responsibleContact}
-          onChangeText={(text) => setResponsibleContact(text)}
+          onChangeText={setResponsibleContact}
+        />
+      </View>
+
+      <View style={styles.block}>
+        <Image source={ubicacionImage} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Pais"
+          placeholderTextColor="white"
+          onChangeText={setPais}
+        />
+      </View>
+
+      <View style={styles.block}>
+        <Image source={ubicacionImage} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Provincia"
+          placeholderTextColor="white"
+          onChangeText={setProvincia}
+        />
+      </View>
+
+      <View style={styles.block}>
+        <Image source={ubicacionImage} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Ciudad"
+          placeholderTextColor="white"
+          onChangeText={setCiudad}
+        />
+      </View>
+
+      <View style={styles.block}>
+        <Image source={ubicacionImage} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Calle"
+          placeholderTextColor="white"
+          onChangeText={setCalle}
+        />
+      </View>
+
+      <View style={styles.block}>
+        <Image source={ubicacionImage} style={styles.inputIcon} />
+        <TextInput
+          style={styles.input}
+          placeholder="Numero"
+          keyboardType="numeric"
+          placeholderTextColor="white"
+          onChangeText={setNumero}
         />
       </View>
 
@@ -92,6 +173,8 @@ export const SignUpHospital = (props) => {
           style={styles.input}
           placeholder="Contraseña"
           placeholderTextColor="white"
+          secureTextEntry
+          onChangeText={setPassword}
         />
       </View>
 
@@ -101,10 +184,16 @@ export const SignUpHospital = (props) => {
           style={styles.input}
           placeholder="Repetir Contraseña"
           placeholderTextColor="white"
+          secureTextEntry
+          onChangeText={setRepeatPassword}
         />
       </View>
 
-      <TouchableOpacity  onPress={() => props.navigation.navigate('VerificacionDeDatosHospital')} style={styles.continueButton}>
+      <TouchableOpacity
+        onPress={handleContinue}
+        style={[styles.continueButton, !isFormComplete() && styles.disabledButton]}
+        disabled={!isFormComplete()}
+      >
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -167,6 +256,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
+  disabledButton: {
+    backgroundColor: '#A8A8A880',
+  }
 });
 
 export default SignUpHospital;

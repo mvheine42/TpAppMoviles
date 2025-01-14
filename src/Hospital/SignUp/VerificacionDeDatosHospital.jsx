@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 
 export const VerificacionDeDatosHospital = (props) => {
   const [isChecked, setIsChecked] = useState(false);
@@ -7,29 +7,72 @@ export const VerificacionDeDatosHospital = (props) => {
   const toggleCheckbox = () => {
     setIsChecked((prevChecked) => !prevChecked);
   };
+  const [loading, setLoading] = useState(false);
 
-  const hospitalInfo = {
-    Nombre: 'Hospital General Santa María',
-    Direccion: '1234 Calle Principal, Ciudad Ejemplo, 12345',
-    Contacto: 'contacto@santamariahospital.com',
-    Responsable: 'Dr. Juan Pérez',
-    Puesto: 'Director Médico',
-    ContactoResponsable: 'juan.perez@santamariahospital.com',
-  };
+  const usuarioData = props.route.params.usuarioData;
   
+  const crearCuenta = async () => {
+      setLoading(true);
+      console.log('USUARIO: ', JSON.stringify(usuarioData));
+      try {
+        const response = await fetch('http://localhost:3000/hospital/postHospital', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(usuarioData),
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          Alert.alert('Error', errorData.message || 'Error al crear la cuenta');
+        } else {
+          const data = await response.json();
+          Alert.alert('Éxito', 'Cuenta creada correctamente');
+          props.navigation.navigate('Login');
+          }
+      } catch (error) {
+        console.error('Error al hacer el POST:', error);
+        Alert.alert('Error', 'Error interno del servidor');
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        <Text style={styles.mainText}>Información</Text>
+        <Text style={styles.mainText}>Información de Verificación</Text>
 
-        {/* Mostrar la información del hospital */}
-        {Object.entries(hospitalInfo).map(([label, value]) => (
-          <View key={label} style={styles.infoBlock}>
-            <Text style={styles.infoLabel}>{label}:</Text>
-            <Text style={styles.infoValue}>{value}</Text>
-          </View>
-        ))}
+        <View style={styles.infoBlock}>
+          <Text style={styles.infoLabel}>Nombre:</Text>
+          <Text style={styles.infoValue}>{usuarioData.nombre || 'N/A'}</Text>
+        </View>
+
+        <View style={styles.infoBlock}>
+          <Text style={styles.infoLabel}>Teléfono:</Text>
+          <Text style={styles.infoValue}>{usuarioData.telefono || 'N/A'}</Text>
+        </View>
+
+        <View style={styles.infoBlock}>
+          <Text style={styles.infoLabel}>Email:</Text>
+          <Text style={styles.infoValue}>{usuarioData.email || 'N/A'}</Text>
+        </View>
+
+        <View style={styles.infoBlock}>
+          <Text style={styles.infoLabel}>Nombre del Responsable:</Text>
+          <Text style={styles.infoValue}>{usuarioData.responsibleName || 'N/A'}</Text>
+        </View>
+
+        <View style={styles.infoBlock}>
+          <Text style={styles.infoLabel}>Correo del Responsable:</Text>
+          <Text style={styles.infoValue}>{usuarioData.responsibleContact || 'N/A'}</Text>
+        </View>
+
+        <View style={styles.infoBlock}>
+          <Text style={styles.infoLabel}>Dirección:</Text>
+          <Text style={styles.infoValue}>{usuarioData.calle + ' ' + usuarioData.numero + ', ' + usuarioData.ciudad + ', ' + usuarioData.provincia + ', ' + usuarioData.pais || 'N/A'}</Text>
+        </View>
 
         <View style={styles.checkboxContainer}>
           <TouchableOpacity onPress={toggleCheckbox} style={styles.checkbox}>
@@ -38,13 +81,13 @@ export const VerificacionDeDatosHospital = (props) => {
           <Text style={styles.checkboxLabel}>Verifiqué los datos</Text>
         </View>
 
-        <TouchableOpacity
-          onPress={() => props.navigation.navigate('TabScreenHospital')}
-          style={[styles.continueButton, !isChecked && styles.disabledButton]}
-          disabled={!isChecked}
-        >
-          <Text style={styles.buttonText}>Crear Cuenta</Text>
-        </TouchableOpacity>
+     <TouchableOpacity
+        onPress={crearCuenta}
+        style={[styles.continueButton, (!isChecked || loading) && styles.disabledButton]}
+        disabled={!isChecked || loading}
+      >
+        <Text style={styles.buttonText}>{loading ? 'Cargando...' : 'Crear Cuenta'}</Text>
+      </TouchableOpacity>
 
       </View>
     </ScrollView>
