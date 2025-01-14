@@ -4,12 +4,21 @@ import { TextInput } from "react-native-gesture-handler"
 
 const emailImage = require('../imagenes/usuario-2.png');
 const cerrarImage = require('../imagenes/candado.png');
+const hideImage = require('../imagenes/hide.png');
+const viewImage = require('../imagenes/view.png');
+
 
 
 const Login = (props) => {
   console.log('PROPS', props.navigation);
-    const [email, setEmail] = React.useState("")
-    const [password, setPassword] = React.useState("")
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const togglePasswordVisibility = () => {
+      setShowPassword(!showPassword);
+    };
+
     return (
         <ScrollView style={styles.container}>
           <Text style={styles.header}>DONAVIDA+</Text>
@@ -26,14 +35,25 @@ const Login = (props) => {
                 onChangeText={setEmail}
               />
             </View>
+
             <View style={styles.inputIconContainer}>
               <Image source={cerrarImage} style={styles.inputIcon} />
-              <TextInput style={styles.input} secureTextEntry placeholderTextColor="white"
+              <TextInput
+                style={styles.input}
+                secureTextEntry={!showPassword}
+                placeholderTextColor="white"
                 placeholder="Contraseña"
                 onChangeText={setPassword}
               />
+              <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIconContainer}>
+                <Image
+                  source={showPassword ? viewImage : hideImage}
+                  style={styles.eyeIcon}
+                />
+              </TouchableOpacity>
             </View>
-            <Text> </Text>
+
+
             <TouchableOpacity onPress={() => props.handleLogin({email, password})}
               style={styles.loginButton}>
               <Text style={styles.buttonText}>Iniciar Sesion</Text>
@@ -136,6 +156,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#660708',
         marginTop: 4
+    },
+    eyeIconContainer: {
+      position: "absolute",
+      right: 15,
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100%",
+    },
+    eyeIcon: {
+      width: 20,
+      height: 20,
     },
 });
 
