@@ -64,7 +64,9 @@ function PedidosHospitalStackNavigator(props){
         <Stack.Screen name='PedidosEnCurso' options={{ headerShown: false }} {...props}>
             {() => <PedidosEnCurso {...props} />}
         </Stack.Screen>
-      <Stack.Screen name='RequestHospital' component={RequestHospital} options={{ headerShown: false }} />
+        <Stack.Screen name='RequestHospital' options={{ headerShown: false }} {...props}>
+            {() => <RequestHospital {...props} />}
+        </Stack.Screen>
     </Stack.Navigator>
   );
 }

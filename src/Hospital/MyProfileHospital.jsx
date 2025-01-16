@@ -13,7 +13,7 @@ export const MyProfileHospital = (props) => {
 
   const handleCancel = () => {
     setEditing(false);
-    setEditedHospital({ ...props.user.user.id });
+    setEditedHospital({ ...id });
   };
 
   const handleSave = () => {

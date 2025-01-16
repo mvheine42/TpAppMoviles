@@ -29,7 +29,7 @@ export const RequestHospital = (props) => {
   const handleConfirm = async () => {
     try {
       const pedidoData = {
-        idHospital: props.userId.id,
+        idHospital: props.user.user.id,
         fechaDesde: startDate.toISOString(),
         fechaHasta: endDate.toISOString(),
         tipoDonacion: donationType,
