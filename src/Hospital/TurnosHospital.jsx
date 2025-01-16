@@ -71,10 +71,9 @@ export const TurnosHospital = (props) => {
       <TouchableOpacity onPress={() => props.navigation.navigate('HistorialTurnosHospital')} style={styles.button}>
         <Text style={styles.buttonText}>Historial de turnos</Text>
       </TouchableOpacity>
-
+      <Text style={styles.sectionTitle}>Turnos para confirmar:</Text>
       <ScrollView>
         {turns.length > 0 ? (
-          <Text>Turnos pendientes de confirmación</Text>,
           turns.map((turn) => (
             <View key={turn.id} style={styles.turnBlock}>
               <View style={styles.turnInfo}>
