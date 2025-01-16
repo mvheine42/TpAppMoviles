@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import Modal from 'react-native-modal';
 
-const trashImage = require('../../imagenes/basura.png');
+const checkImage = require('../../imagenes/icons8-check-100.png');
 
 const API_URL = "http://localhost:3000";
 
@@ -26,7 +26,7 @@ export const TurnosHospital = (props) => {
 
   const fetchTurns = async () => {
     try {
-      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalId/${props.user.user.id}`);
+      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalIdAssisted/${props.user.user.id}`);
       const data = await response.json();
       setTurns(data);
     } catch (error) {
@@ -34,32 +34,33 @@ export const TurnosHospital = (props) => {
     }
   };
 
-  const deleteTurn = (id) => {
+  const confirmAttendance = (id) => {
     setSelectedTurn(id);
     setConfirmationVisible(true);
   };
 
-  const confirmDeletion = async () => {
+  const handleConfirmAttendance = async (confirmed) => {
     try {
-      await fetch(`${API_URL}/donante/deleteTurno/${selectedTurn}`, {
-        method: 'DELETE',
+      const assistedValue = confirmed ? "true" : "false";
+      await fetch(`${API_URL}/donante/updateAttendance/${selectedTurn}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ assisted: assistedValue }),
       });
-      await fetchTurns();
+      setTurns((prevTurns) => prevTurns.filter((turn) => turn.id !== selectedTurn));
       setSelectedTurn(null);
       setConfirmationVisible(false);
     } catch (error) {
-      console.error('Error deleting turn:', error);
+      console.error(`Error updating attendance:`, error);
     }
   };
 
-  const cancelDeletion = () => {
+  const cancelConfirmation = () => {
     setSelectedTurn(null);
     setConfirmationVisible(false);
   };
-
-  const todayTurns = turns.filter((turn) => turn.fecha.includes(getFormattedDate(0)));
-  const tomorrowTurns = turns.filter((turn) => turn.fecha.includes(getFormattedDate(1)));
-  const dayAfterTomorrowTurns = turns.filter((turn) => turn.fecha.includes(getFormattedDate(2)));
 
   return (
     <View style={styles.container}>
@@ -72,73 +73,43 @@ export const TurnosHospital = (props) => {
       </TouchableOpacity>
 
       <ScrollView>
-        <View>
-          <Text style={styles.sectionTitle}>Hoy ({getFormattedDate(0)}):</Text>
-          {todayTurns.map((turn) => (
+        {turns.length > 0 ? (
+          <Text>Turnos pendientes de confirmación</Text>,
+          turns.map((turn) => (
             <View key={turn.id} style={styles.turnBlock}>
               <View style={styles.turnInfo}>
                 <Text style={styles.turnText}>Paciente: {turn.donante.nombre} {turn.donante.apellido}</Text>
                 <Text style={styles.turnText}>Nro de Pedido: {turn.pedidoHospital.id} {turn.pedidoHospital.tipoDonacion}</Text>
+                <Text style={styles.turnText}>Fecha: {turn.fecha}</Text>
                 <Text style={styles.turnText}>Hora: {turn.hora}hs</Text>
               </View>
               <TouchableOpacity
-                onPress={() => deleteTurn(turn.id)}
-                style={styles.trashButton}
+                onPress={() => confirmAttendance(turn.id)}
+                style={styles.checkButton}
               >
-                <Image source={trashImage} style={styles.trashImage} />
+                <Image source={checkImage} style={styles.checkImage} />
               </TouchableOpacity>
             </View>
-          ))}
-        </View>
-
-        <View>
-          <Text style={styles.sectionTitle}>{getFormattedDate(1)}:</Text>
-          {tomorrowTurns.map((turn) => (
-            <View key={turn.id} style={styles.turnBlock}>
-              <View style={styles.turnInfo}>
-                <Text style={styles.turnText}>Paciente: {turn.donante.nombre} {turn.donante.apellido}</Text>
-                <Text style={styles.turnText}>Nro de Pedido: {turn.pedidoHospital.id} {turn.pedidoHospital.tipoDonacion}</Text>
-                <Text style={styles.turnText}>Hora: {turn.hora}hs</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => deleteTurn(turn.id)}
-                style={styles.trashButton}
-              >
-                <Image source={trashImage} style={styles.trashImage} />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-
-        <View>
-          <Text style={styles.sectionTitle}>{getFormattedDate(2)}:</Text>
-          {dayAfterTomorrowTurns.map((turn) => (
-            <View key={turn.id} style={styles.turnBlock}>
-              <View style={styles.turnInfo}>
-                <Text style={styles.turnText}>Paciente: {turn.donante.nombre} {turn.donante.apellido}</Text>
-                <Text style={styles.turnText}>Nro de Pedido: {turn.pedidoHospital.id} {turn.pedidoHospital.tipoDonacion}</Text>
-                <Text style={styles.turnText}>Hora: {turn.hora}hs</Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => deleteTurn(turn.id)}
-                style={styles.trashButton}
-              >
-                <Image source={trashImage} style={styles.trashImage} />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
+          ))
+        ) : (
+          <View style={styles.noTurnsContainer}>
+            <Text style={styles.noTurnsText}>No hay turnos pendientes de confirmación</Text>
+          </View>
+        )}
       </ScrollView>
 
       <Modal isVisible={isConfirmationVisible}>
         <View style={styles.confirmationModal}>
-          <Text style={styles.confirmationQuestion}>¿Estás seguro de eliminar este turno?</Text>
+          <Text style={styles.confirmationQuestion}>¿Confirmar asistencia del donante?</Text>
           <View style={styles.confirmationButtons}>
-            <TouchableOpacity onPress={cancelDeletion} style={styles.confirmationButton}>
+            <TouchableOpacity onPress={cancelConfirmation} style={styles.confirmationButton}>
               <Text style={styles.confirmationButtonText}>Cancelar</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={confirmDeletion} style={styles.confirmationButton}>
-              <Text style={styles.confirmationButtonText}>Aceptar</Text>
+            <TouchableOpacity onPress={() => handleConfirmAttendance(false)} style={styles.confirmationButton}>
+              <Text style={styles.confirmationButtonText}>No Confirmar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleConfirmAttendance(true)} style={styles.confirmationButton}>
+              <Text style={styles.confirmationButtonText}>Confirmar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -165,6 +136,13 @@ const styles = StyleSheet.create({
     color: '#A4161A',
     marginTop: 10,
   },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 10,
+    color: '#A4161A',
+  },
   button: {
     backgroundColor: '#A4161A',
     borderRadius: 15,
@@ -178,13 +156,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 10,
-    color: '#A4161A',
   },
   turnBlock: {
     flexDirection: 'row',
@@ -201,12 +172,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#A4161A',
   },
-  trashButton: {
+  checkButton: {
     position: 'absolute',
     top: 10,
     right: 10,
   },
-  trashImage: {
+  checkImage: {
     width: 20,
     height: 20,
   },
@@ -226,10 +197,10 @@ const styles = StyleSheet.create({
   },
   confirmationButton: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 5,
   },
   confirmationButtonText: {
-    fontSize: 20,
+    fontSize: 17,
     color: '#A4161A',
     fontWeight: 'bold',
   },
