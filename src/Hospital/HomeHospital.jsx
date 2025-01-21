@@ -23,7 +23,6 @@ const API_URL = "http://localhost:3000"
 const HomeHospital = (props) => {
   const [pedidos, setPedidos] = React.useState([]);
   const [turnos, setTurnos] = React.useState([]);
-  const navigation = useNavigation();
 
     React.useEffect(() => {
       fetchTurnos();

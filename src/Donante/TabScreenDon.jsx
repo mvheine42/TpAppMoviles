@@ -26,7 +26,6 @@ import { EligeQueDonar } from './SignUp/EligeQueDonar';
 
 
   function StackNavigation(props) {
-    console.log(props)
     return (
       <Stack.Navigator>
         <Stack.Screen name='HomeDelDonante' options={{ headerShown: false }} {...props}>
@@ -41,29 +40,6 @@ import { EligeQueDonar } from './SignUp/EligeQueDonar';
         <Stack.Screen name='HospitalDonante' options={{ headerShown: false }} {...props}>
           {() => <HospitalStackNavigation {...props} />}
         </Stack.Screen>
-      </Stack.Navigator>
-    );
-  }
-
-  function SignUpDonStackNavigation(props) {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen name='SignUpDonante' options={{ headerShown: false }} {...props}>
-          {() => <SignUpDonante {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name='EligeQueDonar' options={{ headerShown: false }} {...props}>
-          {() => <EligeQueDonar {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name='EligeTipoDeSangre' options={{ headerShown: false }} {...props}>
-          {() => <EligeTipoDeSangre {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name='EligeFactorRH' options={{ headerShown: false }} {...props}>
-          {() => <EligeFactorRH {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name='VerificacionDeDatos' options={{ headerShown: false }} {...props}>
-          {() => <VerificacionDeDatos {...props} />}
-        </Stack.Screen>
-
       </Stack.Navigator>
     );
   }

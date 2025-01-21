@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Geolocation from '@react-native-community/geolocation';
 import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
 
+const API_URL = "http://localhost:3000";
+const image = 'https://thumbs.dreamstime.com/b/icono-del-logotipo-hospital-135146804.jpg';
 
 function calcularDistancia(lat1, lon1, lat2, lon2) { //fun de chatgpt para calcular la distancia en kms
     const degreesToRadians = (degrees) => {
@@ -38,30 +40,29 @@ Geolocation.setRNConfiguration({
 
 })
 
-const data = [
-  { id: '1', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '2', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '3', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '4', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '5', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '6', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '7', text: 'SANGRE 0+', category: 'Sangre', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '8', text: 'PLAQUETAS', category: 'Plaquetas', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-  { id: '9', text: 'MEDULA', category: 'Médula', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Hospital_Británico_Central_%28fachada%29.jpg/1200px-Hospital_Británico_Central_%28fachada%29.jpg'},
-];
-
-const categories = Array.from(new Set(data.map((item) => item.category)));
-
 
 const Home = (props) => {
     const [position, setPosition] = useState(null);
     const [distancia, setDistancia] = useState(null);
+    const [pedidos, setPedidos] = useState([]);
+
+    React.useEffect(() => {      
+      fetchPedidos();
+    }, []);
+    
+    const categories = pedidos.length > 0 ? Array.from(new Set(pedidos.map((item) => item.tipoDonacion))) : [];
+
+    const fetchPedidos = async () => {
+      let pedidos = await fetch(`${API_URL}/donante/getHospitalOrdersFor/${props.user.user.id}`);
+      pedidos = await pedidos.json();
+      setPedidos(pedidos);
+    }
+  
   
     useEffect(() => {
       const handleGetCurrentPosition = () => {
         Geolocation.getCurrentPosition(
           (pos) => {
-            console.log(pos);
             setPosition(pos);
           },
           (error) => {
@@ -93,9 +94,10 @@ const Home = (props) => {
       );
     };
   
-    const filteredData = data.filter((item) =>
-      selectedCategories.includes(item.category)
-    );
+    const filteredData = pedidos.length > 0
+    ? pedidos.filter((item) => selectedCategories.includes(item.tipoDonacion))
+    : [];
+  
 
     const handleHospitalPress = (hospital) => {
       console.log('Hospital seleccionado:', hospital); 
@@ -105,14 +107,13 @@ const Home = (props) => {
     const renderItem = ({ item }) => (
       <TouchableOpacity onPress={() => handleHospitalPress(item)}>
         <View style={styles.item}>
-          <Text style={styles.itemText}>{item.text}</Text>
+          <Text style={styles.itemText}>{item.descripcion}</Text>
             <View style={styles.itemContent}>
               <View style={styles.itemTextContainer}>
-                <Text style= {styles.itemInfoTextHospital}>Hospital Británico</Text>
-                <Image source={{ uri: item.image }} style={styles.itemImage} />
+                <Text style= {styles.itemInfoTextHospital}>{item.hospital.nombre}</Text>
+                <Image source={{ uri: image }} style={styles.itemImage} />
                 <Text style= {styles.itemInfoText}>Ubicado a {distancia ? distancia.toFixed(2) : 'Cargando...'}km de tu ubicación actual</Text>
               </View>
-             
             </View>
         </View>
       </TouchableOpacity>
@@ -376,7 +377,7 @@ const Home = (props) => {
     },
     itemImage: {
       width: '100%',     
-      aspectRatio: 1.5, 
+      aspectRatio: 1.8, 
       marginVertical: 5,
       resizeMode: 'cover', 
     },

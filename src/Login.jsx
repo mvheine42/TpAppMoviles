@@ -10,7 +10,6 @@ const viewImage = require('../imagenes/view.png');
 
 
 const Login = (props) => {
-  console.log('PROPS', props.navigation);
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [showPassword, setShowPassword] = React.useState(false);

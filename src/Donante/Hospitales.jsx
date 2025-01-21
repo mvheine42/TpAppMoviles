@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Geolocation from '@react-native-community/geolocation';
-import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useHospitalContext } from './HospitalContext'; // Importamos el contexto
-import { Hospital } from "./Hospital"
+
 
 const fetchHospitales = async () => {
   try {
@@ -72,7 +72,6 @@ export const Hospitales = (props) => {
     const handleGetCurrentPosition = () => {
       Geolocation.getCurrentPosition(
         (pos) => {
-          console.log(pos);
           setPosition(pos);
         },
         (error) => {
@@ -90,9 +89,6 @@ export const Hospitales = (props) => {
     const obtenerHospitales = async () => {
       const hospitalesData = await fetchHospitales();
       setHospitales(hospitalesData);
-
-      // Imprime la información de los hospitales por consola
-      console.log('Hospitales:', hospitalesData);
 
       if (position && position.coords) {
         // Calcular la distancia y ordenar hospitales por distancia
@@ -115,7 +111,6 @@ export const Hospitales = (props) => {
   }, [position]);
 
   const handleHospitalPress = (hospital) => {
-    console.log('Hospital seleccionado:', hospital);  // Verifica que el hospital es el correcto
     setHospital(hospital);  // Aquí estamos actualizando el contexto con el hospital seleccionado
     props.navigation.navigate('Hospital', { hospital });  // Navega a la pantalla 'Hospital'
   };
