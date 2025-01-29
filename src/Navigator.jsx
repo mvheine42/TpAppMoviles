@@ -13,6 +13,7 @@ import { EligeQueDonar } from "./Donante/SignUp/EligeQueDonar";
 import EligeTipoDeSangre from "./Donante/SignUp/EligeTipoDeSangre";
 import { VerificacionDeDatos } from "./Donante/SignUp/VerificacionDeDatos";
 import { VerificacionDeDatosHospital } from "./Hospital/SignUp/VerificacionDeDatosHospital";
+import LocationHospital from "./Hospital/SignUp/LocationHospital";
 
 const Stack = createStackNavigator();
 
@@ -44,6 +45,7 @@ export default function StackNavigator(props) {
                         <Stack.Screen name="EligeFactorRH" component={EligeFactorRH} />
                         <Stack.Screen name="VerificacionDeDatos" component={VerificacionDeDatos} />
                         <Stack.Screen name="SignUpHospital" component={SignUpHospital} />
+                        <Stack.Screen name="LocationHospital" component={LocationHospital} />
                         <Stack.Screen name="VerificacionDeDatosHospital" component={VerificacionDeDatosHospital} />
                     </>
                 )}

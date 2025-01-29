@@ -3,12 +3,9 @@ import { View, ScrollView, TextInput, TouchableOpacity, Text, StyleSheet, Image 
 
 const hospitalImage = require('../../../imagenes/hospital.png');
 const correoImage = require('../../../imagenes/correo-electronico.png');
-const ubicacionImage = require('../../../imagenes/ubicacion.png');
 const usuarioImage = require('../../../imagenes/usuario-2.png');
 const candadoImage = require('../../../imagenes/candado.png');
 const telephoneImage = require('../../../imagenes/telephone.png');
-
-
 
 export const SignUpHospital = (props) => {
   
@@ -17,11 +14,6 @@ export const SignUpHospital = (props) => {
   const [telefono, setTelefono] = useState('');
   const [responsibleName, setResponsibleName] = useState('');
   const [responsibleContact, setResponsibleContact] = useState('');
-  const [pais, setPais] = useState('');
-  const [provincia, setProvincia] = useState('');
-  const [ciudad, setCiudad] = useState('');
-  const [calle, setCalle] = useState('');
-  const [numero, setNumero] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
 
@@ -32,26 +24,16 @@ export const SignUpHospital = (props) => {
       email,
       responsibleName,
       responsibleContact,
-      pais,
-      provincia,
-      ciudad,
-      calle,
-      numero,
       password
     };
   
-    props.navigation.navigate('VerificacionDeDatosHospital', { usuarioData });
+    props.navigation.navigate('LocationHospital', { usuarioData });
   };
 
   const isFormComplete = () => {
     return (
       nombre &&
       telefono &&
-      pais &&
-      provincia &&
-      ciudad &&
-      calle &&
-      numero &&
       email &&
       responsibleName &&
       responsibleContact &&
@@ -117,57 +99,6 @@ export const SignUpHospital = (props) => {
       </View>
 
       <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Pais"
-          placeholderTextColor="white"
-          onChangeText={setPais}
-        />
-      </View>
-
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Provincia"
-          placeholderTextColor="white"
-          onChangeText={setProvincia}
-        />
-      </View>
-
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ciudad"
-          placeholderTextColor="white"
-          onChangeText={setCiudad}
-        />
-      </View>
-
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Calle"
-          placeholderTextColor="white"
-          onChangeText={setCalle}
-        />
-      </View>
-
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Numero"
-          keyboardType="numeric"
-          placeholderTextColor="white"
-          onChangeText={setNumero}
-        />
-      </View>
-
-      <View style={styles.block}>
         <Image source={candadoImage} style={styles.inputIcon} />
         <TextInput
           style={styles.input}
@@ -192,7 +123,7 @@ export const SignUpHospital = (props) => {
       <TouchableOpacity
         onPress={handleContinue}
         style={[styles.continueButton, !isFormComplete() && styles.disabledButton]}
-        disabled={!isFormComplete()}
+        /*disabled={!isFormComplete()}*/
       >
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>

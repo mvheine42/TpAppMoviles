@@ -14,12 +14,6 @@
   import { createStackNavigator } from '@react-navigation/stack';
   import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
   import GraciasScreen from './GraciasScreen';
-import { SignUpDonante } from './SignUp/SignUpDonante';
-import EligeTipoDeSangre from './SignUp/EligeTipoDeSangre';
-import { EligeFactorRH } from './SignUp/EligeFactorRH';
-import { VerificacionDeDatos } from './SignUp/VerificacionDeDatos';
-import { EligeQueDonar } from './SignUp/EligeQueDonar';
-
 
   const Stack = createStackNavigator();
   const Tab = createMaterialBottomTabNavigator();
@@ -38,6 +32,9 @@ import { EligeQueDonar } from './SignUp/EligeQueDonar';
           {() => <Proceso {...props} />}
         </Stack.Screen>
         <Stack.Screen name='HospitalDonante' options={{ headerShown: false }} {...props}>
+          {() => <HospitalStackNavigation {...props} />}
+        </Stack.Screen>
+        <Stack.Screen name="Hospital" options={{ headerShown: false }}  {...props}>
           {() => <HospitalStackNavigation {...props} />}
         </Stack.Screen>
       </Stack.Navigator>

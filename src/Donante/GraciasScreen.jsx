@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, Image, Text } from 'react-native';
+import { View, StyleSheet, Animated, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { TabScreen } from './TabScreenDon';
 
 const GraciasScreen = () => {
   const navigation = useNavigation();
@@ -11,8 +10,7 @@ const GraciasScreen = () => {
 
   useEffect(() => {
     const navigateToNextScreen = () => {
-      // Reemplaza la pantalla actual con la pantalla 'HomeDelDonante' (o la que prefieras)
-      navigation.replace('TabScreen');  // Reemplaza con 'HomeDelDonante' o tu pantalla deseada
+      navigation.replace('TabScreenDon'); 
     };
 
     const animationDuration = 5000; // 5 seconds
