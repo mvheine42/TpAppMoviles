@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, TouchableOpacity, Image, TouchableWithoutFeedback, Modal, SafeAreaView, StyleSheet, FlatList } from "react-native"
+import { View, Text, TouchableOpacity, Image, TouchableWithoutFeedback, Modal, ScrollView , StyleSheet, FlatList } from "react-native"
 import { useState, useEffect } from 'react';
 import Geolocation from '@react-native-community/geolocation';
 import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
@@ -100,14 +100,18 @@ const Home = (props) => {
   
 
     const handleHospitalPress = (hospital) => {
-      console.log('Hospital seleccionado:', hospital); 
-      props.navigation.navigate('Hospital', { hospital });
+      console.log('Pedido de Hospital seleccionado:', hospital); 
+      props.navigation.navigate('HospitalDonante', { pedidoHospital: hospital });
     };
 
     const renderItem = ({ item }) => (
       <TouchableOpacity onPress={() => handleHospitalPress(item)}>
         <View style={styles.item}>
-          <Text style={styles.itemText}>{item.descripcion}</Text>
+        <Text style={styles.itemText}>
+            {item.tipoDonacion === 'Sangre' 
+              ? `${item.tipoDonacion}: ${item.tipoSangre} ${item.factorRh}` 
+              : item.tipoDonacion}
+          </Text>
             <View style={styles.itemContent}>
               <View style={styles.itemTextContainer}>
                 <Text style= {styles.itemInfoTextHospital}>{item.hospital.nombre}</Text>
@@ -163,60 +167,66 @@ const Home = (props) => {
 
         </Modal>
         
-        <View style={styles.header}>
+        <ScrollView 
+          style={{ flex: 1 }} 
+          contentContainerStyle={{ flexGrow: 1 }} 
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.header}>
           <Text style={styles.title}>DonaVida+</Text>
-        </View>
-        <View style={styles.tituloNoticias}>
-          <Text style={styles.noticiasText}>DONACIONES</Text>
-          <Text style={styles.noticiaSubBText}>Hecho especialmente para tí</Text>
-        </View>
-        <View style={styles.categoryButtons}>
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              style={
-                selectedCategories.includes(category)
-                  ? styles.selectedCategoryButton
-                  : styles.categoryButton
-              }
-              onPress={() => toggleCategory(category)}
-            >
-              <Text
+          </View>
+          <View style={styles.tituloNoticias}>
+            <Text style={styles.noticiasText}>DONACIONES</Text>
+            <Text style={styles.noticiaSubBText}>Hecho especialmente para tí</Text>
+          </View>
+          <View style={styles.categoryButtons}>
+            {categories.map((category) => (
+              <TouchableOpacity
+                key={category}
                 style={
                   selectedCategories.includes(category)
-                    ? styles.selectedCategoryButtonText
-                    : styles.categoryButtonText
+                    ? styles.selectedCategoryButton
+                    : styles.categoryButton
                 }
-                >
-                  {category}
-              </Text>
+                onPress={() => toggleCategory(category)}
+              >
+                <Text
+                  style={
+                    selectedCategories.includes(category)
+                      ? styles.selectedCategoryButtonText
+                      : styles.categoryButtonText
+                  }
+                  >
+                    {category}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <View style={styles.content}>
+            <FlatList
+              data={filteredData}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              horizontal
+              contentContainerStyle={styles.flatlistContent}
+            />
+          </View>
+          <View style={styles.informacion}>
+            <Text style={styles.informacionText}>Información</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => props.navigation.navigate('Requerimientos')}
+            >
+              <Text style={styles.buttonText}>Requerimientos para donar</Text>
             </TouchableOpacity>
-          ))}
-        </View>
-        <View style={styles.content}>
-          <FlatList
-            data={filteredData}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            horizontal
-            contentContainerStyle={styles.flatlistContent}
-          />
-        </View>
-        <View style={styles.informacion}>
-          <Text style={styles.informacionText}>Información</Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => props.navigation.navigate('Requerimientos')}
-          >
-            <Text style={styles.buttonText}>Requerimientos para donar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => props.navigation.navigate('Proceso')}
-          >
-            <Text style={styles.buttonText}>Cómo es el proceso</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => props.navigation.navigate('Proceso')}
+            >
+              <Text style={styles.buttonText}>Cómo es el proceso</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
     );
 };

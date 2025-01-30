@@ -20,28 +20,45 @@
 
 
   function StackNavigation(props) {
+    console.log('StackNavigation: ', props);
     return (
       <Stack.Navigator>
-        <Stack.Screen name='HomeDelDonante' options={{ headerShown: false }} {...props}>
-          {() => <Home {...props} />}
+        <Stack.Screen name='HomeDelDonante' options={{ headerShown: false }}>
+          {(screenProps) => <Home {...props} {...screenProps} />}
         </Stack.Screen>
-        <Stack.Screen name='Requerimientos' options={{ headerShown: false }} {...props}>
-          {() => <Requerimientos {...props} />}
+        <Stack.Screen name='Requerimientos' options={{ headerShown: false }}>
+          {(screenProps) => <Requerimientos {...props} {...screenProps} />}
         </Stack.Screen>
-        <Stack.Screen name='Proceso' options={{ headerShown: false }} {...props}>
-          {() => <Proceso {...props} />}
+        <Stack.Screen name='Proceso' options={{ headerShown: false }}>
+          {(screenProps) => <Proceso {...props} {...screenProps} />}
         </Stack.Screen>
-        <Stack.Screen name='HospitalDonante' options={{ headerShown: false }} {...props}>
-          {() => <HospitalStackNavigation {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name="Hospital" options={{ headerShown: false }}  {...props}>
-          {() => <HospitalStackNavigation {...props} />}
+        <Stack.Screen name='HospitalDonante' options={{ headerShown: false }}>
+          {(screenProps) => <HospitalStackNavigation {...props} {...screenProps} />}
         </Stack.Screen>
       </Stack.Navigator>
     );
   }
 
-
+  function HospitalStackNavigation({ route, navigation, ...props }) {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name='Hospital' options={{ headerShown: false }}>
+          {(screenProps) => (
+            <Hospital 
+              {...props} 
+              {...screenProps} 
+              route={route} // ✅ Ahora `route` se pasa correctamente
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="QuieroDonar" component={QuieroDonar} options={{ headerShown: false }} />
+        <Stack.Screen name="GraciasScreen" component={GraciasScreen} 
+          options={{ tabBarStyle: { display: 'none' }, headerShown: false }}
+        />
+      </Stack.Navigator>
+    );
+  }
+  
   function MyProfileStackNavigation(props) {
     return (
       <Stack.Navigator>
@@ -72,17 +89,7 @@
     );
   }
 
-  function HospitalStackNavigation() {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen name="Hospital" component={Hospital} options={{ headerShown: false }} />
-        <Stack.Screen name="QuieroDonar" component={QuieroDonar} options={{ headerShown: false }} />
-        <Stack.Screen name="GraciasScreen" component={GraciasScreen} 
-          options={{ tabBarStyle: { display: 'none' }, tabBarVisible: false, headerShown: false }}
-        />
-      </Stack.Navigator>
-    );
-  }
+ 
 
   export const TabScreenDon = (props) => {
     const [activeTab, setActiveTab] = React.useState(null);

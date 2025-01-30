@@ -11,7 +11,8 @@ export const LocationHospital = (props) => {
   const [ciudad, setCiudad] = useState('');
   const [calle, setCalle] = useState('');
   const [numero, setNumero] = useState('');
-  const [coordinates, setCoordinates] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
 
   const handleContinue = () => {
     const usuarioData = {
@@ -21,7 +22,8 @@ export const LocationHospital = (props) => {
       ciudad,
       calle,
       numero,
-      coordinates
+      longitude,
+      latitude
     };
     props.navigation.navigate('VerificacionDeDatosHospital', { usuarioData });
   };
@@ -38,7 +40,8 @@ export const LocationHospital = (props) => {
       );
       if (response.data && response.data.length > 0) {
         const { lat, lon } = response.data[0];
-        setCoordinates({ latitude: parseFloat(lat), longitude: parseFloat(lon) });
+        setLongitude(lon);
+        setLatitude(lat);
       } else {
         Alert.alert('Error', 'No se pudo obtener la ubicación. Verifica la dirección.');
       }

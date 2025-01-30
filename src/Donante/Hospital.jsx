@@ -1,37 +1,51 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { useHospitalContext } from './HospitalContext';
-
 
 const Hospital = (props) => {
-  console.log(props);
-  const { selectedHospital } = useHospitalContext();
-  const [region, setRegion] = React.useState({latitude: selectedHospital.latitude,
-    longitude: selectedHospital.longitude,
-    latitudeDelta: 0.015,
-    longitudeDelta: 0.0121});
+
+  const selectedPedidoHospital = props.route.params?.pedidoHospital
+  const selectedHospital = props.route.params?.pedidoHospital.hospital;
+
+  console.log('PedidoHospital: ' , selectedPedidoHospital);
+  console.log('Hospital: ', selectedHospital);
 
   if (!selectedHospital) {
     return <Text>No hay hospital seleccionado</Text>;
   }
+
+  const region = {
+    latitude: selectedHospital.latitude,
+    longitude: selectedHospital.longitude,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      <Text style={styles.subtitle}>{selectedHospital.name}</Text>
+      <Text style={styles.subtitle}>{selectedHospital.nombre}</Text>
+      {/* 
       <MapView
-      provider={PROVIDER_GOOGLE}
-       style={styles.map}
-       initialRegion={region}>
-        <Marker title = {selectedHospital.name} coordinate={{latitude: selectedHospital.latitude, longitude: selectedHospital.longitude}}></Marker>
-      </MapView>
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        initialRegion={region}
+      >
+        <Marker 
+          title={selectedHospital.name} 
+          coordinate={{
+            latitude: selectedHospital.latitude, 
+            longitude: selectedHospital.longitude
+          }} 
+        />
+      </MapView> 
+      */}
       <View style={styles.informacion}>
-        <Text style={styles.texto}>Dirección: {selectedHospital.address}</Text>
-        <Text style={styles.texto}>Distancia: {selectedHospital.distance.toFixed(2)} kilómetros</Text>
-        <Text style={styles.texto}>Buscamos donantes de: Sangre 0+</Text>
+        <Text style={styles.texto}>Dirección: {selectedHospital.provincia}, {selectedHospital.ciudad}, {selectedHospital.calle}, {selectedHospital.numero}</Text>
+        <Text style={styles.texto}>Distancia: X kilómetros</Text>
+        <Text style={styles.texto}> {selectedPedidoHospital.descripcion} </Text>
       </View>
       <TouchableOpacity style={styles.donarButton} onPress={() => props.navigation.navigate('QuieroDonar')}>
         <Text style={styles.donarButtonText}>Quiero donar</Text>
