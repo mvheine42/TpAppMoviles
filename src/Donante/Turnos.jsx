@@ -2,55 +2,155 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { useHospitalContext } from './HospitalContext';
+
+const API_URL = "http://localhost:3000";
 
 export const Turnos = (props) => {
+  const [selectedTurn, setSelectedTurn] = useState(null);
+  const [cancelItemId, setCancelItemId] = useState(null);
+  const [turnos, setTurnos] = useState([]);
+  const [selectedPedidoHospital, setSelectedPedidoHospital] = useState(null);
+  const [selectedHospital, setSelectedHospital] = useState(null);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
+    
+  
+  React.useEffect(() => {      
+      fetchTurnos();
+  }, []);
 
+  const fetchTurnos = async () => {
+    let turnos = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);
+    turnos = await turnos.json();
+    setTurnos(turnos);
+  }
 
-  const [region, setRegion] = React.useState({latitude: 37.78825,
-    longitude: -122.4324,
+  function formatFecha(fechaISO) {
+    const fecha = new Date(fechaISO);
+    
+    const fechaFormateada = fecha.toISOString().split('T')[0].replace(/-/g, '/');
+
+    const horaFormateada = fecha.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  
+    return `${fechaFormateada} - ${horaFormateada}`;
+  }
+
+  const [region, setRegion] = React.useState({latitude: latitude,
+    longitude: longitude,
     latitudeDelta: 0.015,
     longitudeDelta: 0.0121})
 
-  const [turnos, setTurnos] = useState([
-    {
-      id: '1',
-      fecha: '2023-09-28',
-      hora: '09:00 AM',
-      dona: 'Sangre y Medula',
-      tipo: 'A+',
-      hospital: 'Hospital Fernandez'
-    },
-  ]);
+    useEffect(() => {
+      if (latitude !== null && longitude !== null) {
+        setRegion({
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude),
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121,
+        });
+      }
+    }, [latitude, longitude]);
+    
 
   const openTurnDetails = (item) => {
     setSelectedTurn(item);
-    };
+    setSelectedPedidoHospital(item.pedidoHospital);
+    setSelectedHospital(item.pedidoHospital.hospital);
+    const lat = item.pedidoHospital.hospital.latitude;
+    const lon = item.pedidoHospital.hospital.longitude;
+    setLatitude(lat);
+    setLongitude(lon);
+  };
 
   const closeTurnDetails = () => {
     setSelectedTurn(null);
+    setSelectedPedidoHospital(null);
+    setSelectedHospital(null);
   };
 
-  const [selectedTurn, setSelectedTurn] = useState(null);
+  const renderItem = ({ item }) => {
+    const tipoDonacion =
+      item.pedidoHospital.tipoDonacion === "Sangre"
+        ? `${item.pedidoHospital.tipoDonacion} - ${item.pedidoHospital.tipoSangre} ${item.pedidoHospital.factorRh}`
+        : item.pedidoHospital.tipoDonacion;
+  
+    const isDisabled = item.assisted !== "";
+  
+    const itemStyle = {
+      ...styles.item,
+      backgroundColor: isDisabled ? "#B0B0B0" : "#A4161A",
+    };
+  
 
-  const [cancelItemId, setCancelItemId] = useState(null);
-
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <TouchableOpacity onPress={() => openTurnDetails(item)}>
+    let asistenciaText = "";
+    let asistenciaColor = "transparent"; // Oculto por defecto
+  
+    if (item.assisted === "true") {
+      asistenciaText = "Asistió";
+      asistenciaColor = "green";
+    } else if (item.assisted === "false") {
+      asistenciaText = "No asistió";
+      asistenciaColor = "#555555"; // Gris oscuro
+    }
+  
+    return (
+      <TouchableOpacity 
+        style={itemStyle} 
+        onPress={() => openTurnDetails(item)} 
+        disabled={isDisabled}
+      >
         <View style={styles.itemInfo}>
-          <Text style={styles.itemTitle}>{item.fecha}</Text>
-          <Text style={styles.itemSubtitle}>{item.hora}</Text>
-          <Text style={styles.itemSubtitle}>{item.dona}</Text>
-          <Text style={styles.itemSubtitle}>{item.tipo}</Text>
-          <Text style={styles.itemSubtitle}>{item.hospital}</Text>
+          <Text style={styles.itemTitle}>{formatFecha(item.fecha)}hs</Text>
+          <Text style={styles.itemSubtitle}>Dona: {tipoDonacion}</Text>
+          <Text style={styles.itemSubtitle}>En: {item.pedidoHospital.hospital.nombre}</Text>
         </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleCancel(item.id)}>
-          <Text style={styles.cancelButton}>Cancelar</Text>
-        </TouchableOpacity>
-    </View>
-  );
+    
+        {!isDisabled && (
+          <TouchableOpacity onPress={() => handleCancel(item.id)}>
+            <Text style={styles.cancelButton}>Cancelar</Text>
+          </TouchableOpacity>
+        )}
+    
+        {asistenciaText !== "" && (
+          <Text style={{ ...styles.assistenciaText, color: asistenciaColor }}>
+            {asistenciaText}
+          </Text>
+        )}
+      </TouchableOpacity>
+    );
+    
+  };
+  
+  const deleteItem = async (itemId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/donante/deleteTurno/${itemId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error al eliminar el turno');
+      }
+  
+      const result = response.status === 204 ? { success: true } : await response.json();
+  
+      if (result.success) {
+        console.log('Turno eliminado con éxito:', result.message);
+        fetchTurnos();
+      } else {
+        console.log('Error:', result.message);
+      }
+    } catch (error) {
+      console.error('Error en la solicitud DELETE:', error);
+    }
+  };
+  
 
   const handleCancel = (itemId) => {
     Alert.alert(
@@ -65,38 +165,34 @@ export const Turnos = (props) => {
         {
           text: 'Confirmar',
           onPress: () => {
-            // Elimina el elemento del array de turnos
-            const updatedTurnos = turnos.filter(item => item.id !== itemId);
-            setTurnos(updatedTurnos);
-            setCancelItemId(null);
+            deleteItem(itemId);
           },
-        },
+        }
       ]
-    );
-    setCancelItemId(itemId);
-  };
+  )}
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      <FlatList
-        data={turnos}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      <FlatList data={turnos} renderItem={renderItem} keyExtractor={(item) => item.id}/>
       <Modal visible={selectedTurn !== null} animationType="slide" transparent>
       <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalHeading}>{selectedTurn?.hospital}</Text>
-            <Text>Fecha: {selectedTurn?.fecha}</Text>
-            <Text>Hora: {selectedTurn?.hora}</Text>
-            <Text>Dona: {selectedTurn?.dona}</Text>
-            <Text>Tipo: {selectedTurn?.tipo}</Text>
-            <MapView provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={region}>
-              <Marker coordinate={region} title={selectedTurn?.hospital} />
-            </MapView>
+            <Text style={styles.modalHeading}>{selectedHospital?.nombre}</Text>
+            <Text style={styles.modalInfo}>Fecha: {selectedTurn ? formatFecha(selectedTurn.fecha) : "N/A"}hs</Text>
+            <Text style={styles.modalInfo}>Dona: {selectedTurn?.pedidoHospital.tipoDonacion}</Text>
+            {latitude !== null && longitude !== null && (
+              <MapView 
+                provider={PROVIDER_GOOGLE} 
+                style={styles.map} 
+                initialRegion={region}
+              >
+                <Marker coordinate={region} title={selectedTurn?.hospital} />
+              </MapView>
+            )}
+            <Text style={styles.modalDirec}>{selectedHospital?.calle} {selectedHospital?.numero}, {selectedHospital?.ciudad}, {selectedHospital?.provincia}, {selectedHospital?.pais}</Text>
             <TouchableOpacity onPress={closeTurnDetails}>
               <Text style={styles.closeButton}>Cerrar</Text>
             </TouchableOpacity>
@@ -135,12 +231,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textShadowColor: '#A4161A',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 4,
+    textShadowRadius: 4
   },
   item: {
     backgroundColor: '#A4161A',
-    padding: 20,
-    marginVertical: 8,
+    padding: 25,
+    marginTop: 15,
     marginHorizontal: 16,
     borderRadius: 10,
     elevation: 2,
@@ -153,19 +249,26 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'white'
+    color: 'white',
+    marginBottom: 15
   },
   itemSubtitle: {
+    marginTop: 3,
     fontSize: 16,
     color: 'white',
   },
   cancelButton: {
     color: 'white',
     fontSize: 16,
+    fontWeight: "bold",    
+  },
+  assistenciaText: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
   map: {
     width: '100%',
-    height: '60%',
+    height: '65%',
     marginTop: 10,
   },
   modalContainer: {
@@ -178,17 +281,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 8,
-    width: '80%',
-    height: '50%',
+    width: '85%',
+    height: '65%',
   },
   modalHeading: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  modalInfo: {
+    fontSize: 18,
+    marginBottom: 2,
+  },
+  modalDirec: {
+    fontSize: 14,
+    marginTop: 2,
+  },
   closeButton: {
+    fontSize: 18,
     color: 'blue',
-    marginTop: 10,
+    marginTop: 20,
     textAlign: 'right',
   },
 });

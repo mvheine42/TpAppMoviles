@@ -44,7 +44,7 @@ const Hospital = (props) => {
         <Text style={styles.texto}>Distancia: X kilómetros</Text>
       </View>
       <View style={styles.infoPedido}>
-        <Text style={styles.textoPedido}>Donacion para:
+        <Text style={styles.textoPedido}>Donacion para: 
                   {selectedPedidoHospital.tipoDonacion === 'Sangre' 
                     ? `  ${selectedPedidoHospital.tipoDonacion}: ${selectedPedidoHospital.tipoSangre} ${selectedPedidoHospital.factorRh}` 
                     : selectedPedidoHospital.tipoDonacion}
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '93%',
-    height: '45%',
+    height: '40%',
     marginLeft: 15,
     marginBottom: 20,
     marginTop: 10,
