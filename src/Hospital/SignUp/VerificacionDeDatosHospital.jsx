@@ -10,19 +10,35 @@ export const VerificacionDeDatosHospital = (props) => {
   const [loading, setLoading] = useState(false);
 
   const usuarioData = props.route.params.usuarioData;
+  console.log(usuarioData);
   
   const crearCuenta = async () => {
-      setLoading(true);
-      console.log('USUARIO: ', JSON.stringify(usuarioData));
+    setLoading(true);
+  
+    // Flatten the data
+    const flattenedData = {
+      ...usuarioData,
+      ...usuarioData.userInfo,  // This will spread the userInfo fields into the main object
+    };
+    delete flattenedData.userInfo;  // Remove the nested object since it's now redundant
+    const fieldsToConvert = ['latitude', 'longitude']; // Add the keys you need to convert
+    fieldsToConvert.forEach((key) => {
+        if (flattenedData[key] !== undefined && typeof flattenedData[key] === 'number') {
+          flattenedData[key] = flattenedData[key].toString();
+        }
+      });
+  
+      console.log('USUARIO (FLATTENED & CONVERTED): ', JSON.stringify(flattenedData));
+
       try {
         const response = await fetch('http://localhost:3000/hospital/postHospital', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(usuarioData),
+          body: JSON.stringify(flattenedData),
         });
-  
+    
         if (!response.ok) {
           const errorData = await response.json();
           Alert.alert('Error', errorData.message || 'Error al crear la cuenta');
@@ -30,7 +46,7 @@ export const VerificacionDeDatosHospital = (props) => {
           const data = await response.json();
           Alert.alert('Éxito', 'Cuenta creada correctamente');
           props.navigation.navigate('Login');
-          }
+        }
       } catch (error) {
         console.error('Error al hacer el POST:', error);
         Alert.alert('Error', 'Error interno del servidor');
@@ -46,27 +62,27 @@ export const VerificacionDeDatosHospital = (props) => {
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Nombre:</Text>
-          <Text style={styles.infoValue}>{usuarioData.nombre || 'N/A'}</Text>
+          <Text style={styles.infoValue}>{usuarioData.userInfo.nombre || 'N/A'}</Text>
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Teléfono:</Text>
-          <Text style={styles.infoValue}>{usuarioData.telefono || 'N/A'}</Text>
+          <Text style={styles.infoValue}>{usuarioData.userInfo.telefono || 'N/A'}</Text>
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Email:</Text>
-          <Text style={styles.infoValue}>{usuarioData.email || 'N/A'}</Text>
+          <Text style={styles.infoValue}>{usuarioData.userInfo.email || 'N/A'}</Text>
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Nombre del Responsable:</Text>
-          <Text style={styles.infoValue}>{usuarioData.responsibleName || 'N/A'}</Text>
+          <Text style={styles.infoValue}>{usuarioData.userInfo.responsibleName || 'N/A'}</Text>
         </View>
 
         <View style={styles.infoBlock}>
           <Text style={styles.infoLabel}>Correo del Responsable:</Text>
-          <Text style={styles.infoValue}>{usuarioData.responsibleContact || 'N/A'}</Text>
+          <Text style={styles.infoValue}>{usuarioData.userInfo.responsibleContact || 'N/A'}</Text>
         </View>
 
         <View style={styles.infoBlock}>
