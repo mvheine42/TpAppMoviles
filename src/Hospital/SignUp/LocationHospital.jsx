@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, TextInput, TouchableOpacity, Text, StyleSheet, Image, Alert } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
 const ubicacionImage = require('../../../imagenes/ubicacion.png');
 
@@ -13,6 +14,21 @@ export const LocationHospital = (props) => {
   const [numero, setNumero] = useState('');
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
+  const [region, setRegion] = useState(null);
+  const [locationError, setLocationError] = useState(false);
+
+  const typingTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (isFormComplete()) {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      typingTimeoutRef.current = setTimeout(() => {
+        fetchCoordinates();
+      }, 1000);
+    }
+  }, [pais, provincia, ciudad, calle, numero]);
 
   const handleContinue = () => {
     const usuarioData = {
@@ -34,76 +50,78 @@ export const LocationHospital = (props) => {
 
   const fetchCoordinates = async () => {
     const address = `${calle} ${numero}, ${ciudad}, ${provincia}, ${pais}`;
+    const formattedAddress = encodeURIComponent(address);
+    const apiKey = `AIzaSyAPYG0ejrPF7v9yxjxc9C5O0-0zfoB1SGM`;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${formattedAddress}&key=${apiKey}`;
+
     try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
-      );
-      if (response.data && response.data.length > 0) {
-        const { lat, lon } = response.data[0];
-        setLongitude(lon);
-        setLatitude(lat);
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.results.length > 0) {
+        const location = data.results[0].geometry.location;
+        setLatitude(location.lat);
+        setLongitude(location.lng);
+
+        setRegion({
+          latitude: location.lat,
+          longitude: location.lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+
+        setLocationError(false);
       } else {
-        Alert.alert('Error', 'No se pudo obtener la ubicación. Verifica la dirección.');
+        setLocationError(true);
+        setLatitude(null);
+        setLongitude(null);
       }
     } catch (error) {
-      Alert.alert('Error', 'Ocurrió un problema al obtener la ubicación.');
+      console.error('Error fetching coordinates:', error);
+      setLocationError(true);
     }
   };
+
+  const handleTextInputChange = (text) => {};
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.welcomeText}>Ubicación</Text>
 
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Pais"
-          placeholderTextColor="white"
-          onChangeText={setPais}
-        />
-      </View>
+      {['Pais', 'Provincia', 'Ciudad', 'Calle', 'Numero'].map((placeholder, index) => (
+        <View style={styles.block} key={index}>
+          <Image source={ubicacionImage} style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder={placeholder}
+            placeholderTextColor="white"
+            onChangeText={(text) => {
+              if (placeholder === 'Pais') setPais(text);
+              else if (placeholder === 'Provincia') setProvincia(text);
+              else if (placeholder === 'Ciudad') setCiudad(text);
+              else if (placeholder === 'Calle') setCalle(text);
+              else setNumero(text.replace(/[^0-9]/g, ''));
+              handleTextInputChange(text);
+            }}
+            keyboardType={placeholder === 'Numero' ? 'numeric' : 'default'}
+            value={placeholder === 'Numero' ? numero : undefined}
+          />
+        </View>
+      ))}
 
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Provincia"
-          placeholderTextColor="white"
-          onChangeText={setProvincia}
-        />
-      </View>
-
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Ciudad"
-          placeholderTextColor="white"
-          onChangeText={setCiudad}
-        />
-      </View>
-
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Calle"
-          placeholderTextColor="white"
-          onChangeText={setCalle}
-        />
-      </View>
-
-      <View style={styles.block}>
-        <Image source={ubicacionImage} style={styles.inputIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Numero"
-          keyboardType="numeric"
-          placeholderTextColor="white"
-          onChangeText={setNumero}
-        />
-      </View>
+      {locationError && (
+        <Text style={styles.errorText}>No location found</Text>
+      )}
+      {latitude && longitude && (
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            region={region}
+          >
+            <Marker coordinate={{ latitude, longitude }} title="Ubicación del hospital" />
+          </MapView>
+        </View>
+      )}
 
       <TouchableOpacity
         onPress={handleContinue}
@@ -115,7 +133,6 @@ export const LocationHospital = (props) => {
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   welcomeText: {
@@ -176,15 +193,6 @@ const styles = StyleSheet.create({
   disabledButton: {
     backgroundColor: '#A8A8A880',
   },
-  mapButton: {
-    backgroundColor: '#BA181B',
-    borderRadius: 25,
-    padding: 15,
-    alignItems: 'center',
-    width: 270,
-    alignSelf: 'center',
-    marginTop: 15,
-  },
   mapContainer: {
     marginTop: 20,
     height: 300,
@@ -195,7 +203,14 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
-  }
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+  },
 });
 
 export default LocationHospital;
