@@ -14,9 +14,9 @@ const Hospital = (props) => {
     return <Text>No hay hospital seleccionado</Text>;
   }
 
-  const region = {
-    latitude: selectedHospital.latitude,
-    longitude: selectedHospital.longitude,
+  const initialRegion = {
+    latitude: parseFloat(selectedHospital.latitude),
+    longitude: parseFloat(selectedHospital.longitude),
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   };
@@ -27,21 +27,20 @@ const Hospital = (props) => {
         <Text style={styles.title}>DonaVida+</Text>
       </View>
       <Text style={styles.subtitle}>{selectedHospital.nombre}</Text>
-      {/* 
+      {
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialRegion={region}
+        initialRegion={initialRegion}
       >
         <Marker 
           title={selectedHospital.name} 
           coordinate={{
-            latitude: selectedHospital.latitude, 
-            longitude: selectedHospital.longitude
-          }} 
+            latitude: parseFloat(selectedHospital.latitude),
+            longitude: parseFloat(selectedHospital.longitude)}}
         />
       </MapView> 
-      */}
+      }
       <View style={styles.informacion}>
         <Text style={styles.texto}>Dirección: {selectedHospital.provincia}, {selectedHospital.ciudad}, {selectedHospital.calle}, {selectedHospital.numero}</Text>
         <Text style={styles.texto}>Distancia: X kilómetros</Text>

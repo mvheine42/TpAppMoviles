@@ -7,8 +7,8 @@ import { useHospitalContext } from './HospitalContext';
 export const Turnos = (props) => {
 
 
-  const [region, setRegion] = React.useState({latitude:0,
-    longitude:0,
+  const [region, setRegion] = React.useState({latitude: 37.78825,
+    longitude: -122.4324,
     latitudeDelta: 0.015,
     longitudeDelta: 0.0121})
 
@@ -94,7 +94,9 @@ export const Turnos = (props) => {
             <Text>Hora: {selectedTurn?.hora}</Text>
             <Text>Dona: {selectedTurn?.dona}</Text>
             <Text>Tipo: {selectedTurn?.tipo}</Text>
-            <MapView provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={region}></MapView>
+            <MapView provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={region}>
+              <Marker coordinate={region} title={selectedTurn?.hospital} />
+            </MapView>
             <TouchableOpacity onPress={closeTurnDetails}>
               <Text style={styles.closeButton}>Cerrar</Text>
             </TouchableOpacity>
