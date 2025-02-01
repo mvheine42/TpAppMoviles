@@ -20,7 +20,6 @@
 
 
   function StackNavigation(props) {
-    console.log('StackNavigation: ', props);
     return (
       <Stack.Navigator>
         <Stack.Screen name='HomeDelDonante' options={{ headerShown: false }}>
@@ -47,11 +46,13 @@
             <Hospital 
               {...props} 
               {...screenProps} 
-              route={route} // ✅ Ahora `route` se pasa correctamente
+              route={route}
             />
           )}
         </Stack.Screen>
-        <Stack.Screen name="QuieroDonar" component={QuieroDonar} options={{ headerShown: false }} />
+        <Stack.Screen name='QuieroDonar' options={{ headerShown: false }}>
+          {(screenProps) => <QuieroDonar {...props} {...screenProps} />}
+        </Stack.Screen>
         <Stack.Screen name="GraciasScreen" component={GraciasScreen} 
           options={{ tabBarStyle: { display: 'none' }, headerShown: false }}
         />

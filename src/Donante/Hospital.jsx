@@ -4,11 +4,9 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 
 const Hospital = (props) => {
 
-  const selectedPedidoHospital = props.route.params?.pedidoHospital
+  const selectedPedidoHospital = props.route.params?.pedidoHospital;
   const selectedHospital = props.route.params?.pedidoHospital.hospital;
-
-  console.log('PedidoHospital: ' , selectedPedidoHospital);
-  console.log('Hospital: ', selectedHospital);
+  const donacion = props.route.params?.pedidoHospital.tipoDonacion + ': ' + props.route.params?.pedidoHospital.tipoSangre + ' ' + props.route.params?.pedidoHospital.factorRh;
 
   if (!selectedHospital) {
     return <Text>No hay hospital seleccionado</Text>;
@@ -42,11 +40,18 @@ const Hospital = (props) => {
       </MapView> 
       }
       <View style={styles.informacion}>
-        <Text style={styles.texto}>Dirección: {selectedHospital.provincia}, {selectedHospital.ciudad}, {selectedHospital.calle}, {selectedHospital.numero}</Text>
+        <Text style={styles.texto}>{selectedHospital.provincia}, {selectedHospital.ciudad}, {selectedHospital.calle}, {selectedHospital.numero}</Text>
         <Text style={styles.texto}>Distancia: X kilómetros</Text>
-        <Text style={styles.texto}> {selectedPedidoHospital.descripcion} </Text>
       </View>
-      <TouchableOpacity style={styles.donarButton} onPress={() => props.navigation.navigate('QuieroDonar')}>
+      <View style={styles.infoPedido}>
+        <Text style={styles.textoPedido}>Donacion para:
+                  {selectedPedidoHospital.tipoDonacion === 'Sangre' 
+                    ? `  ${selectedPedidoHospital.tipoDonacion}: ${selectedPedidoHospital.tipoSangre} ${selectedPedidoHospital.factorRh}` 
+                    : selectedPedidoHospital.tipoDonacion}
+        </Text>
+        <Text style={styles.textoPedido}>{selectedPedidoHospital.descripcion} </Text>
+      </View>
+      <TouchableOpacity style={styles.donarButton} onPress={() => props.navigation.navigate('QuieroDonar' , { hospital: selectedHospital, idPedidoHospital: selectedPedidoHospital.id, tipoDonacion: donacion })}>
         <Text style={styles.donarButtonText}>Quiero donar</Text>
       </TouchableOpacity>
     </View>
@@ -102,18 +107,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   informacion:{
-    alignItems: 'center',
+    alignItems: 'left',
   },
   texto: {
-    fontSize: 18,
+    marginBottom: 5,
+    fontSize: 16,
     color: 'grey',
     marginHorizontal: 10,
     justifyContent: 'center',
   },
+  infoPedido: {
+    padding: 2,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  textoPedido: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+    fontSize: 19,
+    color: 'black',
+    justifyContent: 'center',
+  },
   map: {
-    width: '95%',
-    height: '35%',
-    marginLeft: 10,
+    width: '93%',
+    height: '45%',
+    marginLeft: 15,
     marginBottom: 20,
     marginTop: 10,
   }  

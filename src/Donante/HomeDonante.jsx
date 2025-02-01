@@ -100,8 +100,8 @@ const Home = (props) => {
   
 
     const handleHospitalPress = (hospital) => {
-      console.log('Pedido de Hospital seleccionado:', hospital); 
-      props.navigation.navigate('HospitalDonante', { pedidoHospital: hospital });
+      //console.log('Pedido de Hospital seleccionado:', hospital); 
+      props.navigation.navigate('HospitalDonante', { pedidoHospital: hospital});
     };
 
     const renderItem = ({ item }) => (
