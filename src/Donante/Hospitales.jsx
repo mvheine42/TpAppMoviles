@@ -1,35 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import Geolocation from '@react-native-community/geolocation';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useHospitalContext } from './HospitalContext'; // Importamos el contexto
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useHospitalContext } from './HospitalContext';
+
 const API_URL = "http://localhost:3000";
 
 const getDistanceInKilometers = (lat1, lon1, lat2, lon2) => {
-        const degreesToRadians = (degrees) => {
-          return degrees * (Math.PI / 180);
-      }
-
-      const EARTH_RADIUS = 6371; // Radio de la Tierra en kilómetros
-
-      const dLat = degreesToRadians(lat2 - lat1);
-      const dLon = degreesToRadians(lon2 - lon1);
-
-      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.sin(dLon / 2) * Math.sin(dLon / 2) * 
-                Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2));
-
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const distancia = EARTH_RADIUS * c; // Distancia en kilómetros
-
-      return distancia;
+  const degreesToRadians = (degrees) => degrees * (Math.PI / 180);
+  const EARTH_RADIUS = 6371;
+  const dLat = degreesToRadians(lat2 - lat1);
+  const dLon = degreesToRadians(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(degreesToRadians(lat1)) * Math.cos(degreesToRadians(lat2)) * Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return EARTH_RADIUS * c;
 };
 
 export const Hospitales = (props) => {
   const { setHospital } = useHospitalContext();
   const [position, setPosition] = useState(null);
-  const [filteredData, setFilteredData] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
   const [hospitales, setHospitales] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
 
   const requestBody = {
     tipoDonacion: props.route.params.tipoDonacion,
@@ -37,101 +28,77 @@ export const Hospitales = (props) => {
     factorRh: props.route.params.factorRh,
   };
 
-  React.useEffect(() => {      
-    fetchHospitales();
+  useEffect(() => {
     handleGetCurrentPosition();
-    obtenerHospitales();
   }, []);
-    
+
   const handleGetCurrentPosition = () => {
-      Geolocation.getCurrentPosition(
-        (pos) => {
-          setPosition(pos);
-        },
-        (error) => {
-          console.log(error);
-        },
-        { enableHighAccuracy: true, maximumAge: 100 }
-      );
+    Geolocation.getCurrentPosition(
+      (pos) => {
+        setPosition(pos);
+        fetchHospitales(pos);
+      },
+      (error) => console.log(error),
+      { enableHighAccuracy: true, maximumAge: 1000 }
+    );
   };
 
-
-   const obtenerHospitales = async () => {
-
-      if (position && position.coords) {
-        const hospitalsWithDistance = hospitales.map((hospital) => ({
-          ...hospital,
-          distance: getDistanceInKilometers(
-            position.coords.latitude, position.coords.longitude,
-            hospital.latitude,
-            hospital.longitude
-          ),
-        }));
-  
-        const sortedHospitals = hospitalsWithDistance.sort((a,b) => a.distance - b.distance);
-  
-        setFilteredData(sortedHospitals);
-      } else {
-        console.log('No se ha obtenido la ubicación del usuario.'); }
-  }
-
-  const fetchHospitales = async () => {  
+  const fetchHospitales = async (pos) => {
+    setLoading(true); // Start loading
     try {
-      let response = await fetch(`${API_URL}/hospital/getPedidosPorParametros/${props.user.user.id}`, {
-        method: "POST", 
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await fetch(`${API_URL}/hospital/getPedidosPorParametros/${props.user.user.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
-      }); 
+      });
 
       if (response.status === 404) {
         setErrorMessage("No hay pedidos disponibles con esta información.");
-        setHospitales([]); 
+        setHospitales([]);
+        setLoading(false); // Stop loading
         return;
       }
-  
-      if (!response.ok) {
-        throw new Error("Error al obtener hospitales");
-      }
-  
+
+      if (!response.ok) throw new Error("Error al obtener hospitales");
+
       let hospitales = await response.json();
+
+      if (pos && pos.coords) {
+        hospitales = hospitales.map((hospital) => ({
+          ...hospital,
+          distance: getDistanceInKilometers(
+            pos.coords.latitude,
+            pos.coords.longitude,
+            parseFloat(hospital.hospital.latitude),
+            parseFloat(hospital.hospital.longitude)
+          ).toFixed(2),
+        })).sort((a, b) => a.distance - b.distance);
+      }
+
       setHospitales(hospitales);
       setErrorMessage("");
-
     } catch (error) {
       console.error("Error en fetching Hospitales: ", error);
+    } finally {
+      setLoading(false); // Stop loading after fetching
     }
   };
-  
+
   const handleHospitalPress = (hospital) => {
     setHospital(hospital);
-    props.navigation.navigate('HospitalDonante', { pedidoHospital: hospital})
+    props.navigation.navigate('HospitalDonante', { pedidoHospital: hospital });
   };
 
-  const renderItem = ({ item }) => {
-    const donacionText =
-      item.tipoDonacion === "Sangre"
-        ? `Sangre: ${item.tipoSangre} ${item.factorRh}`
-        : item.tipoDonacion;
-  
-    return (
-      <TouchableOpacity onPress={() => handleHospitalPress(item)}>
-        <View style={styles.item}>
-          <Text style={styles.itemTitle}>{item.hospital.nombre}</Text>
-          <Text style={styles.itemPedido}>Tipo de Pedido: {donacionText}</Text>
-          <Text style={styles.itemDescription}>{item.descripcion}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      {errorMessage ? (
+      {loading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="black" />
+        </View>
+      ) : errorMessage ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{errorMessage}</Text>
         </View>
@@ -139,11 +106,14 @@ export const Hospitales = (props) => {
         <ScrollView>
           <View style={styles.columnContainer}>
             {hospitales.map((item) => (
-              <View style={styles.columnItem} key={item.id}>
+              <TouchableOpacity key={item.id} onPress={() => handleHospitalPress(item)}>
                 <View style={styles.item}>
-                  {renderItem({ item })}
+                  <Text style={styles.itemTitle}>{item.hospital.nombre}</Text>
+                  <Text style={styles.itemPedido}>Tipo de Pedido: {item.tipoDonacion === "Sangre" ? `Sangre: ${item.tipoSangre} ${item.factorRh}` : item.tipoDonacion}</Text>
+                  <Text style={styles.itemDescription}>{item.descripcion}</Text>
+                  <Text style={styles.itemDistancia}>Distancia: {item.distance} km</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         </ScrollView>
@@ -164,41 +134,36 @@ const styles = StyleSheet.create({
     height: '14%',
     backgroundColor: 'rgb(245, 243, 244)',
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.34,
     shadowRadius: 6.27,
     elevation: 10,
-    position: 'relative',
   },
   title: {
     fontSize: 40,
     fontWeight: 'bold',
     color: '#A4161A',
     textAlign: 'center',
-    textShadowColor: '#A4161A',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 4,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
   columnContainer: {
     margin: 10,
   },
-  columnItem: {
-    marginBottom: 15,
-    width: '95%',
-    alignSelf: 'center',
-  },
   item: {
     backgroundColor: '#ECECEC',
     padding: 10,
-    borderRadius: 10
+    borderRadius: 10,
+    marginBottom: 15,
   },
   itemTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#A4161A'
+    color: '#A4161A',
   },
   itemPedido: {
     marginTop: 10,
@@ -211,8 +176,9 @@ const styles = StyleSheet.create({
     color: 'gray',
   },
   itemDistancia: {
+    marginTop: 5,
     fontSize: 14,
-    color: 'gray'
+    color: '#555',
   },
   errorContainer: {
     padding: 20,
