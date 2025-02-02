@@ -72,25 +72,32 @@
     );
   }
 
-  function HospitalesStackNavigation() {
+  function HospitalesStackNavigation(props) {
     return (
       <Stack.Navigator>
-        <Stack.Screen name="TiposHospital" component={TiposHospital} options={{ headerShown: false }} />
-        <Stack.Screen name="ListaDeHospitales" component={ListaDeHospitales} options={{ headerShown: false }} />
+        <Stack.Screen name='TiposHospital' options={{ headerShown: false }}>
+          {(screenProps) => <TiposHospital {...props} {...screenProps} />}
+        </Stack.Screen>
+        <Stack.Screen name='ListaDeHospitales' options={{ headerShown: false }}>
+          {(screenProps) => <ListaDeHospitales {...props} {...screenProps} />}
+        </Stack.Screen>
       </Stack.Navigator>
     );
   }
 
-  function ListaDeHospitales() {
+  function ListaDeHospitales(props) {
     return (
       <Stack.Navigator>
-        <Stack.Screen name="HospitalesDonante" component={Hospitales} options={{ headerShown: false }} />
-        <Stack.Screen name="Hospital" component={HospitalStackNavigation} options={{ headerShown: false }} />
+        <Stack.Screen name='HospitalesDonante' options={{ headerShown: false }}>
+          {(screenProps) => <HospitalesDonante {...props} {...screenProps} />}
+        </Stack.Screen>
+        <Stack.Screen name='Hospital' options={{ headerShown: false }}>
+          {(screenProps) => <Hospital {...props} {...screenProps} />}
+        </Stack.Screen>
       </Stack.Navigator>
     );
   }
 
- 
 
   export const TabScreenDon = (props) => {
     const [activeTab, setActiveTab] = React.useState(null);
@@ -140,8 +147,7 @@
           </Tab.Screen>
 
           <Tab.Screen 
-            name="Hospitales" 
-            component={HospitalesStackNavigation} 
+            name="Hospitales"  
             options={{
               headerShown: false,
               tabBarIcon: ({ focused }) => (
@@ -156,7 +162,9 @@
               ),
               tabBarOnPress: () => changeTab('Hospitales'),
             }}
-          />
+            >
+            {() => <HospitalesStackNavigation {...props} />}
+          </Tab.Screen>
 
           <Tab.Screen 
             name="Perfil" 
