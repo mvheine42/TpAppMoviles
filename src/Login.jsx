@@ -7,16 +7,39 @@ const cerrarImage = require('../imagenes/candado.png');
 const hideImage = require('../imagenes/hide.png');
 const viewImage = require('../imagenes/view.png');
 
-
+const ErrorPopup = ({ message, onClose }) => {
+  return (
+    <View style={styles.errorPopup}>
+      <Text style={styles.errorText}>{message}</Text>
+      <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <Text style={styles.closeButtonText}>Cerrar</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const Login = (props) => {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [showPassword, setShowPassword] = React.useState(false);
+    const [error, setError] = React.useState(""); 
 
     const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
     };
+
+    const handleLoginPress = async () => {
+      try {
+          await props.handleLogin({ email, password });
+      } catch (error) {
+          setError(error.message || "Error desconocido");
+      }
+   };
+
+   const handleCloseErrorPopup = () => {
+    setError("");
+  };
+  
 
     return (
         <ScrollView style={styles.container}>
@@ -53,7 +76,7 @@ const Login = (props) => {
             </View>
 
 
-            <TouchableOpacity onPress={() => props.handleLogin({email, password})}
+            <TouchableOpacity onPress={handleLoginPress}
               style={styles.loginButton}>
               <Text style={styles.buttonText}>Iniciar Sesion</Text>
             </TouchableOpacity>
@@ -63,6 +86,9 @@ const Login = (props) => {
               <Text style={styles.createAccountText} onPress={() => props.navigation.navigate('TipoDeUsuario')}>Crea tu cuenta</Text>
             </View>
           </View>
+
+          {error ? <ErrorPopup message={error} onClose={handleCloseErrorPopup} /> : null}
+
         </ScrollView>
       );
     };
@@ -167,6 +193,34 @@ const styles = StyleSheet.create({
       width: 20,
       height: 20,
     },
+    errorPopup: {
+    position: "absolute",
+    top: "50%",
+    left: "10%",
+    right: "10%",
+    padding: 30,
+    backgroundColor: "rgba(63, 0, 0, 0.89)",
+    borderRadius: 8,
+    alignItems: "center",
+    zIndex: 1,
+  },
+  errorText: {
+    color: "#fff",
+    fontSize: 16,
+    marginTop: 15,
+    marginBottom: 30,
+    textAlign: "left",
+  },
+  closeButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "#333",
+    fontSize: 16,
+  },
 });
 
 export default Login;
