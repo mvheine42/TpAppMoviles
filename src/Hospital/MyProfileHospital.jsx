@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, Dimensions, TouchableOpacity} from 'react-native';
 
 const hospitalImage = require('../../imagenes/hospital.png');
+const logOutImage = require('../../imagenes/icons8-logout-100-2.png');
+
 
 export const MyProfileHospital = (props) => {
   const [editedHospital] = useState({ ...props.user.user });
+  const [loggingOut, setLoggingOut] = useState(false);
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={() => props.logOut()} // Trigger the logout function
+          disabled={loggingOut}>
+          <Image source={logOutImage} style={styles.logOutImage} />
+        </TouchableOpacity>
           <View style={styles.iconContainer}>
             <View style={styles.imageWrapper}>
               <Image source={hospitalImage} style={styles.hospitalImage} />
@@ -122,6 +131,16 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 20,
     color: 'black',
+  },
+  logoutButton: {
+    position: 'absolute',
+    left: 10,
+    top: 10,
+    zIndex: 1,
+  },
+  logOutImage: {
+    width: 30, // Ajusta según tus preferencias
+    height: 30, // Ajusta según tus preferencias
   },
 });
 
