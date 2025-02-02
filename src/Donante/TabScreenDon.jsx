@@ -78,8 +78,11 @@
         <Stack.Screen name='TiposHospital' options={{ headerShown: false }}>
           {(screenProps) => <TiposHospital {...props} {...screenProps} />}
         </Stack.Screen>
-        <Stack.Screen name='ListaDeHospitales' options={{ headerShown: false }}>
-          {(screenProps) => <ListaDeHospitales {...props} {...screenProps} />}
+        <Stack.Screen name='HospitalesDonante' options={{ headerShown: false }}>
+          {(screenProps) => <Hospitales {...props} {...screenProps} />}
+        </Stack.Screen>
+        <Stack.Screen name='Hospital' options={{ headerShown: false }}>
+          {(screenProps) => <Hospital {...props} {...screenProps} />}
         </Stack.Screen>
       </Stack.Navigator>
     );
@@ -89,7 +92,7 @@
     return (
       <Stack.Navigator>
         <Stack.Screen name='HospitalesDonante' options={{ headerShown: false }}>
-          {(screenProps) => <HospitalesDonante {...props} {...screenProps} />}
+          {(screenProps) => <Hospitales {...props} {...screenProps} />}
         </Stack.Screen>
         <Stack.Screen name='Hospital' options={{ headerShown: false }}>
           {(screenProps) => <Hospital {...props} {...screenProps} />}

@@ -2,45 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Geolocation from '@react-native-community/geolocation';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useHospitalContext } from './HospitalContext'; // Importamos el contexto
-
-
-const fetchHospitales = async () => {
-  try {
-    const response = await fetch(
-      'https://cdn.buenosaires.gob.ar/datosabiertos/datasets/ministerio-de-salud/hospitales/hospitales.geojson'
-    );
-
-    if (!response.ok) {
-      throw new Error('Error al obtener la información de hospitales');
-    }
-
-    const data = await response.json();
-
-    if (data && data.features) {
-      const hospitalesData = data.features.map((feature) => {
-        const { ID, NOMBRE, DOM_NORMA, TELEFONO } = feature.properties;
-        const [longitude, latitude] = feature.geometry.coordinates;
-
-        return {
-          id: ID,
-          name: NOMBRE,
-          address: DOM_NORMA,
-          telephone: TELEFONO,
-          latitude,
-          longitude,
-        };
-      });
-
-      return hospitalesData;
-    } else {
-      console.error('La respuesta no contiene datos válidos');
-      return [];
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    return [];
-  }
-};
+const API_URL = "http://localhost:3000";
 
 const getDistanceInKilometers = (lat1, lon1, lat2, lon2) => {
         const degreesToRadians = (degrees) => {
@@ -63,13 +25,25 @@ const getDistanceInKilometers = (lat1, lon1, lat2, lon2) => {
 };
 
 export const Hospitales = (props) => {
-  const { setHospital } = useHospitalContext(); // Usamos el setHospital del contexto
+  const { setHospital } = useHospitalContext();
   const [position, setPosition] = useState(null);
-  const [filteredData, setFilteredData] = useState([]); // Lista filtrada de hospitales por distancia
+  const [filteredData, setFilteredData] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const [hospitales, setHospitales] = useState([]);
 
-  useEffect(() => {
-    const handleGetCurrentPosition = () => {
+  const requestBody = {
+    tipoDonacion: props.route.params.tipoDonacion,
+    tipoSangre: props.route.params.tipoSangre,
+    factorRh: props.route.params.factorRh,
+  };
+
+  React.useEffect(() => {      
+    fetchHospitales();
+    handleGetCurrentPosition();
+    obtenerHospitales();
+  }, []);
+    
+  const handleGetCurrentPosition = () => {
       Geolocation.getCurrentPosition(
         (pos) => {
           setPosition(pos);
@@ -79,20 +53,13 @@ export const Hospitales = (props) => {
         },
         { enableHighAccuracy: true, maximumAge: 100 }
       );
-    };
+  };
 
-    handleGetCurrentPosition();
 
-  }, []); // Se ejecuta solo al montar el componente
-  
-  useEffect(() => {
-    const obtenerHospitales = async () => {
-      const hospitalesData = await fetchHospitales();
-      setHospitales(hospitalesData);
+   const obtenerHospitales = async () => {
 
       if (position && position.coords) {
-        // Calcular la distancia y ordenar hospitales por distancia
-        const hospitalsWithDistance = hospitalesData.map((hospital) => ({
+        const hospitalsWithDistance = hospitales.map((hospital) => ({
           ...hospital,
           distance: getDistanceInKilometers(
             position.coords.latitude, position.coords.longitude,
@@ -105,42 +72,82 @@ export const Hospitales = (props) => {
   
         setFilteredData(sortedHospitals);
       } else {
-        console.log('No se ha obtenido la ubicación del usuario.'); }}
+        console.log('No se ha obtenido la ubicación del usuario.'); }
+  }
 
-    obtenerHospitales();
-  }, [position]);
+  const fetchHospitales = async () => {  
+    try {
+      let response = await fetch(`${API_URL}/hospital/getPedidosPorParametros/${props.user.user.id}`, {
+        method: "POST", 
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      }); 
 
+      if (response.status === 404) {
+        setErrorMessage("No hay pedidos disponibles con esta información.");
+        setHospitales([]); 
+        return;
+      }
+  
+      if (!response.ok) {
+        throw new Error("Error al obtener hospitales");
+      }
+  
+      let hospitales = await response.json();
+      setHospitales(hospitales);
+      setErrorMessage("");
+
+    } catch (error) {
+      console.error("Error en fetching Hospitales: ", error);
+    }
+  };
+  
   const handleHospitalPress = (hospital) => {
-    setHospital(hospital);  // Aquí estamos actualizando el contexto con el hospital seleccionado
-    props.navigation.navigate('Hospital', { hospital });  // Navega a la pantalla 'Hospital'
+    setHospital(hospital);
+    props.navigation.navigate('HospitalDonante', { pedidoHospital: hospital})
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleHospitalPress(item)}>
-      <View style={styles.item}>
-        <Text style={styles.itemTitle}>{item.name}</Text>
-        <Text style={styles.itemAddress}>{item.address}</Text>
-        <Text style={styles.itemDistancia}>Distancia: {item.distance.toFixed(0)} kilómetros</Text>
-      </View>
-    </TouchableOpacity>
-  );  
-
+  const renderItem = ({ item }) => {
+    const donacionText =
+      item.tipoDonacion === "Sangre"
+        ? `Sangre: ${item.tipoSangre} ${item.factorRh}`
+        : item.tipoDonacion;
+  
+    return (
+      <TouchableOpacity onPress={() => handleHospitalPress(item)}>
+        <View style={styles.item}>
+          <Text style={styles.itemTitle}>{item.hospital.nombre}</Text>
+          <Text style={styles.itemPedido}>Tipo de Pedido: {donacionText}</Text>
+          <Text style={styles.itemDescription}>{item.descripcion}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      <ScrollView>
-        <View style={styles.columnContainer}>
-          {filteredData.map((item) => (
-            <View style={styles.columnItem} key={item.id}>
-              <View style={styles.item}>
-                {renderItem({ item })}
-              </View>
-            </View>
-          ))}
+      {errorMessage ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
         </View>
-      </ScrollView>
+      ) : (
+        <ScrollView>
+          <View style={styles.columnContainer}>
+            {hospitales.map((item) => (
+              <View style={styles.columnItem} key={item.id}>
+                <View style={styles.item}>
+                  {renderItem({ item })}
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -189,18 +196,32 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   itemTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#A4161A'
   },
-  itemAddress: {
-    marginTop:10,
+  itemPedido: {
+    marginTop: 10,
     fontSize: 16,
+    color: 'black',
+  },
+  itemDescription: {
+    marginTop: 10,
+    fontSize: 14,
     color: 'gray',
   },
   itemDistancia: {
     fontSize: 14,
     color: 'gray'
+  },
+  errorContainer: {
+    padding: 20,
+    alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

@@ -4,14 +4,14 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 export const TiposHospital = (props) => {
   const data = [
     { id: '1', name: 'Donaciones para ti', tipo: null },
-    { id: '2', name: 'Donaciones de Plaquetas', tipo: 'plaquetas' },
-    { id: '3', name: 'Donaciones de Médula', tipo: 'medula' },
-    { id: '4', name: 'Donaciones de Sangre 0+', tipo: 'sangre', sangre: '0', rh: '+' },
-    { id: '5', name: 'Donaciones de Sangre 0-', tipo: 'sangre', sangre: '0', rh: '-' },
-    { id: '7', name: 'Donaciones de Sangre A+', tipo: 'sangre', sangre: 'A', rh: '+' },
-    { id: '8', name: 'Donaciones de Sangre A-', tipo: 'sangre', sangre: 'A', rh: '-' },
-    { id: '9', name: 'Donaciones de Sangre B+', tipo: 'sangre', sangre: 'B', rh: '+' },
-    { id: '10', name: 'Donaciones de Sangre B-', tipo: 'sangre', sangre: 'B', rh: '-' },
+    { id: '2', name: 'Donaciones de Plaquetas', tipo: 'Plaquetas' },
+    { id: '3', name: 'Donaciones de Médula', tipo: 'Médula' },
+    { id: '4', name: 'Donaciones de Sangre 0+', tipo: 'Sangre', Sangre: 'O', rh: '+' },
+    { id: '5', name: 'Donaciones de Sangre 0-', tipo: 'Sangre', Sangre: 'O', rh: '-' },
+    { id: '7', name: 'Donaciones de Sangre A+', tipo: 'Sangre', Sangre: 'A', rh: '+' },
+    { id: '8', name: 'Donaciones de Sangre A-', tipo: 'Sangre', Sangre: 'A', rh: '-' },
+    { id: '9', name: 'Donaciones de Sangre B+', tipo: 'Sangre', Sangre: 'B', rh: '+' },
+    { id: '10', name: 'Donaciones de Sangre B-', tipo: 'Sangre', Sangre: 'B', rh: '-' },
   ];
 
   const colors = ['rgb(102, 7, 8)', 'rgb(164, 22, 26)', 'rgb(186, 24, 27)', 'rgb(229, 56, 59)'];
@@ -23,15 +23,15 @@ export const TiposHospital = (props) => {
       factorRh: null,
     };
   
-    if (item.tipo === 'plaquetas' || item.tipo === 'medula') {
+    if (item.tipo === 'Plaquetas' || item.tipo === 'Médula') {
       params.tipoDonacion = item.tipo;
-    } else if (item.tipo === 'sangre') {
-      params.tipoDonacion = 'sangre';
-      params.tipoSangre = item.sangre;
+    } else if (item.tipo === 'Sangre') {
+      params.tipoDonacion = 'Sangre';
+      params.tipoSangre = item.Sangre;
       params.factorRh = item.rh;
     }
   
-    props.navigation.navigate('ListaDeHospitales', params);
+    props.navigation.navigate('HospitalesDonante', params);
   };
   
 
