@@ -57,8 +57,8 @@ const Home = (props) => {
       pedidos = await pedidos.json();
       setPedidos(pedidos);
     }
-  
-  
+
+
     useEffect(() => {
       const handleGetCurrentPosition = () => {
         Geolocation.getCurrentPosition(
@@ -78,7 +78,7 @@ const Home = (props) => {
   
     useEffect(() => {
       if (position) {
-        const destino = { latitude: 40.7128, longitude: -74.0060 }; // esto es lo q necesitamos de los htales. 
+        const destino = {} ; // esto es lo q necesitamos de los htales. 
         const distanciaCalculada = calcularDistancia(position.coords.latitude, position.coords.longitude, destino.latitude, destino.longitude);
         setDistancia(distanciaCalculada);
       }
@@ -104,24 +104,37 @@ const Home = (props) => {
       props.navigation.navigate('HospitalDonante', { pedidoHospital: hospital});
     };
 
-    const renderItem = ({ item }) => (
-      <TouchableOpacity onPress={() => handleHospitalPress(item)}>
-        <View style={styles.item}>
-        <Text style={styles.itemText}>
-            {item.tipoDonacion === 'Sangre' 
-              ? `${item.tipoDonacion}: ${item.tipoSangre} ${item.factorRh}` 
-              : item.tipoDonacion}
-          </Text>
+    const renderItem = ({ item }) => {
+      const distancia = position
+        ? calcularDistancia(
+            position.coords.latitude,
+            position.coords.longitude,
+            item.hospital.latitude,
+            item.hospital.longitude
+          )
+        : null;
+
+      return (
+        <TouchableOpacity onPress={() => handleHospitalPress(item)}>
+          <View style={styles.item}>
+            <Text style={styles.itemText}>
+              {item.tipoDonacion === 'Sangre' 
+                ? `${item.tipoDonacion}: ${item.tipoSangre} ${item.factorRh}` 
+                : item.tipoDonacion}
+            </Text>
             <View style={styles.itemContent}>
               <View style={styles.itemTextContainer}>
-                <Text style= {styles.itemInfoTextHospital}>{item.hospital.nombre}</Text>
+                <Text style={styles.itemInfoTextHospital}>{item.hospital.nombre}</Text>
                 <Image source={{ uri: image }} style={styles.itemImage} />
-                <Text style= {styles.itemInfoText}>Ubicado a {distancia ? distancia.toFixed(2) : 'Cargando...'}km de tu ubicación actual</Text>
+                <Text style={styles.itemInfoText}>
+                  Ubicado a {distancia ? distancia.toFixed(2) : 'Cargando...'} km de tu ubicación actual
+                </Text>
               </View>
             </View>
-        </View>
-      </TouchableOpacity>
-    );
+          </View>
+        </TouchableOpacity>
+      );
+    };
   
     const [showModal, setShowModal] = useState(false);
   
