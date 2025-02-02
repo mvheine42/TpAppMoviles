@@ -16,18 +16,18 @@ const formatDate = (dateString) => {
 export const PedidosEnCurso = (props) => {
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
-  const [pedidos, setPedidos] = React.useState([])
+  const [pedidos, setPedidos] = React.useState([]);
 
   React.useEffect(() => {
     fetchPedidos();
-  }, [])
+  }, []);
 
   const fetchPedidos = async () => {
-    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`)
-    pedidos = await pedidos.json()
-    setPedidos(pedidos)
-  }
-  
+    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
+    pedidos = await pedidos.json();
+    setPedidos(pedidos);
+  };
+
   const navigation = useNavigation();
 
   const cancelarPedido = (id) => {
@@ -35,10 +35,27 @@ export const PedidosEnCurso = (props) => {
     setConfirmationVisible(true);
   };
 
-  const confirmCancellation = () => {
-    setPedidos((prevPedidos) => prevPedidos.filter((pedido) => pedido.id !== selectedPedido));
-    setSelectedPedido(null);
-    setConfirmationVisible(false);
+  const confirmCancellation = async () => {
+    try {
+      console.log(selectedPedido);
+      const response = await fetch(`${API_URL}/hospital/deletePedido/${selectedPedido}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        setPedidos((prevPedidos) => prevPedidos.filter((pedido) => pedido.id !== selectedPedido));
+      } else {
+        console.error('Failed to cancel pedido:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error cancelling pedido:', error);
+    } finally {
+      setSelectedPedido(null);
+      setConfirmationVisible(false);
+    }
   };
 
   const cancelCancellation = () => {
@@ -47,14 +64,14 @@ export const PedidosEnCurso = (props) => {
   };
 
   const renderPedido = ({ item }) => {
-    const { id, tipoDonacion, fechaDesde, fechaHasta, tipoSangre, factorRh, descripcion} = item;
+    const { id, tipoDonacion, fechaDesde, fechaHasta, tipoSangre, factorRh, descripcion } = item;
     const fechaDesdeFormateada = formatDate(fechaDesde);
     const fechaHastaFormateada = formatDate(fechaHasta);
-  
+
     return (
       <View style={styles.pedidoContainer}>
         <View style={styles.pedidoInfo}>
-          <Text style={styles.pedidoTitle}>{id + ": "}{tipoDonacion}</Text>
+          <Text style={styles.pedidoTitle}>{tipoDonacion}</Text>
           <TouchableOpacity onPress={() => cancelarPedido(id)}>
             <Image source={trashImage} style={styles.trashIcon} />
           </TouchableOpacity>
@@ -74,17 +91,22 @@ export const PedidosEnCurso = (props) => {
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => {
-          navigation.navigate('RequestHospital'); // Cambia 'RequestHospital' por el nombre de tu componente de agregar pedido
+          navigation.navigate('RequestHospital');
         }}
       >
         <Text style={styles.addButtonText}>+ Agregar Pedido</Text>
       </TouchableOpacity>
       <Text style={styles.subtitle}>Pedidos Activos</Text>
-      <FlatList
-        data={pedidos}
-        keyExtractor={(item) => item.id}
-        renderItem={renderPedido}
-      />
+
+      {pedidos.length > 0 ? (
+        <FlatList
+          data={pedidos}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderPedido}
+        />
+      ) : (
+        <Text style={styles.noPedidosText}>No hay pedidos activos.</Text>
+      )}
 
       <Modal isVisible={isConfirmationVisible}>
         <View style={styles.confirmationModal}>
@@ -113,13 +135,13 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: 'left', // Cambio de 'center' a 'left'
+    textAlign: 'left',
     color: '#A4161A',
   },
   subtitle: {
     fontSize: 22,
     marginBottom: 20,
-    textAlign: 'left', // Cambio de 'center' a 'left'
+    textAlign: 'left',
     color: '#A4161A',
   },
   addButton: {
@@ -153,20 +175,17 @@ const styles = StyleSheet.create({
     color: '#A4161A',
   },
   pedidoText: {
-    alignItems: 'center',
     marginBottom: 5,
     fontSize: 18,
     color: '#333',
   },
   pedidoFechaText: {
-    alignItems: 'center',
     marginBottom: 5,
     fontSize: 18,
     color: '#333',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   descripcionText: {
-    alignItems: 'center',
     marginBottom: 5,
     fontSize: 18,
     color: '#333',
@@ -198,6 +217,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#A4161A',
     fontWeight: 'bold',
+  },
+  noPedidosText: {
+    fontSize: 20,
+    color: '#333',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

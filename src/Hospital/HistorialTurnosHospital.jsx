@@ -26,9 +26,16 @@ const HistorialTurnosHospital = (props) => {
     return `${year}-${month}-${day}`;
   };
 
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
   const fetchTurnsFromServer = async () => {
     try {
-      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalId/${props.user.user.id}`);
+      const response = await fetch(`${API_URL}/hospital/getTurnosByHospitalId/${props.user.user.id}`);
       const data = await response.json();
       setHistorialTurnosData(data);
     } catch (error) {
@@ -83,7 +90,7 @@ const HistorialTurnosHospital = (props) => {
               <View style={styles.turnInfo}>
                 <Text style={styles.turnText}>Paciente: {item.donante.nombre} {item.donante.apellido}</Text>
                 <Text style={styles.turnText}>Donación: {item.pedidoHospital.tipoDonacion}</Text>
-                <Text style={styles.turnText}>Hora: {item.hora}</Text>
+                <Text style={styles.turnText}>Hora: {formatTime(item.fecha)}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -164,6 +171,8 @@ const HistorialTurnosHospital = (props) => {
       padding: 20,
       borderRadius: 10,
       marginBottom: 10,
+      marginTop: 10,
+      marginRight: 10,
     },
     turnInfo: {
       flex: 1,

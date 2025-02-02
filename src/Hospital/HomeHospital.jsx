@@ -17,16 +17,24 @@ const formatDate = (dateString) => {
   return formattedDate;
 };
 
-const API_URL = "http://localhost:3000"
+const formatTime = (dateString) => {
+  const date = new Date(dateString);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
 
+
+const API_URL = "http://localhost:3000"
 
 const HomeHospital = (props) => {
   const [pedidos, setPedidos] = React.useState([]);
   const [turnos, setTurnos] = React.useState([]);
+  const navigation = useNavigation();
 
-    React.useEffect(() => {
-      fetchTurnos();
-      fetchPedidos();
+  React.useEffect(() => {
+    fetchTurnos();
+    fetchPedidos();
   }, [])
 
   const fetchPedidos = async () => {
@@ -41,7 +49,6 @@ const HomeHospital = (props) => {
     setTurnos(turnos);
   }
 
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -52,36 +59,47 @@ const HomeHospital = (props) => {
       </View>
 
       <Text style={styles.sectionTitle}>Turnos:</Text>
-      <FlatList
-        horizontal={true}
-        data={turnos}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.turnBlock}>
-            <Text style={styles.turnInfoText}>Número de pedido: {item.idPedidoHospital}</Text>
-            <Text style={styles.turnInfoText}>Fecha: {formatDate(item.fecha)}</Text>
-            <Text style={styles.turnInfoText}>Hora: {item.hora}hs</Text>
-            <Text style={styles.turnInfoText}>Paciente: {item.donante.nombre} {item.donante.apellido}</Text>
-            <Text style={styles.turnInfoText}>Tipo de Sangre: {item.donante.tipoSangre} {item.donante.factorRH}</Text>
-          </View>
-        )}
-      />
+      {turnos.length > 0 ? (
+        <FlatList
+          horizontal={true}
+          data={turnos}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.turnBlock}>
+              <Text style={styles.turnInfoText}>Número de pedido: {item.idPedidoHospital}</Text>
+              <Text style={styles.turnInfoText}>Fecha: {formatDate(item.fecha)}</Text>
+              <Text style={styles.turnInfoText}>Hora: {formatTime(item.fecha)}hs</Text>
+              <Text style={styles.turnInfoText}>Paciente: {item.donante.nombre} {item.donante.apellido}</Text>
+              <Text style={styles.turnInfoText}>Tipo de Sangre: {item.donante.tipoSangre} {item.donante.factorRH}</Text>
+            </View>
+          )}
+        />
+      ) : (
+        <Text style={styles.noDataText}>No hay turnos activos</Text>
+      )}
 
       <Text style={styles.sectionTitle}>Pedidos activos:</Text>
-      <FlatList
-        horizontal={true}
-        data={pedidos}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.requestBlock}>
-            <Text style={styles.requestText}>{item.tipoDonacion}</Text>
-            <Text style={styles.requestText}>Tipo de Sangre: {item.tipoSangre} </Text>
-            <Text style={styles.requestText}>
-              Expira el: {formatDate(item.fechaHasta)}
-            </Text>
-          </View>
-        )}
-      />
+      {pedidos.length > 0 ? (
+        <FlatList
+          horizontal={true}
+          data={pedidos}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.requestBlock}>
+              <Text style={styles.requestText}>{item.tipoDonacion}</Text>
+              <Text style={styles.requestText}>Tipo de Sangre: {item.tipoSangre}</Text>
+              <Text style={styles.requestText}>Expira el: {formatDate(item.fechaHasta)}</Text>
+            </View>
+          )}
+        />
+      ) : (
+        <View style={styles.noDataContainer}>
+          <Text style={styles.noDataText}>No hay pedidos activos</Text>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RequestHospital')}> 
+            <Text style={styles.buttonText}>Crear Pedido</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -139,6 +157,29 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
     marginTop: 7,
+  },
+  noDataContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+  noDataText: {
+    fontSize: 20,
+    color: '#B1A7A6',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  button: {
+    backgroundColor: '#A4161A',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 15,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
