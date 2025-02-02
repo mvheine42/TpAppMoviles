@@ -1,120 +1,70 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, Dimensions } from 'react-native';
 
 const hospitalImage = require('../../imagenes/hospital.png');
 
 export const MyProfileHospital = (props) => {
-  const [editing, setEditing] = useState(false);
-  const [editedHospital, setEditedHospital] = useState({ ...props.user.user });
-
-  const handleEdit = () => {
-    setEditing(true);
-  };
-
-  const handleCancel = () => {
-    setEditing(false);
-    setEditedHospital({ ...id });
-  };
-
-  const handleSave = () => {
-    setEditing(false);
-    setEditedHospital({ ...editedHospital });
-  };
-  
+  const [editedHospital] = useState({ ...props.user.user });
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.iconContainer}>
-          <View style={styles.imageWrapper}>
-            <Image source={hospitalImage} style={styles.hospitalImage} />
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.iconContainer}>
+            <View style={styles.imageWrapper}>
+              <Image source={hospitalImage} style={styles.hospitalImage} />
+            </View>
           </View>
+          <Text style={styles.hospitalName}>{editedHospital.nombre}</Text>
         </View>
-        <Text style={styles.hospitalName}>{editedHospital.nombre}</Text>
-      </View>
-      <View style={styles.content}>
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Dirección</Text>
-          {editing ? (
-            <TextInput
-              style={styles.infoEdit}
-              value={editedHospital.direccion}
-              onChangeText={(text) => setEditedHospital({ ...editedHospital, direccion: text })}
-            />
-          ) : (
-            <Text style={styles.info}>{editedHospital.direccion}</Text>
-          )}
-        </View>
+        <View style={styles.content}>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Dirección</Text>
+            <Text style={styles.info}>
+              {editedHospital.calle} {editedHospital.numero}, {editedHospital.ciudad}
+            </Text>
+          </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Teléfono</Text>
-          {editing ? (
-            <TextInput
-              style={styles.infoEdit}
-              value={editedHospital.nombre}
-              onChangeText={(text) => setEditedHospital({ ...editedHospital, nombre: text })}
-            />
-          ) : (
-            <Text style={styles.info}>{editedHospital.nombre}</Text>
-          )}
-        </View>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Teléfono</Text>
+            <Text style={styles.info}>{editedHospital.telefono}</Text>
+          </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Correo</Text>
-          {editing ? (
-            <TextInput
-              style={styles.infoEdit}
-              value={editedHospital.email}
-              onChangeText={(text) => setEditedHospital({ ...editedHospital, email: text })}
-            />
-          ) : (
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Correo</Text>
             <Text style={styles.info}>{editedHospital.email}</Text>
-          )}
-        </View>
-
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Responsable</Text>
-          {editing ? (
-            <TextInput
-              style={styles.infoEdit}
-              value={editedHospital.nomResp}
-              onChangeText={(text) => setEditedHospital({ ...editedHospital, nomResp: text })}
-            />
-          ) : (
-            <Text style={styles.info}>{editedHospital.nomResp}</Text>
-          )}
-        </View>
-
-        {editing ? (
-          <View style={styles.editButtons}>
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.buttonText}>Guardar</Text>
-            </TouchableOpacity>
           </View>
-        ) : (
-          <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-            <Text style={styles.buttonText}>Editar</Text>
-          </TouchableOpacity>
-        )}
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Responsable</Text>
+            <Text style={styles.info}>{editedHospital.responsibleName}</Text>
+          </View>
+
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Responsable Correo</Text>
+            <Text style={styles.info}>{editedHospital.responsibleContact}</Text>
+          </View>
+        </View>
       </View>
     </ScrollView>
   );
 };
 
+const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
+  scrollContainer: {
+    flexGrow: 1,
     backgroundColor: '#A4161A',
+  },
+  container: {
+    backgroundColor: '#A4161A',
+    padding: 20,
   },
   header: {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#A4161A',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     marginBottom: 15,
@@ -153,7 +103,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 5,
     textAlign: 'center',
-    width:'100%',
+    width: '100%',
   },
   content: {
     flex: 1,
@@ -162,52 +112,16 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   fieldContainer: {
-    marginBottom: 15,
+    marginBottom: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#A4161A',
   },
   info: {
-    fontSize: 16,
+    fontSize: 20,
     color: 'black',
-  },
-  infoEdit: {
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 15,
-    width: '100%',
-    color: 'black',
-  },
-  editButton: {
-    backgroundColor: '#A4161A',
-    borderRadius: 15,
-    padding: 15,
-  },
-  editButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#B1A7A6',
-    borderRadius: 20,
-    padding: 15,
-    marginRight: 10,
-  },
-  saveButton: {
-    backgroundColor: '#A4161A',
-    borderRadius: 20,
-    padding: 15,
-    marginLeft: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 16,
   },
 });
 
