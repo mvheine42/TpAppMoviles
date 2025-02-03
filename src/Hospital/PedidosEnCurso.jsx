@@ -22,11 +22,35 @@ export const PedidosEnCurso = (props) => {
     fetchPedidos();
   }, []);
 
+  const checkAndUpdatePedidos = async (pedidos) => {
+    const today = new Date();
+  
+    for (const pedido of pedidos) {
+      if (pedido.state === 'active' && new Date(pedido.fechaHasta) < today) {
+        try {
+          await fetch(`${API_URL}/hospital/updatePedidoState/${pedido.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ state: 'completed' }),
+          });
+        } catch (error) {
+          console.error(`Error updating pedido ${pedido.id}:`, error);
+        }
+      }
+    }
+  };  
   const fetchPedidos = async () => {
-    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
-    pedidos = await pedidos.json();
-    setPedidos(pedidos);
-  };
+    try {
+      let response = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
+      let pedidos = await response.json();
+      setPedidos(pedidos);
+      await checkAndUpdatePedidos(pedidos); // Check and update overdue pedidos
+    } catch (error) {
+      console.error('Error fetching pedidos:', error);
+    }
+  };  
 
   const navigation = useNavigation();
 
@@ -64,23 +88,29 @@ export const PedidosEnCurso = (props) => {
   };
 
   const renderPedido = ({ item }) => {
-    const { id, tipoDonacion, fechaDesde, fechaHasta, tipoSangre, factorRh, descripcion } = item;
+    const { id, tipoDonacion, fechaDesde, fechaHasta, tipoSangre, factorRh, descripcion, state } = item;
     const fechaDesdeFormateada = formatDate(fechaDesde);
     const fechaHastaFormateada = formatDate(fechaHasta);
-
+  
+    const isActive = state === 'active';
+  
     return (
-      <View style={styles.pedidoContainer}>
+      <View style={[styles.pedidoContainer, isActive ? styles.activePedido : styles.inactivePedido]}>
         <View style={styles.pedidoInfo}>
-          <Text style={styles.pedidoTitle}>{tipoDonacion}</Text>
-          <TouchableOpacity onPress={() => cancelarPedido(id)}>
-            <Image source={trashImage} style={styles.trashIcon} />
-          </TouchableOpacity>
+          <Text style={[styles.pedidoTitle, !isActive && styles.inactiveText]}>{tipoDonacion}</Text>
+          {isActive && (
+            <TouchableOpacity onPress={() => cancelarPedido(id)}>
+              <Image source={trashImage} style={styles.trashIcon} />
+            </TouchableOpacity>
+          )}
         </View>
-        <Text style={styles.pedidoFechaText}>
+        <Text style={[styles.pedidoFechaText, !isActive && styles.inactiveText]}>
           {fechaDesdeFormateada + ' - '}{fechaHastaFormateada}
         </Text>
-        <Text style={styles.pedidoText}>Tipo de Sangre: {tipoSangre} {factorRh}</Text>
-        <Text style={styles.descripcionText}>{descripcion}</Text>
+        <Text style={[styles.pedidoText, !isActive && styles.inactiveText]}>
+          Tipo de Sangre: {tipoSangre} {factorRh}
+        </Text>
+        <Text style={[styles.descripcionText, !isActive && styles.inactiveText]}>{descripcion}</Text>
       </View>
     );
   };
@@ -96,7 +126,7 @@ export const PedidosEnCurso = (props) => {
       >
         <Text style={styles.addButtonText}>+ Agregar Pedido</Text>
       </TouchableOpacity>
-      <Text style={styles.subtitle}>Pedidos Activos</Text>
+      <Text style={styles.subtitle}>Historial de Pedidos</Text>
 
       {pedidos.length > 0 ? (
         <FlatList
@@ -162,6 +192,18 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 20,
     borderRadius: 10,
+    backgroundColor: 'white', // Default active background
+  },
+  
+  // Inactive Pedido (grey, faded look)
+  inactivePedido: {
+    backgroundColor: '#E0E0E0',
+    opacity: 0.6,
+  },
+  
+  // Inactive text color
+  inactiveText: {
+    color: '#7D7D7D',
   },
   pedidoInfo: {
     flexDirection: 'row',
