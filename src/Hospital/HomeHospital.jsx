@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation , useFocusEffect} from '@react-navigation/native';
+
 
 // Función para obtener la fecha de hoy en formato "dd/mm/yyyy"
 const getFormattedDateToday = () => {
@@ -32,16 +33,19 @@ const HomeHospital = (props) => {
   const [turnos, setTurnos] = React.useState([]);
   const navigation = useNavigation();
 
-  React.useEffect(() => {
-    fetchTurnos();
-    fetchPedidos();
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      fetchTurnos();
+      fetchPedidos();
+    }, [])
+  );
 
   const fetchPedidos = async () => {
     try {
       let response = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
       let pedidos = await response.json();
-      const activePedidos = pedidos.filter(pedido => pedido.status === 'active'); // Filter active pedidos
+      console.log(pedidos)
+      const activePedidos = pedidos.filter(pedido => pedido.state === 'active'); // Filter active pedidos
       setPedidos(activePedidos);
     } catch (error) {
       console.error("Error fetching pedidos:", error);
@@ -50,10 +54,25 @@ const HomeHospital = (props) => {
   
 
   const fetchTurnos = async () => {
-    let turnos = await fetch(`${API_URL}/hospital/getTurnosByHospitalId/${props.user.user.id}`);
-    turnos = await turnos.json();
-    setTurnos(turnos);
-  }
+    try {
+      const response = await fetch(`${API_URL}/hospital/getTurnosByHospitalId/${props.user.user.id}`);
+      const turnos = await response.json();
+      const today = new Date();
+      const nextWeek = new Date();
+      nextWeek.setDate(today.getDate() + 30);
+
+      const filteredTurnos = turnos.filter(turno => {
+        const turnoDate = new Date(turno.fecha);
+        return (
+          turnoDate >= today && turnoDate <= nextWeek
+        );
+      });
+
+      setTurnos(filteredTurnos);
+    } catch (error) {
+      console.error("Error fetching turnos:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>

@@ -6,13 +6,19 @@ const checkImage = require('../../imagenes/icons8-check-100.png');
 
 const API_URL = "http://localhost:3000";
 
-const getFormattedDate = (offset) => {
-  const today = new Date();
-  today.setDate(today.getDate() + offset);
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const yyyy = date.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+};
+
+const formatTime = (timeString) => {
+  const date = new Date(timeString);
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  return `${String(hours).padStart(2, '0')}.${String(minutes).padStart(2, '0')} hrs`;
 };
 
 export const TurnosHospital = (props) => {
@@ -26,14 +32,25 @@ export const TurnosHospital = (props) => {
 
   const fetchTurns = async () => {
     try {
-      const response = await fetch(`${API_URL}/donante/getTurnosByHospitalIdAssisted/${props.user.user.id}`);
+      const response = await fetch(`${API_URL}/hospital/getTurnosByHospitalIdAssisted/${props.user.user.id}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+      }
+      
       const data = await response.json();
-      setTurns(data);
+      const today = new Date();
+  
+      // Filter turns with a date prior to today
+      const filteredTurns = data.filter((turn) => new Date(turn.fecha) < today);
+  
+      setTurns(filteredTurns);
     } catch (error) {
       console.error('Error fetching turns:', error);
     }
   };
-
+  
+  
   const confirmAttendance = (id) => {
     setSelectedTurn(id);
     setConfirmationVisible(true);
@@ -78,9 +95,9 @@ export const TurnosHospital = (props) => {
             <View key={turn.id} style={styles.turnBlock}>
               <View style={styles.turnInfo}>
                 <Text style={styles.turnText}>Paciente: {turn.donante.nombre} {turn.donante.apellido}</Text>
-                <Text style={styles.turnText}>Nro de Pedido: {turn.pedidoHospital.id} {turn.pedidoHospital.tipoDonacion}</Text>
-                <Text style={styles.turnText}>Fecha: {turn.fecha}</Text>
-                <Text style={styles.turnText}>Hora: {turn.hora}hs</Text>
+                <Text style={styles.turnText}>Pedido: {turn.pedidoHospital.tipoDonacion}</Text>
+                <Text style={styles.turnText}>Fecha: {formatDate(turn.fecha)}</Text>
+                <Text style={styles.turnText}>Hora: {formatTime(turn.fecha)}</Text> 
               </View>
               <TouchableOpacity
                 onPress={() => confirmAttendance(turn.id)}

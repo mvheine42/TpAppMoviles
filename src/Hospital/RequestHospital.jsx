@@ -38,7 +38,6 @@ export const RequestHospital = (props) => {
         descripcion: description,
       };
   
-      // Realiza la solicitud POST al backend
       const response = await fetch('http://localhost:3000/hospital/postPedido', {
         method: 'POST',
         headers: {
@@ -51,7 +50,7 @@ export const RequestHospital = (props) => {
         setIsConfirmed(true);
         toggleModal();
         Alert.alert('Solicitud Confirmada', 'La solicitud se realizó con éxito.', [
-          { text: 'OK', onPress: () => navigation.navigate('HomeHospital') },
+          { text: 'OK', onPress: () => navigation.navigate('PedidosEnCurso') },
         ]);
       } else {
         console.error('Error al realizar la solicitud POST al backend');
@@ -60,6 +59,7 @@ export const RequestHospital = (props) => {
       console.error('Error inesperado:', error);
     }
   };
+  
   
 
   const handleCancel = () => {

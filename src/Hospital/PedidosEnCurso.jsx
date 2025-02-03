@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native';
 import Modal from 'react-native-modal';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect} from '@react-navigation/native';
 
 const trashImage = require('../../imagenes/basura.png');
 
@@ -18,9 +18,12 @@ export const PedidosEnCurso = (props) => {
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
   const [pedidos, setPedidos] = useState([]);
 
-  useEffect(() => {
-    fetchPedidos();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchPedidos();
+    }, [])
+  );
+  
 
   const checkAndUpdatePedidos = async (pedidos) => {
     const today = new Date();
