@@ -82,7 +82,7 @@ const Login = (props) => {
             </TouchableOpacity>
             
             <View style={styles.textContainer}>
-              <Text style={styles.forgotPasswordText}>Olvidé mi contraseña</Text>
+              <Text style={styles.forgotPasswordText}onPress={() => props.navigation.navigate('ResetPassword')}>Olvidé mi contraseña</Text>
               <Text style={styles.createAccountText} onPress={() => props.navigation.navigate('TipoDeUsuario')}>Crea tu cuenta</Text>
             </View>
           </View>
@@ -173,14 +173,15 @@ const styles = StyleSheet.create({
         marginTop: 15,
     },
     forgotPasswordText: {
-        fontSize: 16,
+        fontSize: 17.5,
         color: '#660708',
+        marginTop: 5
     },
     createAccountText: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#660708',
-        marginTop: 4
+        marginTop: 10
     },
     eyeIconContainer: {
       position: "absolute",

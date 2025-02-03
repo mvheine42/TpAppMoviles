@@ -84,15 +84,24 @@ const Home = (props) => {
       }
     }, [position]);
 
-    const [selectedCategories, setSelectedCategories] = useState(['Sangre']);
+    const initialCategories = [];
+    if (props.user.user.donaSangre) initialCategories.push("Sangre");
+    if (props.user.user.donaPlaquetas) initialCategories.push("Plaquetas");
+    if (props.user.user.donaMedula) initialCategories.push("Médula");
+
+    const [selectedCategories, setSelectedCategories] = useState(initialCategories);
 
     const toggleCategory = (category) => {
-      setSelectedCategories((prevCategories) =>
-        prevCategories.includes(category)
-          ? prevCategories.filter((c) => c !== category)
-          : [...prevCategories, category]
-      );
-    };
+      setSelectedCategories((prevCategories) => {
+          if (prevCategories.includes(category)) {
+              // Evitar que todas se deseleccionen
+              if (prevCategories.length === 1) return prevCategories;
+              return prevCategories.filter((c) => c !== category);
+          } else {
+              return [...prevCategories, category];
+          }
+      });
+  };
   
     const filteredData = pedidos.length > 0
     ? pedidos.filter((item) => selectedCategories.includes(item.tipoDonacion))
@@ -100,7 +109,6 @@ const Home = (props) => {
   
 
     const handleHospitalPress = (hospital) => {
-      //console.log('Pedido de Hospital seleccionado:', hospital); 
       props.navigation.navigate('HospitalDonante', { pedidoHospital: hospital});
     };
 

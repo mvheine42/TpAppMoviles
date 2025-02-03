@@ -14,6 +14,7 @@ import EligeTipoDeSangre from "./Donante/SignUp/EligeTipoDeSangre";
 import { VerificacionDeDatos } from "./Donante/SignUp/VerificacionDeDatos";
 import { VerificacionDeDatosHospital } from "./Hospital/SignUp/VerificacionDeDatosHospital";
 import LocationHospital from "./Hospital/SignUp/LocationHospital";
+import ResetPassword from './ResetPassword';
 
 const Stack = createStackNavigator();
 
@@ -39,6 +40,7 @@ export default function StackNavigator(props) {
                     <>
                         <Stack.Screen name="Login" component={Login} />
                         <Stack.Screen name="TipoDeUsuario" component={NewUser} />
+                        <Stack.Screen name="ResetPassword" component={ResetPassword} />
                         <Stack.Screen name="SignUpDonante" component={SignUpDonante} />
                         <Stack.Screen name="EligeQueDonar" component={EligeQueDonar} />
                         <Stack.Screen name="EligeTipoDeSangre" component={EligeTipoDeSangre} />
