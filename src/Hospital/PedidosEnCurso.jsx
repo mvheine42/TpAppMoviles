@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native';
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
@@ -16,41 +16,58 @@ const formatDate = (dateString) => {
 export const PedidosEnCurso = (props) => {
   const [selectedPedido, setSelectedPedido] = useState(null);
   const [isConfirmationVisible, setConfirmationVisible] = useState(false);
-  const [pedidos, setPedidos] = React.useState([]);
+  const [pedidos, setPedidos] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchPedidos();
   }, []);
 
   const checkAndUpdatePedidos = async (pedidos) => {
     const today = new Date();
-  
+
     for (const pedido of pedidos) {
       if (pedido.state === 'active' && new Date(pedido.fechaHasta) < today) {
         try {
-          await fetch(`${API_URL}/hospital/updatePedidoState/${pedido.id}`, {
+          const response = await fetch(`${API_URL}/hospital/updatePedidoState/${pedido.id}`, {
             method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ state: 'completed' }),
           });
+
+          if (response.ok) {
+            console.log(`Pedido ${pedido.id} marcado como completado.`);
+          } else {
+            console.error(`Error al actualizar pedido ${pedido.id}:`, response.statusText);
+          }
         } catch (error) {
-          console.error(`Error updating pedido ${pedido.id}:`, error);
+          console.error(`Error actualizando pedido ${pedido.id}:`, error);
         }
       }
     }
-  };  
+  };
+
   const fetchPedidos = async () => {
     try {
       let response = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
       let pedidos = await response.json();
+  
+      // Priority for ordering
+      const statusOrder = { 
+        active: 1, 
+        inactive: 2, 
+        completed: 3, 
+        cancelled: 4 
+      };
+  
+      // Sort based on status priority
+      pedidos.sort((a, b) => (statusOrder[a.state] || 5) - (statusOrder[b.state] || 5));
+  
       setPedidos(pedidos);
-      await checkAndUpdatePedidos(pedidos); // Check and update overdue pedidos
+      await checkAndUpdatePedidos(pedidos);
     } catch (error) {
       console.error('Error fetching pedidos:', error);
     }
-  };  
+  };
 
   const navigation = useNavigation();
 
@@ -61,16 +78,18 @@ export const PedidosEnCurso = (props) => {
 
   const confirmCancellation = async () => {
     try {
-      console.log(selectedPedido);
-      const response = await fetch(`${API_URL}/hospital/deletePedido/${selectedPedido}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(`${API_URL}/hospital/updatePedidoState/${selectedPedido}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state: 'cancelled' }),
       });
 
       if (response.ok) {
-        setPedidos((prevPedidos) => prevPedidos.filter((pedido) => pedido.id !== selectedPedido));
+        setPedidos((prevPedidos) =>
+          prevPedidos.map((pedido) =>
+            pedido.id === selectedPedido ? { ...pedido, state: 'cancelled' } : pedido
+          )
+        );
       } else {
         console.error('Failed to cancel pedido:', response.statusText);
       }
@@ -91,11 +110,18 @@ export const PedidosEnCurso = (props) => {
     const { id, tipoDonacion, fechaDesde, fechaHasta, tipoSangre, factorRh, descripcion, state } = item;
     const fechaDesdeFormateada = formatDate(fechaDesde);
     const fechaHastaFormateada = formatDate(fechaHasta);
-  
+
     const isActive = state === 'active';
-  
+    const isCompleted = state === 'completed';
+    const isCancelled = state === 'cancelled';
+
     return (
-      <View style={[styles.pedidoContainer, isActive ? styles.activePedido : styles.inactivePedido]}>
+      <View style={[ 
+        styles.pedidoContainer, 
+        isActive ? styles.activePedido : styles.inactivePedido, 
+        isCompleted && styles.completedPedido,
+        isCancelled && styles.cancelledPedido
+      ]}>
         <View style={styles.pedidoInfo}>
           <Text style={[styles.pedidoTitle, !isActive && styles.inactiveText]}>{tipoDonacion}</Text>
           {isActive && (
@@ -110,7 +136,7 @@ export const PedidosEnCurso = (props) => {
         <Text style={[styles.pedidoText, !isActive && styles.inactiveText]}>
           Tipo de Sangre: {tipoSangre} {factorRh}
         </Text>
-        <Text style={[styles.descripcionText, !isActive && styles.inactiveText]}>{descripcion}</Text>
+        <Text style={[styles.descripcionText, !isActive && styles.inactiveText]}>{state}</Text>
       </View>
     );
   };
@@ -120,9 +146,7 @@ export const PedidosEnCurso = (props) => {
       <Text style={styles.title}>Pedidos</Text>
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => {
-          navigation.navigate('RequestHospital');
-        }}
+        onPress={() => navigation.navigate('RequestHospital')}
       >
         <Text style={styles.addButtonText}>+ Agregar Pedido</Text>
       </TouchableOpacity>
@@ -192,16 +216,19 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 20,
     borderRadius: 10,
-    backgroundColor: 'white', // Default active background
+    backgroundColor: 'white',
   },
-  
-  // Inactive Pedido (grey, faded look)
   inactivePedido: {
     backgroundColor: '#E0E0E0',
     opacity: 0.6,
   },
-  
-  // Inactive text color
+  completedPedido: {
+    backgroundColor: '#E6F9E6',
+  },
+  cancelledPedido: {
+    backgroundColor: '#FDEAEA',
+    opacity: 0.8,
+  },
   inactiveText: {
     color: '#7D7D7D',
   },

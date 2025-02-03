@@ -38,10 +38,16 @@ const HomeHospital = (props) => {
   }, [])
 
   const fetchPedidos = async () => {
-    let pedidos = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
-    pedidos = await pedidos.json();
-    setPedidos(pedidos);
-  }
+    try {
+      let response = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
+      let pedidos = await response.json();
+      const activePedidos = pedidos.filter(pedido => pedido.status === 'active'); // Filter active pedidos
+      setPedidos(activePedidos);
+    } catch (error) {
+      console.error("Error fetching pedidos:", error);
+    }
+  };
+  
 
   const fetchTurnos = async () => {
     let turnos = await fetch(`${API_URL}/hospital/getTurnosByHospitalId/${props.user.user.id}`);
