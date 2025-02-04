@@ -9,7 +9,7 @@ export const HospitalProvider = ({ children }) => {
   const [selectedHospital, setSelectedHospital] = useState(null);
 
   const setHospital = (hospital) => {
-    console.log("Set hospital: ", hospital);  // Aquí puedes ver si se está actualizando el hospital
+    //console.log("Set hospital: ", hospital);  // Aquí puedes ver si se está actualizando el hospital
     setSelectedHospital(hospital); // Guarda el hospital seleccionado
   };
 

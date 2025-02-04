@@ -50,7 +50,6 @@ const Hospital = (props) => {
       let response = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);
       let data = await response.json();
       setTurnos(data);
-      console.log(data);
       checkDonationEligibility(data);
     } catch (error) {
       console.error('Error fetching turnos:', error);

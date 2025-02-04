@@ -55,7 +55,6 @@ const Home = (props) => {
     const fetchPedidos = async () => {
       let pedidos = await fetch(`${API_URL}/donante/getHospitalActiveOrdersFor/${props.user.user.id}`);
       pedidos = await pedidos.json();
-      console.log(pedidos)
       setPedidos(pedidos);
     }
 

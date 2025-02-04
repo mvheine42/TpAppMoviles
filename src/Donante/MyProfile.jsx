@@ -28,8 +28,7 @@ export const MyProfile = (props) => {
 
         if (response.ok) {
             const updatedPost = await response.json();
-            console.log("Post actualizado:", updatedPost);
-            // Aquí puedes realizar cualquier acción adicional después de la actualización exitosa
+            
         } else {
             console.error("Error al actualizar el post:", response.status);
         }
@@ -46,9 +45,7 @@ export const MyProfile = (props) => {
     setEditing(true);
   };
 
-  console.log(props.user.user);
   const userFields = props.user.user ? Object.keys(props.user.user) : [];
-  console.log(userFields);
   return (
     <ScrollView contentContainerStyle={styles.container}>
       

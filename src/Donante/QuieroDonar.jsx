@@ -14,7 +14,6 @@ export const QuieroDonar = (props) => {
   const [acceptRequerimientos, setAcceptRequerimientos] = useState(false);
   const [markedDates, setMarkedDates] = useState({});
   const donacion = props.route.params?.tipoDonacion;
-  console.log(props.route.params);
 
   const today = new Date();
   const oneMonthFromNow = new Date();
@@ -195,8 +194,7 @@ export const QuieroDonar = (props) => {
         fecha: fechaCompleta,
       };
     
-      console.log("Turno a postear: ", turnoData);
-    
+
       try {
         const response = await fetch(`${API_URL}/donante/postTurno`, {
           method: "POST",
