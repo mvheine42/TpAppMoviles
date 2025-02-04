@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import { format, parseISO } from 'date-fns';
 
@@ -14,17 +14,16 @@ const HistorialTurnosHospital = (props) => {
   const formattedTime = selectedTurn ? selectedTurn.hora : '';
 
   useEffect(() => {
-    // Obtener los turnos del hospital desde el servidor
     fetchTurnsFromServer();
   }, []);
 
-  const getFormattedCurrentDate = () => {
+  function getFormattedCurrentDate() {
     const today = new Date();
     const year = today.getFullYear();
     const month = (today.getMonth() + 1).toString().padStart(2, '0');
     const day = today.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
-  };
+  }
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
@@ -51,6 +50,28 @@ const HistorialTurnosHospital = (props) => {
   const closeModal = () => {
     setSelectedTurn(null);
     setModalVisible(false);
+  };
+
+  const cancelTurn = async () => {
+    if (!selectedTurn) return;
+
+    try {
+      const response = await fetch(`${API_URL}/hospital/cancelTurno/${selectedTurn.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        Alert.alert('Éxito', 'Turno cancelado exitosamente.');
+        closeModal();
+        fetchTurnsFromServer(); // Refresh turns
+      } else {
+        const errorData = await response.json();
+        Alert.alert('Error', errorData.message || 'Error al cancelar el turno.');
+      }
+    } catch (error) {
+      console.error('Error canceling turno:', error);
+      Alert.alert('Error', 'Hubo un problema al cancelar el turno.');
+    }
   };
 
   const items = historialTurnosData.reduce((result, turno) => {
@@ -103,151 +124,140 @@ const HistorialTurnosHospital = (props) => {
         }}
       />
 
-      {/* Modal para mostrar la información detallada del turno */}
-      <Modal 
-        visible={isModalVisible} 
-        style={styles.modal} 
-        animationType="slide" 
-        transparent={true}>
+      <Modal visible={isModalVisible} style={styles.modal} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
-            <ScrollView>
-              <Text style={styles.modalTitle}>Información del Turno</Text>
-              {/* Aquí puedes mostrar toda la información del donante */}
-              {selectedTurn && (
+          <ScrollView>
+            <Text style={styles.modalTitle}>Información del Turno</Text>
+            {selectedTurn && (
+              <View>
+                <Text style={styles.modalInfo}>Pedido n°{selectedTurn.pedidoHospital.id} - {selectedTurn.pedidoHospital.tipoDonacion}</Text>
+                <Text style={styles.modalInfo}>Fecha: {formattedDate} - {formattedTime}hs</Text>
                 <View>
-                  <Text style={styles.modalInfo}>Pedido n°{selectedTurn.pedidoHospital.id} - {selectedTurn.pedidoHospital.tipoDonacion}</Text>
-                  <Text style={styles.modalInfo}>Fecha: {formattedDate} - {formattedTime}hs</Text>
-                  <View>
-                    <Text style={styles.modalInfoPacienteTitle}>Paciente</Text>
-
-                    <Text style={styles.modalInfoPaciente}>Donante: {selectedTurn.donante.nombre} {selectedTurn.donante.apellido}</Text>
-                    <Text style={styles.modalInfoPaciente}>DNI: {selectedTurn.donante.dni}</Text>
-                    <Text style={styles.modalInfoPaciente}>Género: {selectedTurn.donante.genero}</Text> 
-                    <Text style={styles.modalInfoPaciente}>Edad: {selectedTurn.donante.edad}</Text>
-                    <Text style={styles.modalInfoPaciente}>Peso: {selectedTurn.donante.peso}kg</Text>
-                    <Text style={styles.modalInfoPaciente}>Medicaciones: {selectedTurn.donante.medicaciones}</Text>
-                    <Text style={styles.modalInfoPaciente}>Embarazo: {selectedTurn.donante.embarazo}</Text>
-                    <Text style={styles.modalInfoPaciente}>Tipo de Sangre: {selectedTurn.donante.tipoSangre} {selectedTurn.donante.factorRH}</Text>
-                  </View>
-                  
+                  <Text style={styles.modalInfoPacienteTitle}>Paciente</Text>
+                  <Text style={styles.modalInfoPaciente}>Donante: {selectedTurn.donante.nombre} {selectedTurn.donante.apellido}</Text>
+                  <Text style={styles.modalInfoPaciente}>DNI: {selectedTurn.donante.dni}</Text>
+                  <Text style={styles.modalInfoPaciente}>Género: {selectedTurn.donante.genero}</Text>
+                  <Text style={styles.modalInfoPaciente}>Edad: {selectedTurn.donante.edad}</Text>
+                  <Text style={styles.modalInfoPaciente}>Peso: {selectedTurn.donante.peso}kg</Text>
+                  <Text style={styles.modalInfoPaciente}>Medicaciones: {selectedTurn.donante.medicaciones}</Text>
+                  <Text style={styles.modalInfoPaciente}>Embarazo: {selectedTurn.donante.embarazo}</Text>
+                  <Text style={styles.modalInfoPaciente}>Tipo de Sangre: {selectedTurn.donante.tipoSangre} {selectedTurn.donante.factorRH}</Text>
                 </View>
-              )}
-              <TouchableOpacity onPress={closeModal} style={styles.modalCloseButton}>
-                <Text style={styles.modalCloseButtonText}>Cancelar Turno</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
+              </View>
+            )}
+            <TouchableOpacity onPress={cancelTurn} style={styles.modalCloseButton}>
+              <Text style={styles.modalCloseButtonText}>Cancelar Turno</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
       </Modal>
-
-      
     </View>
   );
 };
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#F5F5F5',
-    },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 20,
-      justifyContent: 'center',
-    },
-    headerTitle: {
-      marginTop: 20,
-      fontSize: 35,
-      fontWeight: 'bold',
-      color: '#A4161A',
-    },
-    turnBlock: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'white',
-      padding: 20,
-      borderRadius: 10,
-      marginBottom: 10,
-      marginTop: 10,
-      marginRight: 10,
-    },
-    turnInfo: {
-      flex: 1,
-    },
-    turnText: {
-      fontSize: 18,
-      color: '#A4161A',
-    },
-    emptyDataContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    emptyDataText: {
-      fontSize: 18,
-      color: '#A4161A',
-    },
-    modalContainer: {
-      flex: 1,
-      backgroundColor: 'white',
-      margin: 30,
-      marginTop: 110,
-      marginBottom: 110,
-      borderRadius: 10,
-      padding: 35,
-      color: 'black',
-      borderColor: '#BA181B',  // Color del borde
-      borderWidth: 2,
-    },
-    modalTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginBottom: 10,
-      color: 'black',
-    },
-    modalInfo: {
-      fontSize: 15,
-      marginBottom: 5,
-      color: 'black',
-    },
-    modalInfoPacienteTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginTop: 10,
-      marginBottom: 10,
-      color: 'black',
-    },
-    modalInfoPaciente: {
-      fontSize: 15,
-      marginBottom: 5,
-      color: 'black',
-    },
-    modalCloseButton: {
-      backgroundColor: '#BA181B',
-      padding: 10,
-      borderRadius: 5,
-      marginTop: 20,
-      alignItems: 'center',
-    },
-    modalCloseButtonText: {
-      color: 'white',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    closeButton: {
-      position: 'absolute',
-      top: 10,
-      right: 10,
-      padding: 10,
-      zIndex: 1,
-    },
-    closeButtonText: {
-      fontSize: 20,
-      color: '#A4161A',
-    },
-  });
-  
-  export default HistorialTurnosHospital;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    marginTop: 20,
+    fontSize: 35,
+    fontWeight: 'bold',
+    color: '#A4161A',
+  },
+  turnBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 10,
+    marginTop: 10,
+    marginRight: 10,
+  },
+  turnInfo: {
+    flex: 1,
+  },
+  turnText: {
+    fontSize: 18,
+    color: '#A4161A',
+  },
+  emptyDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyDataText: {
+    fontSize: 18,
+    color: '#A4161A',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    margin: 30,
+    marginTop: 110,
+    marginBottom: 110,
+    borderRadius: 10,
+    padding: 35,
+    borderColor: '#BA181B',
+    borderWidth: 2,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: 'black',
+  },
+  modalInfo: {
+    fontSize: 15,
+    marginBottom: 5,
+    color: 'black',
+  },
+  modalInfoPacienteTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 10,
+    color: 'black',
+  },
+  modalInfoPaciente: {
+    fontSize: 15,
+    marginBottom: 5,
+    color: 'black',
+  },
+  modalCloseButton: {
+    backgroundColor: '#BA181B',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  modalCloseButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 10,
+    zIndex: 1,
+  },
+  closeButtonText: {
+    fontSize: 20,
+    color: '#A4161A',
+  },
+});
+
+export default HistorialTurnosHospital;

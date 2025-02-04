@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, FlatList, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 
-const DonationsScreen = () => {
-  const [donationHistory, setDonationHistory] = useState([
-    { id: 1, date: '01/01/2023', location: 'Hospital A', donationType: 'Sangre 0+' },
-    { id: 2, date: '02/15/2023', location: 'Clinica B', donationType: 'Plaquetas' },
-  ]);
-
+const API_URL = "http://localhost:3000";
+export const DonationsScreen = (props) => {
   const [discounts, setDiscounts] = useState([]);
   const [selectedDiscount, setSelectedDiscount] = useState(null);
 
+  const userId = props.user.user.id;
+
   useEffect(() => {
-    fetch('http://localhost:3000/donante/getAllBenefits')
-      .then((response) => response.json())
-      .then((data) => {
-        setDiscounts(data);
-      })
-      .catch((error) => {
-        console.error('Error fetching benefits:', error);
-      });
-  }, []);
+    if (userId) {
+      fetch(`${API_URL}/donante/getBenefitById/${userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setDiscounts(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching benefits:', error);
+        });
+    }
+  }, [userId]);
 
   const openDiscountDetails = (item) => {
     setSelectedDiscount(item);
@@ -32,22 +32,8 @@ const DonationsScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>DonaVida+</Text>
-      <Text style={styles.heading}>Historial de Donaciones</Text>
-      <ScrollView style={styles.section}>
-        <FlatList
-          data={donationHistory}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.donationItem}>
-              <Text>{`Fecha: ${item.date}`}</Text>
-              <Text>{`Ubicación: ${item.location}`}</Text>
-              <Text>{`Tipo de Donación: ${item.donationType}`}</Text>
-            </View>
-          )}
-        />
-      </ScrollView>
       <Text style={styles.heading}>Beneficios y Descuentos</Text>
-      <ScrollView style={styles.section}>
+      {userId ? (
         <FlatList
           data={discounts}
           keyExtractor={(item) => item.id.toString()}
@@ -62,7 +48,9 @@ const DonationsScreen = () => {
             </TouchableOpacity>
           )}
         />
-      </ScrollView>
+      ) : (
+        <Text style={styles.noUserText}>User data not available</Text>
+      )}
 
       <Modal visible={selectedDiscount !== null} animationType="slide" transparent>
         <View style={styles.modalContainer}>
@@ -107,11 +95,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: 16,
     color: '#A4161A',
-  },
-  donationItem: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingVertical: 10,
   },
   discountItem: {
     alignItems: 'center',
@@ -158,6 +141,12 @@ const styles = StyleSheet.create({
     color: 'blue',
     marginTop: 10,
     textAlign: 'right',
+  },
+  noUserText: {
+    textAlign: 'center',
+    fontSize: 18,
+    marginTop: 20,
+    color: 'gray',
   },
 });
 

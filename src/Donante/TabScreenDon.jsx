@@ -63,14 +63,18 @@
   function MyProfileStackNavigation(props) {
     return (
       <Stack.Navigator>
-        <Stack.Screen name='PerfilDonante' options={{ headerShown: false }} {...props}>
-          {() => <MyProfile {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name='MisTurnos' component={Turnos} options={{ headerShown: false }} />
-        <Stack.Screen name='HistoryDonation' component={HistoryDonation} options={{ headerShown: false }} />
-      </Stack.Navigator>
-    );
-  }
+      <Stack.Screen name='PerfilDonante' options={{ headerShown: false }}>
+        {(screenProps) => <MyProfile {...props} {...screenProps} />}
+      </Stack.Screen>
+      <Stack.Screen name='MisTurnos' options={{ headerShown: false }}>
+        {(screenProps) => <Turnos {...props} {...screenProps} />}
+      </Stack.Screen>
+      <Stack.Screen name='HistoryDonation' options={{ headerShown: false }}>
+        {(screenProps) => <HistoryDonation {...props} {...screenProps} />}
+      </Stack.Screen>
+    </Stack.Navigator>
+  );
+}
 
   function HospitalesStackNavigation(props) {
     return (
