@@ -15,6 +15,8 @@ const Hospital = (props) => {
   const selectedPedidoHospital = props.route.params?.pedidoHospital;
   const selectedHospital = props.route.params?.pedidoHospital.hospital;
   const donacion = `${props.route.params?.pedidoHospital.tipoDonacion}: ${props.route.params?.pedidoHospital.tipoSangre} ${props.route.params?.pedidoHospital.factorRh}`;
+  const userBloodType = props.user.user.tipoSangre;
+  const userRhFactor = props.user.user.factorRH;
 
   useEffect(() => {
     request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
@@ -45,33 +47,45 @@ const Hospital = (props) => {
     fetchTurnos();
   }, []);
 
+  useEffect(() => {
+    console.log("UPDATED canDonate:", canDonate);
+  }, [canDonate]);
+
   const fetchTurnos = async () => {
     try {
       let response = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);
       let data = await response.json();
       setTurnos(data);
-      checkDonationEligibility(data);
+      checkEligibilityAndCompatibility(data);
     } catch (error) {
       console.error('Error fetching turnos:', error);
     }
   };
 
-  const checkDonationEligibility = (turnos) => {
+  const checkEligibilityAndCompatibility = (turnos) => {
     const today = new Date();
-  
-    const recentDonation = turnos.some(turno => {
-      const turnoDate = new Date(turno.fecha);
-      const attended = turno.assisted; // Adjust this if 'asistido' is named differently
-  
-      // Check if the turno was attended AND less than 6 months have passed
-      const monthsDifference = 
-        (today.getFullYear() - turnoDate.getFullYear()) * 12 + 
-        (today.getMonth() - turnoDate.getMonth());
-  
-      return attended && monthsDifference < 6;
-    });
-  
-    setCanDonate(!recentDonation);
+    let isEligible = true;
+
+    if (Array.isArray(turnos)) {
+      for (let turno of turnos) {
+        const turnoDate = new Date(turno.fecha);
+        const attended = turno.assisted;
+        const monthsDifference =
+          (today.getFullYear() - turnoDate.getFullYear()) * 12 +
+          (today.getMonth() - turnoDate.getMonth());
+
+        if (attended && monthsDifference < 6) {
+          isEligible = false;
+          break;
+        }
+      }
+    }
+
+    const isCompatible =
+      userBloodType === selectedPedidoHospital.tipoSangre &&
+      userRhFactor === selectedPedidoHospital.factorRh;
+
+    setCanDonate(isEligible && isCompatible);
   };
 
   const calcularDistancia = (lat1, lon1, lat2, lon2) => {
