@@ -1,5 +1,3 @@
-// App.tsx
-
 import React, { useEffect } from "react";
 import StackNavigatorScreen from "./src/Navigator";
 import store from "./src/redux/store";
@@ -8,15 +6,28 @@ import { connectScreen } from "./src/redux/helpers";
 import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import PushNotification from "react-native-push-notification";
 
+// Crear el canal de notificación
+const createNotificationChannel = () => {
+  PushNotification.createChannel(
+    {
+      channelId: "default-channel-id", // ID del canal
+      channelName: "Default Channel",  // Nombre del canal
+      channelDescription: "Canal predeterminado para notificaciones", // Descripción
+      playSound: true, // Habilitar sonido
+      soundName: "default", // Nombre del sonido
+      importance: 4, // Alta importancia
+      vibrate: true, // Habilitar vibración
+    },
+    (created) => console.log(`Canal creado: ${created}`)
+  );
+};
 
 const obtenerFCMToken = async () => {
   try {
     const token = await messaging().getToken();
-    console.log("🔥 Token FCM obtenido:", token);
-    
     await AsyncStorage.setItem("fcmToken", token);
-    
   } catch (error) {
     console.error("❌ Error al obtener el token FCM:", error);
   }
@@ -26,28 +37,35 @@ const StackNavigator = connectScreen(StackNavigatorScreen);
 
 const App = () => {
   useEffect(() => {
-    // Solicitar permisos de notificaciones
+    // Crear canal de notificación al iniciar la app
+    createNotificationChannel();
+
     requestMultiple([PERMISSIONS.ANDROID.POST_NOTIFICATIONS]).then((statuses) => {
-      console.log("📢 Estado de permisos:", statuses[PERMISSIONS.ANDROID.POST_NOTIFICATIONS]);
       if (statuses[PERMISSIONS.ANDROID.POST_NOTIFICATIONS] !== 'granted') {
         console.error('❌ Permiso de notificaciones no concedido');
       }
     });
 
-    // Obtener el token FCM y guardarlo en AsyncStorage
     obtenerFCMToken();
 
-    // Listener para notificaciones en primer plano
     messaging().onMessage(async remoteMessage => {
-      console.log("📩 Notificación en primer plano:", remoteMessage);
-      // Aquí podrías mostrar la notificación al usuario usando alguna librería de notificaciones como react-native-notifications
+      if (remoteMessage.notification) {
+        const messageBody = remoteMessage.notification.body ?? 'Mensaje no disponible';
+
+        // Aquí ya estás usando el channelId, asegúrate de que esté disponible
+        PushNotification.localNotification({
+          channelId: "default-channel-id", // Usar el canal creado
+          title: remoteMessage.notification.title,
+          message: messageBody,
+        });
+      }
     });
 
-    // Listener para notificaciones en segundo plano
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log("📩 Notificación en segundo plano:", remoteMessage);
+      if (remoteMessage.notification) {
+        // Manejar notificación en segundo plano
+      }
     });
-
   }, []);
 
   return (
