@@ -53,8 +53,9 @@ const Home = (props) => {
     const categories = pedidos.length > 0 ? Array.from(new Set(pedidos.map((item) => item.tipoDonacion))) : [];
 
     const fetchPedidos = async () => {
-      let pedidos = await fetch(`${API_URL}/donante/getHospitalOrdersFor/${props.user.user.id}`);
+      let pedidos = await fetch(`${API_URL}/donante/getHospitalActiveOrdersFor/${props.user.user.id}`);
       pedidos = await pedidos.json();
+      console.log(pedidos)
       setPedidos(pedidos);
     }
 
