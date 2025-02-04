@@ -22,6 +22,6 @@ export const HospitalProvider = ({ children }) => {
 
 export const useHospitalContext = () => {
   const context = useContext(HospitalContext);
-  console.log("useHospitalContext:", context); // Verifica que el contexto está siendo accesado correctamente
+  //console.log("useHospitalContext:", context); // Verifica que el contexto está siendo accesado correctamente
   return context;
 };

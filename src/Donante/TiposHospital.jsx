@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 
 export const TiposHospital = (props) => {
   const data = [
-    { id: '1', name: 'Donaciones para ti', tipo: null, Sangre: props.user.user.tipoSangre, rh: props.user.user.factorRh },
+    { id: '1', name: 'Donaciones para ti', tipo: null},
     { id: '2', name: 'Donaciones de Plaquetas', tipo: 'Plaquetas' },
     { id: '3', name: 'Donaciones de Médula', tipo: 'Médula' },
     { id: '4', name: 'Donaciones de Sangre 0+', tipo: 'Sangre', Sangre: 'O', rh: '+' },

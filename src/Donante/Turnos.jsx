@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import { useFocusEffect } from '@react-navigation/native';
 
 const API_URL = "http://localhost:3000";
 
@@ -15,9 +16,12 @@ export const Turnos = (props) => {
   const [longitude, setLongitude] = useState(0);
     
   
-  React.useEffect(() => {      
+  useFocusEffect(
+    React.useCallback(() => {
       fetchTurnos();
-  }, []);
+    }, [])
+  );
+  
 
   const fetchTurnos = async () => {
     let turnos = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);

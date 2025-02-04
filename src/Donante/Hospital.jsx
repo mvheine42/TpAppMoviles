@@ -11,12 +11,37 @@ const Hospital = (props) => {
   const [distance, setDistance] = useState(null);
   const [turnos, setTurnos] = useState([]);
   const [canDonate, setCanDonate] = useState(true);
-
   const selectedPedidoHospital = props.route.params?.pedidoHospital;
   const selectedHospital = props.route.params?.pedidoHospital.hospital;
   const donacion = `${props.route.params?.pedidoHospital.tipoDonacion}: ${props.route.params?.pedidoHospital.tipoSangre} ${props.route.params?.pedidoHospital.factorRh}`;
   const userBloodType = props.user.user.tipoSangre;
   const userRhFactor = props.user.user.factorRH;
+
+
+  const checkCompatibility = () => {
+    const { tipoDonacion, tipoSangre, factorRh } = selectedPedidoHospital;
+    const donaSangre = props.user.user.donaSangre;
+    const donaMedula = props.user.user.donaMedula;
+    const donaPlaquetas = props.user.user.donaPlaquetas;
+
+    if (tipoDonacion === "Plaquetas") return donaPlaquetas;
+    if (tipoDonacion === "Médula") return donaMedula;
+  
+    const compatibilidadSangre = {
+      "O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+      "O+": ["O+", "A+", "B+", "AB+"],
+      "A-": ["A-", "A+", "AB-", "AB+"],
+      "A+": ["A+", "AB+"],
+      "B-": ["B-", "B+", "AB-", "AB+"],
+      "B+": ["B+", "AB+"],
+      "AB-": ["AB-", "AB+"],
+      "AB+": ["AB+"],
+    };
+  
+    return donaSangre && compatibilidadSangre[`${userBloodType}${userRhFactor}`]?.includes(`${tipoSangre}${factorRh}`);
+  };
+
+  const esCompatible = checkCompatibility();
 
   useEffect(() => {
     request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
@@ -48,7 +73,8 @@ const Hospital = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log("UPDATED canDonate:", canDonate);
+    //console.log("UPDATED canDonate:", canDonate);
+
   }, [canDonate]);
 
   const fetchTurnos = async () => {
@@ -56,38 +82,34 @@ const Hospital = (props) => {
       let response = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);
       let data = await response.json();
       setTurnos(data);
-      checkEligibilityAndCompatibility(data);
+      checkDonationEligibility(data);
     } catch (error) {
       console.error('Error fetching turnos:', error);
     }
   };
 
-  const checkEligibilityAndCompatibility = (turnos) => {
-    const today = new Date();
-    let isEligible = true;
-
-    if (Array.isArray(turnos)) {
-      for (let turno of turnos) {
-        const turnoDate = new Date(turno.fecha);
-        const attended = turno.assisted;
-        const monthsDifference =
-          (today.getFullYear() - turnoDate.getFullYear()) * 12 +
-          (today.getMonth() - turnoDate.getMonth());
-
-        if (attended && monthsDifference < 6) {
-          isEligible = false;
-          break;
-        }
-      }
+  const checkDonationEligibility = (turnos) => {
+    if (!Array.isArray(turnos) || turnos.length === 0) {
+      return;
     }
-
-    const isCompatible =
-      userBloodType === selectedPedidoHospital.tipoSangre &&
-      userRhFactor === selectedPedidoHospital.factorRh;
-
-    setCanDonate(isEligible && isCompatible);
-  };
-
+  
+    const today = new Date();
+  
+    const recentDonation = turnos.some(turno => {
+      const turnoDate = new Date(turno.fecha);
+      const attended = turno.assisted;
+  
+      const monthsDifference = 
+        (today.getFullYear() - turnoDate.getFullYear()) * 12 + 
+        (today.getMonth() - turnoDate.getMonth());
+  
+      return attended && monthsDifference < 6;
+    });
+  
+    setCanDonate(!recentDonation);
+  }
+  
+  
   const calcularDistancia = (lat1, lon1, lat2, lon2) => {
     const degreesToRadians = (degrees) => degrees * (Math.PI / 180);
     const EARTH_RADIUS = 6371;
@@ -101,6 +123,8 @@ const Hospital = (props) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return EARTH_RADIUS * c;
   };
+
+  const isDisabled = !(canDonate && esCompatible);
 
   return (
     <View style={styles.container}>
@@ -135,7 +159,7 @@ const Hospital = (props) => {
         <Text style={styles.textoPedido}>{selectedPedidoHospital.descripcion}</Text>
       </View>
       <TouchableOpacity
-        style={[styles.donarButton, !canDonate && styles.disabledButton]}
+        style={[styles.donarButton, isDisabled && styles.disabledButton]}
         onPress={() =>
           props.navigation.navigate('QuieroDonar', {
             hospital: selectedHospital,
@@ -143,9 +167,9 @@ const Hospital = (props) => {
             tipoDonacion: donacion,
           })
         }
-        disabled={!canDonate}
+        disabled={isDisabled}
       >
-        <Text style={styles.donarButtonText}>{canDonate ? 'Quiero donar' : 'No apto para donar aún'}</Text>
+        <Text style={styles.donarButtonText}>{!isDisabled ? 'Quiero donar' : 'No apto para donar aún'}</Text>
       </TouchableOpacity>
     </View>
   );
