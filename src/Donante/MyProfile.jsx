@@ -19,14 +19,20 @@ export const MyProfile = (props) => {
         const response = await fetch(`${API_URL}/donante/getLastAssistedTurnByDonante/${props.user.user.id}`);
         const data = await response.json();
   
-        if (data && data.fecha) {
+        if (Array.isArray(data)) {
+          if (data.length > 0 && data[0].fecha) {
+            setLastDonation(data[0].fecha);
+          } else {
+            setLastDonation(null);
+          }
+        } else if (data && data.fecha) {
           setLastDonation(data.fecha);
         } else {
-          setLastDonation(null);  // Handle case where no donation exists
+          setLastDonation(null);
         }
       } catch (error) {
         console.error('Error fetching donation data:', error);
-        setLastDonation(null);  // Handle error case gracefully
+        setLastDonation(null);
       }
     };
   
