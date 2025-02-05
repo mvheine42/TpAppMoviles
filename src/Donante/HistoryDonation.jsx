@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, FlatList, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 
 const API_URL = "http://localhost:3000";
 export const DonationsScreen = (props) => {
   const [discounts, setDiscounts] = useState([]);
   const [selectedDiscount, setSelectedDiscount] = useState(null);
+  const [donationSum, setDonationSum] = useState(0);
 
   const userId = props.user.user.id;
 
@@ -14,6 +15,8 @@ export const DonationsScreen = (props) => {
         .then((response) => response.json())
         .then((data) => {
           setDiscounts(data);
+          const totalDonations = data.reduce((sum, benefit) => sum + (benefit.cantidadDonacionesRequeridas || 0), 0);
+          setDonationSum(totalDonations);
         })
         .catch((error) => {
           console.error('Error fetching benefits:', error);
@@ -34,20 +37,25 @@ export const DonationsScreen = (props) => {
       <Text style={styles.header}>DonaVida+</Text>
       <Text style={styles.heading}>Beneficios y Descuentos</Text>
       {userId ? (
-        <FlatList
-          data={discounts}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => openDiscountDetails(item)}>
-              <View style={styles.discountItem}>
-                <Image source={{ uri: item.imagen }} style={styles.discountImage} />
-                <View style={styles.discountOverlay}>
-                  <Text style={styles.discountText}>{item.tipoDescuento}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
+        <>
+          {donationSum === 0 && (
+            <Text style={styles.newUserMessage}>¡Para seguir sumando beneficios, doná!</Text>
           )}
-        />
+          <FlatList
+            data={discounts}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => openDiscountDetails(item)}>
+                <View style={styles.discountItem}>
+                  <Image source={{ uri: item.imagen }} style={styles.discountImage} />
+                  <View style={styles.discountOverlay}>
+                    <Text style={styles.discountText}>{item.tipoDescuento}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </>
       ) : (
         <Text style={styles.noUserText}>User data not available</Text>
       )}
@@ -84,10 +92,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
   },
-  section: {
-    marginHorizontal: 16,
-    marginBottom: 20,
-  },
   heading: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -96,9 +100,17 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     color: '#A4161A',
   },
+  newUserMessage: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#A4161A',
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
   discountItem: {
     alignItems: 'center',
     marginBottom: 10,
+    marginHorizontal: 20,
   },
   discountImage: {
     width: 300,

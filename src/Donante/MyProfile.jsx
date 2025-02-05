@@ -8,42 +8,13 @@ const API_URL = "http://localhost:3000"
 
 export const MyProfile = (props) => {
 
-  const [editing, setEditing] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [post, setPost] = React.useState("");
 
-  const handleUpdatePost = async () => {
-    try {
-        const response = await fetch(API_URL + "/donantes/" + postId, { // Especifica el ID del post que deseas actualizar
-            method: "PUT", // Utiliza el método PUT para actualizar el post existente
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                content: newPostContent, // Nuevo contenido del post
-                authorId: userId,
-                groupId: groupId
-            })
-        });
-
-        if (response.ok) {
-            const updatedPost = await response.json();
-            
-        } else {
-            console.error("Error al actualizar el post:", response.status);
-        }
-    } catch (error) {
-        console.error("Error en la solicitud de actualización:", error);
-    }
-};
 
 
   const fieldsToShow = ['nombre', 'apellido', 'email', 'edad', 'peso', 'medicaciones', 'embarazo'];
 
-
-  const handleEdit = () => {
-    setEditing(true);
-  };
 
   const userFields = props.user.user ? Object.keys(props.user.user) : [];
   return (
@@ -52,7 +23,7 @@ export const MyProfile = (props) => {
       <View style={styles.header}>
       <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => props.logOut()} // Trigger the logout function
+          onPress={() => props.logOut()}
           disabled={loggingOut}>
           <Image source={logOutImage} style={styles.logOutImage} />
         </TouchableOpacity>
@@ -64,28 +35,35 @@ export const MyProfile = (props) => {
         <Text style={styles.perfilName}>{props.user.user.nombre} {props.user.user.apellido}</Text>
       </View>
       <ScrollView style={styles.content}>
-        {fieldsToShow.map(field => (
-          props.user.user[field] !== undefined && props.user.user[field]  !== null && (
-            <View key={field} style={styles.fieldContainer}>
-              <Text style={styles.label}>
-                {field === 'nombre' ? 'Nombre' :
-                 field === 'apellido' ? 'Apellido' :
-                 field === 'email' ? 'Correo' :
-                 field === 'edad' ? 'Edad' :
-                 field === 'peso' ? 'Peso' :
-                 field === 'medicaciones' ? 'Medicación' :
-                 field === 'embarazo' ? 'Probabilidad de embarazo' : ''}:
-              </Text>
-              <Text>{props.user.user[field]}</Text>
-            </View>)))}
-            </ScrollView>
-      <View style={styles.timeSinceDonation}>
-        <Text style={styles.label}>Tiempo desde la última donación: 6 meses y 6 días</Text>
-      </View>
+          {fieldsToShow.map(field => (
+            props.user.user[field] !== undefined && props.user.user[field] !== null && (
+              <View key={field} style={styles.fieldContainer}>
+                <Text style={styles.label}>
+                  {field === 'nombre' ? 'Nombre' :
+                  field === 'apellido' ? 'Apellido' :
+                  field === 'email' ? 'Correo' :
+                  field === 'edad' ? 'Edad' :
+                  field === 'peso' ? 'Peso' :
+                  field === 'medicaciones' ? 'Medicación' :
+                  field === 'embarazo' ? 'Probabilidad de embarazo' : ''}:
+                </Text>
+                <Text>
+                  {field === 'embarazo' 
+                    ? (props.user.user[field] ? 'Sí' : 'No') 
+                    : props.user.user[field]
+                  }
+                </Text>
+              </View>
+            )
+          ))}
+        </ScrollView>
+        <View style={styles.timeSinceDonation}>
+          <Text style={styles.label}>Tiempo desde la última donación: 6 meses y 6 días</Text>
+        </View>
       <TouchableOpacity
   onPress={() => props.navigation.navigate('HistoryDonation')}>
   <View style={styles.historyBenefits}>
-    <Text style={styles.historyBenefitsText}>Historial y Beneficios</Text>
+    <Text style={styles.historyBenefitsText}>Beneficios</Text>
   </View>
 </TouchableOpacity>
   </ScrollView>
@@ -98,7 +76,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: '#A4161A',
-    position: 'relative', // Agrega esto para que el position: 'absolute' de logoutButton funcione correctamente
+    position: 'relative',
   },
   header: {
     flexDirection: 'column',
@@ -108,7 +86,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     marginBottom: 15,
-    position: 'relative', // Ajusta para que el position: 'absolute' de logoutButton funcione correctamente
+    position: 'relative', 
   },
   iconContainer: {
     width: 50,
@@ -139,7 +117,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     color: '#660708',
-    marginTop: 50, // Reduce the margin here
+    marginTop: 50, 
     backgroundColor: '#F5F3F4',
     borderRadius: 10,
     padding: 5,
@@ -204,21 +182,21 @@ const styles = StyleSheet.create({
   timeSinceDonation: {
     marginBottom: 10,
     marginTop: 10,
-    backgroundColor: '#F5F3F4', // Color de fondo
-    padding: 10, // Espaciado interior
-    borderRadius: 10, // Bordes redondeados
-    alignItems: 'center', // Centra el contenido horizontalmente
+    backgroundColor: '#F5F3F4', 
+    padding: 10, 
+    borderRadius: 10, 
+    alignItems: 'center',
   },
   historyBenefits: {
-    backgroundColor: '#F5F3F4', // Color de fondo del contenedor
-    borderRadius: 10, // Bordes redondeados
-    padding: 15, // Espaciado interior
-    alignItems: 'center', // Centra el contenido horizontalmente
+    backgroundColor: '#F5F3F4', 
+    borderRadius: 10, 
+    padding: 15, 
+    alignItems: 'center', 
   },
   historyBenefitsText: {
-    color: 'black', // Color del texto
-    fontWeight: 'bold', // Estilo de texto en negrita
-    fontSize: 20, // Tamaño de fuente
+    color: 'black', 
+    fontWeight: 'bold', 
+    fontSize: 20,
   },   
   logoutButton: {
     position: 'absolute',
@@ -227,28 +205,9 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   logOutImage: {
-    width: 30, // Ajusta según tus preferencias
-    height: 30, // Ajusta según tus preferencias
+    width: 30, 
+    height: 30, 
   },
 });
 
 export default MyProfile;
-
-
-//const handleCancel = () => {
-    //setEditing(false);
-    //setEditedPerfil({ ...perfil });
-  //};
-
-  //const handleSave = () => {
-    //setEditing(false);
-    //setPerfil({ ...editedPerfil });
-  //};
-
-  //const handleLogout = () => {
-    // Lógica de logout aquí
-    //setLoggingOut(true); // Puedes mostrar un indicador de carga si es necesario
-    // Ejemplo: Redirigir al inicio de sesión o realizar otras acciones de logout
-
-    //setLoggingOut(false);
-  //};
