@@ -77,16 +77,28 @@ const Hospital = (props) => {
 
   }, [canDonate]);
 
+  const [hasActiveTurn, setHasActiveTurn] = useState([]);
+
   const fetchTurnos = async () => {
     try {
       let response = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);
       let data = await response.json();
-      setTurnos(data);
-      checkDonationEligibility(data);
+      
+      const turnosOrdenados = data.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+  
+      const hoy = new Date();
+
+      const hasActiveTurn = turnosOrdenados.length > 0 && new Date(turnosOrdenados[0].fecha) > hoy;
+  
+      setTurnos(turnosOrdenados);
+      setHasActiveTurn(hasActiveTurn);
+  
+      checkDonationEligibility(turnosOrdenados);
     } catch (error) {
       console.error('Error fetching turnos:', error);
     }
   };
+  
 
   const checkDonationEligibility = (turnos) => {
     if (!Array.isArray(turnos)) {
@@ -124,7 +136,18 @@ const Hospital = (props) => {
     return EARTH_RADIUS * c;
   };
 
-  const isDisabled = !(canDonate && esCompatible);
+  const isDisabled = !(canDonate && esCompatible && !hasActiveTurn);
+  
+  let mensaje = "Quiero donar";
+
+  if (!esCompatible) {
+    mensaje = "No eres compatible para donar";
+  } else if (!canDonate) {
+    mensaje = "Aún no puedes donar";
+  } else if (hasActiveTurn) {
+    mensaje = "Tienes un turno activo";
+  }
+  
 
   return (
     <View style={styles.container}>
@@ -169,7 +192,7 @@ const Hospital = (props) => {
         }
         disabled={isDisabled}
       >
-        <Text style={styles.donarButtonText}>{!isDisabled ? 'Quiero donar' : 'No apto para donar aún'}</Text>
+        <Text style={styles.donarButtonText}>{mensaje}</Text>
       </TouchableOpacity>
     </View>
   );

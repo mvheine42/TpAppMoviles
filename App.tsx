@@ -35,36 +35,55 @@ const obtenerFCMToken = async () => {
 const StackNavigator = connectScreen(StackNavigatorScreen);
 
 const App = () => {
+
   useEffect(() => {
-    createNotificationChannel();
+    const solicitarPermisos = async () => {
+      try {
+        const statuses = await requestMultiple([
+          PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+          PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
+          PERMISSIONS.ANDROID.POST_NOTIFICATIONS,
+        ]);
+  
+        if (statuses[PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION] !== 'granted' &&
+            statuses[PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION] !== 'granted') {
+          console.error('❌ Permiso de ubicación no concedido');
+        }
+  
+        if (statuses[PERMISSIONS.ANDROID.POST_NOTIFICATIONS] !== 'granted') {
+          console.error('❌ Permiso de notificaciones no concedido');
+        }
 
-    requestMultiple([PERMISSIONS.ANDROID.POST_NOTIFICATIONS]).then((statuses) => {
-      if (statuses[PERMISSIONS.ANDROID.POST_NOTIFICATIONS] !== 'granted') {
-        console.error('❌ Permiso de notificaciones no concedido');
+        console.log('Location Permissions: ', statuses[PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION])
+        console.log('Notification Permissions: ', statuses[PERMISSIONS.ANDROID.POST_NOTIFICATIONS])
+      
+      } catch (error) {
+        console.error('Error al solicitar permisos:', error);
       }
-    });
-
+    };
+  
+    createNotificationChannel();
+    solicitarPermisos();
     obtenerFCMToken();
-
+  
     messaging().onMessage(async remoteMessage => {
       if (remoteMessage.notification) {
-        const messageBody = remoteMessage.notification.body ?? 'Mensaje no disponible';
         PushNotification.localNotification({
           channelId: "default-channel-id",
           title: remoteMessage.notification.title,
-          message: messageBody,
+          message: remoteMessage.notification.body ?? 'Mensaje no disponible',
         });
-        console.log('Se recibió una notificacion en primer plano');
+        console.log('📩 Notificación en primer plano recibida');
       }
     });
-
+  
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      if (remoteMessage.notification) {
-        console.log('Se recibió una notificacion en segundo plano');
-      }
+      console.log('📩 Notificación en segundo plano recibida');
     });
+  
   }, []);
 
+  
   return (
     <Provider store={store}>
       <StackNavigator />
