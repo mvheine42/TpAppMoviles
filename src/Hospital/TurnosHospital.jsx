@@ -41,7 +41,6 @@ export const TurnosHospital = (props) => {
       const data = await response.json();
       const today = new Date();
   
-      // Filter turns with a date prior to today
       const filteredTurns = data.filter((turn) => new Date(turn.fecha) < today);
   
       setTurns(filteredTurns);

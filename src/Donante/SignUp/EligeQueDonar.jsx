@@ -52,7 +52,6 @@ export const EligeQueDonar = (props) => {
     <View style={styles.container}>
       <Text style={styles.mainText}>¿Qué quieres donar?</Text>
 
-      {/* Opción de donar sangre */}
       <TouchableOpacity
         style={[
           styles.option,
@@ -68,7 +67,6 @@ export const EligeQueDonar = (props) => {
         </View>
       </TouchableOpacity>
 
-      {/* Opción de donar médula */}
       <TouchableOpacity
         style={[
           styles.option,
@@ -84,7 +82,6 @@ export const EligeQueDonar = (props) => {
         </View>
       </TouchableOpacity>
 
-      {/* Opción de donar plaquetas */}
       <TouchableOpacity
         style={[
           styles.option,

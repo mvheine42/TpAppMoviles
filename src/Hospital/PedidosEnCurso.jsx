@@ -54,7 +54,6 @@ export const PedidosEnCurso = (props) => {
       let response = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
       let pedidos = await response.json();
   
-      // Priority for ordering
       const statusOrder = { 
         active: 1, 
         inactive: 2, 
@@ -62,7 +61,6 @@ export const PedidosEnCurso = (props) => {
         cancelled: 4 
       };
   
-      // Sort based on status priority
       pedidos.sort((a, b) => (statusOrder[a.state] || 5) - (statusOrder[b.state] || 5));
   
       setPedidos(pedidos);

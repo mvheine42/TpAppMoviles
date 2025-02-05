@@ -54,11 +54,13 @@ const App = () => {
           title: remoteMessage.notification.title,
           message: messageBody,
         });
+        console.log('Se recibió una notificacion en primer plano');
       }
     });
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       if (remoteMessage.notification) {
+        console.log('Se recibió una notificacion en segundo plano');
       }
     });
   }, []);

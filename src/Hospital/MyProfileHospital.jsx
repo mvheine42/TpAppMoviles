@@ -15,7 +15,7 @@ export const MyProfileHospital = (props) => {
         <View style={styles.header}>
         <TouchableOpacity
           style={styles.logoutButton}
-          onPress={() => props.logOut()} // Trigger the logout function
+          onPress={() => props.logOut()} 
           disabled={loggingOut}>
           <Image source={logOutImage} style={styles.logOutImage} />
         </TouchableOpacity>
@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   logOutImage: {
-    width: 30, // Ajusta según tus preferencias
-    height: 30, // Ajusta según tus preferencias
+    width: 30,
+    height: 30,
   },
 });
 

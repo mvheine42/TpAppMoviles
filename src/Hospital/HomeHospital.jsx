@@ -3,11 +3,10 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import { useNavigation , useFocusEffect} from '@react-navigation/native';
 
 
-// Función para obtener la fecha de hoy en formato "dd/mm/yyyy"
 const getFormattedDateToday = () => {
   const today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
-  const mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+  const mm = String(today.getMonth() + 1).padStart(2, '0'); 
   const yyyy = today.getFullYear();
   return `${dd}/${mm}/${yyyy}`;
 };
@@ -44,8 +43,7 @@ const HomeHospital = (props) => {
     try {
       let response = await fetch(`${API_URL}/hospital/getPedidosById/${props.user.user.id}`);
       let pedidos = await response.json();
-      //console.log(pedidos)
-      const activePedidos = pedidos.filter(pedido => pedido.state === 'active'); // Filter active pedidos
+      const activePedidos = pedidos.filter(pedido => pedido.state === 'active');
       setPedidos(activePedidos);
     } catch (error) {
       console.error("Error fetching pedidos:", error);

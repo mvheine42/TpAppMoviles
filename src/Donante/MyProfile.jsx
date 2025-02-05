@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   fieldContainer: {
-    marginBottom: 15,
+    marginTop: 15,
   },
   label: {
     fontSize: 16,

@@ -15,13 +15,12 @@ export const VerificacionDeDatosHospital = (props) => {
   const crearCuenta = async () => {
     setLoading(true);
   
-    // Flatten the data
     const flattenedData = {
       ...usuarioData,
-      ...usuarioData.userInfo,  // This will spread the userInfo fields into the main object
+      ...usuarioData.userInfo, 
     };
-    delete flattenedData.userInfo;  // Remove the nested object since it's now redundant
-    const fieldsToConvert = ['latitude', 'longitude']; // Add the keys you need to convert
+    delete flattenedData.userInfo;
+    const fieldsToConvert = ['latitude', 'longitude'];
     fieldsToConvert.forEach((key) => {
         if (flattenedData[key] !== undefined && typeof flattenedData[key] === 'number') {
           flattenedData[key] = flattenedData[key].toString();

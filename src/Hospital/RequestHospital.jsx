@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 28,
-    color: 'black',  // Color de la "X"
+    color: 'black',
   },
 });
 

@@ -2,15 +2,14 @@ import React, { createContext, useContext, useState } from 'react';
 
 const HospitalContext = createContext({
   selectedHospital: null,
-  setHospital: () => {}, // Función de no-op para valores iniciales
+  setHospital: () => {},
 });
 
 export const HospitalProvider = ({ children }) => {
   const [selectedHospital, setSelectedHospital] = useState(null);
 
   const setHospital = (hospital) => {
-    //console.log("Set hospital: ", hospital);  // Aquí puedes ver si se está actualizando el hospital
-    setSelectedHospital(hospital); // Guarda el hospital seleccionado
+    setSelectedHospital(hospital);
   };
 
   return (
@@ -22,6 +21,5 @@ export const HospitalProvider = ({ children }) => {
 
 export const useHospitalContext = () => {
   const context = useContext(HospitalContext);
-  //console.log("useHospitalContext:", context); // Verifica que el contexto está siendo accesado correctamente
   return context;
 };

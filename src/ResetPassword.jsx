@@ -7,7 +7,7 @@ const ResetPassword = () => {
     const [email, setEmail] = useState("");
     const [pin, setPin] = useState("");
     const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");  // Campo para confirmar la contraseña
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const navigation = useNavigation();
@@ -86,7 +86,6 @@ const ResetPassword = () => {
     setLoading(false);
   };
 
-  // Verificaciones para habilitar/deshabilitar los botones
   const isSendPinDisabled = !email || loading;
   const isVerifyPinDisabled = !pin || loading;
   const isResetPasswordDisabled = !newPassword || loading;

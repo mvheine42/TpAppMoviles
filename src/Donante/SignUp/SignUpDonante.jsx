@@ -49,8 +49,8 @@ export const SignUpDonante = (props) => {
       email &&
       genero &&
       dni &&
-      edad > 0 && // Asegurarse de que la edad es un número válido
-      peso > 0 && // Asegurarse de que el peso es un número válido
+      edad > 0 && 
+      peso > 0 && 
       (selectedMedicacion === 'No' || (selectedMedicacion === 'Si' && medicacion)) &&
       (genero !== 'Femenino' || selectedEmbarazo !== null) &&
       password &&
@@ -67,10 +67,10 @@ export const SignUpDonante = (props) => {
       dni,
       email,
       genero,
-      edad: parseInt(edad, 10), // Convertir edad a número
-      peso: parseFloat(peso), // Convertir peso a número
-      medicaciones: selectedMedicacion === 'Si' ? medicacion : 'Ninguna', // Enviar medicaciones correctamente
-      embarazo: selectedEmbarazo === 'Si', // Convertir embarazo a booleano
+      edad: parseInt(edad, 10), 
+      peso: parseFloat(peso), 
+      medicaciones: selectedMedicacion === 'Si' ? medicacion : 'Ninguna',
+      embarazo: selectedEmbarazo === 'Si',
       password,
     };
   

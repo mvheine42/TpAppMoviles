@@ -99,14 +99,14 @@ export const Turnos = (props) => {
   
 
     let asistenciaText = "";
-    let asistenciaColor = "transparent"; // Oculto por defecto
+    let asistenciaColor = "transparent";
   
     if (item.assisted === "true") {
       asistenciaText = "Asistió";
       asistenciaColor = "green";
     } else if (item.assisted === "false") {
       asistenciaText = "No asistió";
-      asistenciaColor = "#555555"; // Gris oscuro
+      asistenciaColor = "#555555"; 
     }
   
     return (

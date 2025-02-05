@@ -13,7 +13,7 @@ const GraciasScreen = () => {
       navigation.replace('TabScreenDon'); 
     };
 
-    const animationDuration = 5000; // 5 seconds
+    const animationDuration = 5000;
 
     Animated.parallel([
       Animated.timing(circleScaleValue, {

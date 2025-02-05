@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 
 export const CargarTurnos = (props) => {
-  const [fecha, setFecha] = useState(new Date()); // Cambia el estado inicial a una fecha
+  const [fecha, setFecha] = useState(new Date()); 
   const [hora, setHora] = useState('');
   const [tipo, setTipo] = useState('Sangre');
   const [tipoSangre, setTipoSangre] = useState('O');

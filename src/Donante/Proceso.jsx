@@ -13,9 +13,9 @@ export const Proceso = (props) => {
 
     const toggleButton = (index) => {
         if (activeButton === index) {
-            setActiveButton(null); // Cierra el botón si ya está abierto
+            setActiveButton(null);
         } else {
-            setActiveButton(index); // Abre el botón seleccionado
+            setActiveButton(index);
         }
     };
 

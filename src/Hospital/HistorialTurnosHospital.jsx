@@ -63,7 +63,7 @@ const HistorialTurnosHospital = (props) => {
       if (response.ok) {
         Alert.alert('Éxito', 'Turno cancelado exitosamente.');
         closeModal();
-        fetchTurnsFromServer(); // Refresh turns
+        fetchTurnsFromServer();
       } else {
         const errorData = await response.json();
         Alert.alert('Error', errorData.message || 'Error al cancelar el turno.');

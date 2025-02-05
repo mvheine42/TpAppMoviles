@@ -108,7 +108,6 @@ export const QuieroDonar = (props) => {
       for (let min = 0; min < 60; min += 30) {
         const horaString = `${hora.toString().padStart(2, "0")}:${min === 0 ? "00" : "30"}`;
   
-        // Verificar si el turno está ocupado o si ya pasó en el día actual
         const isNoDisponible =
           horariosNoDisponiblesParaFecha.includes(horaString) || 
           (esHoy && (hora < horaActual || (hora === horaActual && min < minutosActuales)));
@@ -183,7 +182,7 @@ export const QuieroDonar = (props) => {
         return;
       }
     
-      const idDonante = props.user.user.id; // Asegúrate de obtenerlo correctamente
+      const idDonante = props.user.user.id;
       const idPedidoHospital = props.route.params?.idPedidoHospital;
     
       const fechaCompleta = new Date(`${selectedDate}T${selectedHorario}:00`);
@@ -445,8 +444,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   horaBox: {
-    width: '18%', // Ajusta el ancho según tus preferencias
-    height: 70, // Ajusta el alto según tus preferencias
+    width: '18%',
+    height: 70, 
     borderWidth: 2,
     borderColor: 'rgb(173, 193, 120)',
     alignItems: 'center',
@@ -489,8 +488,8 @@ const styles = StyleSheet.create({
     alignContent: 'space-between'
   },
   image: {
-    width: 100,  // Aumenta el tamaño del icono
-    height: 100, // Aumenta el tamaño del icono
+    width: 100, 
+    height: 100,
     resizeMode: 'contain',
     marginTop: 15,
   },

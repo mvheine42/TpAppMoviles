@@ -20,7 +20,7 @@ export const Hospitales = (props) => {
   const [position, setPosition] = useState(null);
   const [hospitales, setHospitales] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(true);
 
   const requestBody = {
     tipoDonacion: props.route.params.tipoDonacion,
@@ -44,7 +44,6 @@ export const Hospitales = (props) => {
   };
 
   const fetchHospitales = async (pos) => {
-    setLoading(true); // Start loading
     try {
       const response = await fetch(`${API_URL}/hospital/getPedidosPorParametros/${props.user.user.id}`, {
         method: "POST",
@@ -55,7 +54,7 @@ export const Hospitales = (props) => {
       if (response.status === 404) {
         setErrorMessage("No hay pedidos disponibles con esta información.");
         setHospitales([]);
-        setLoading(false); // Stop loading
+        setLoading(false);
         return;
       }
 
@@ -80,7 +79,7 @@ export const Hospitales = (props) => {
     } catch (error) {
       console.error("Error en fetching Hospitales: ", error);
     } finally {
-      setLoading(false); // Stop loading after fetching
+      setLoading(false);
     }
   };
 
@@ -94,11 +93,8 @@ export const Hospitales = (props) => {
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      {loading ? (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="black" />
-        </View>
-      ) : errorMessage ? (
+
+      {errorMessage ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{errorMessage}</Text>
         </View>
@@ -109,7 +105,9 @@ export const Hospitales = (props) => {
               <TouchableOpacity key={item.id} onPress={() => handleHospitalPress(item)}>
                 <View style={styles.item}>
                   <Text style={styles.itemTitle}>{item.hospital.nombre}</Text>
-                  <Text style={styles.itemPedido}>Tipo de Pedido: {item.tipoDonacion === "Sangre" ? `Sangre: ${item.tipoSangre} ${item.factorRh}` : item.tipoDonacion}</Text>
+                  <Text style={styles.itemPedido}>
+                    Tipo de Pedido: {item.tipoDonacion === "Sangre" ? `Sangre: ${item.tipoSangre} ${item.factorRh}` : item.tipoDonacion}
+                  </Text>
                   <Text style={styles.itemDescription}>{item.descripcion}</Text>
                   <Text style={styles.itemDistancia}>Distancia: {item.distance} km</Text>
                 </View>
@@ -117,6 +115,12 @@ export const Hospitales = (props) => {
             ))}
           </View>
         </ScrollView>
+      )}
+
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="white" />
+        </View>
       )}
     </View>
   );
@@ -188,6 +192,16 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

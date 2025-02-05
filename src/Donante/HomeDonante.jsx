@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, TouchableOpacity, Image, TouchableWithoutFeedback, Modal, ScrollView , StyleSheet, FlatList } from "react-native"
+import { View, Text, TouchableOpacity, Image, RefreshControl , TouchableWithoutFeedback, Modal, ScrollView , StyleSheet, FlatList } from "react-native"
 import { useState, useEffect } from 'react';
 import Geolocation from '@react-native-community/geolocation';
 import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
@@ -7,7 +7,7 @@ import { requestMultiple, PERMISSIONS } from 'react-native-permissions';
 const API_URL = "http://localhost:3000";
 const image = 'https://thumbs.dreamstime.com/b/icono-del-logotipo-hospital-135146804.jpg';
 
-function calcularDistancia(lat1, lon1, lat2, lon2) { //fun de chatgpt para calcular la distancia en kms
+function calcularDistancia(lat1, lon1, lat2, lon2) {
     const degreesToRadians = (degrees) => {
         return degrees * (Math.PI / 180);
     }
@@ -45,6 +45,7 @@ const Home = (props) => {
     const [position, setPosition] = useState(null);
     const [distancia, setDistancia] = useState(null);
     const [pedidos, setPedidos] = useState([]);
+    const [refreshing, setRefreshing] = useState(false); 
 
     React.useEffect(() => {      
       fetchPedidos();
@@ -53,11 +54,21 @@ const Home = (props) => {
     const categories = pedidos.length > 0 ? Array.from(new Set(pedidos.map((item) => item.tipoDonacion))) : [];
 
     const fetchPedidos = async () => {
-      let pedidos = await fetch(`${API_URL}/donante/getHospitalActiveOrdersFor/${props.user.user.id}`);
-      pedidos = await pedidos.json();
-      setPedidos(pedidos);
-    }
+      setRefreshing(true);
+      try {
+        let response = await fetch(`${API_URL}/donante/getHospitalActiveOrdersFor/${props.user.user.id}`);
+        let pedidosData = await response.json();
+        setPedidos(pedidosData);
+      } catch (error) {
+        console.error("Error al obtener pedidos:", error);
+      } finally {
+        setRefreshing(false);
+      }
+    };
 
+    const onRefresh = () => {
+      fetchPedidos();
+    };
 
     useEffect(() => {
       const handleGetCurrentPosition = () => {
@@ -78,7 +89,7 @@ const Home = (props) => {
   
     useEffect(() => {
       if (position) {
-        const destino = {} ; // esto es lo q necesitamos de los htales. 
+        const destino = {} ;
         const distanciaCalculada = calcularDistancia(position.coords.latitude, position.coords.longitude, destino.latitude, destino.longitude);
         setDistancia(distanciaCalculada);
       }
@@ -94,7 +105,6 @@ const Home = (props) => {
     const toggleCategory = (category) => {
       setSelectedCategories((prevCategories) => {
           if (prevCategories.includes(category)) {
-              // Evitar que todas se deseleccionen
               if (prevCategories.length === 1) return prevCategories;
               return prevCategories.filter((c) => c !== category);
           } else {
@@ -148,7 +158,7 @@ const Home = (props) => {
   
     const fechaDonacion = new Date('2023-11-17');
     const fechaActual = new Date();
-    const tiempoRestante = Math.ceil((fechaDonacion - fechaActual) / (1000 * 60 * 60 * 24)); // Diferencia en días
+    const tiempoRestante = Math.ceil((fechaDonacion - fechaActual) / (1000 * 60 * 60 * 24)); 
   
     const closeCountdown = () => {
       setShowModal(false);
@@ -192,6 +202,9 @@ const Home = (props) => {
           style={{ flex: 1 }} 
           contentContainerStyle={{ flexGrow: 1 }} 
           keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           <View style={styles.header}>
           <Text style={styles.title}>DonaVida+</Text>
