@@ -1,30 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 const profileImage = require('../../imagenes/icons8-circled-user-female-skin-type-4-100.png');
 const logOutImage = require('../../imagenes/icons8-logout-100-2.png');
 
-const API_URL = "http://localhost:3000"
-
+const API_URL = "http://localhost:3000";
 
 export const MyProfile = (props) => {
-
   const [loggingOut, setLoggingOut] = useState(false);
-  const [post, setPost] = React.useState("");
-
-
+  const [lastDonation, setLastDonation] = useState(null);
 
   const fieldsToShow = ['nombre', 'apellido', 'email', 'edad', 'peso', 'medicaciones', 'embarazo'];
 
-
   const userFields = props.user.user ? Object.keys(props.user.user) : [];
+
+  useEffect(() => {
+    const fetchLastDonation = async () => {
+      try {
+        const response = await fetch(`${API_URL}/donante/getLastAssistedTurnByDonante/${props.user.user.id}`);
+        const data = await response.json();
+        if (data.length > 0) {
+          setLastDonation(new Date(data[0].fecha));
+        }
+      } catch (error) {
+        console.error('Error fetching donation data:', error);
+      }
+    };
+
+    fetchLastDonation();
+  }, [props.user.user.id]);
+
+  const calculateTimeSinceDonation = (date) => {
+    const now = new Date();
+    const diffInMilliseconds = now - date;
+    const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+    const months = Math.floor(diffInDays / 30);
+    const days = diffInDays % 30;
+    return `${months} meses y ${days} días`;
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      
       <View style={styles.header}>
-      <TouchableOpacity
+        <TouchableOpacity
           style={styles.logoutButton}
           onPress={() => props.logOut()}
-          disabled={loggingOut}>
+          disabled={loggingOut}
+        >
           <Image source={logOutImage} style={styles.logOutImage} />
         </TouchableOpacity>
         <View style={styles.iconContainer}>
@@ -34,41 +55,47 @@ export const MyProfile = (props) => {
         </View>
         <Text style={styles.perfilName}>{props.user.user.nombre} {props.user.user.apellido}</Text>
       </View>
-      <ScrollView style={styles.content}>
-          {fieldsToShow.map(field => (
-            props.user.user[field] !== undefined && props.user.user[field] !== null && (
-              <View key={field} style={styles.fieldContainer}>
-                <Text style={styles.label}>
-                  {field === 'nombre' ? 'Nombre' :
-                  field === 'apellido' ? 'Apellido' :
-                  field === 'email' ? 'Correo' :
-                  field === 'edad' ? 'Edad' :
-                  field === 'peso' ? 'Peso' :
-                  field === 'medicaciones' ? 'Medicación' :
-                  field === 'embarazo' ? 'Probabilidad de embarazo' : ''}:
-                </Text>
-                <Text>
-                  {field === 'embarazo' 
-                    ? (props.user.user[field] ? 'Sí' : 'No') 
-                    : props.user.user[field]
-                  }
-                </Text>
-              </View>
-            )
-          ))}
-        </ScrollView>
-        <View style={styles.timeSinceDonation}>
-          <Text style={styles.label}>Tiempo desde la última donación: 6 meses y 6 días</Text>
-        </View>
-      <TouchableOpacity
-  onPress={() => props.navigation.navigate('HistoryDonation')}>
-  <View style={styles.historyBenefits}>
-    <Text style={styles.historyBenefitsText}>Beneficios</Text>
-  </View>
-</TouchableOpacity>
-  </ScrollView>
 
-)};
+      <ScrollView style={styles.content}>
+        {fieldsToShow.map(field => (
+          props.user.user[field] !== undefined && props.user.user[field] !== null && (
+            <View key={field} style={styles.fieldContainer}>
+              <Text style={styles.label}>
+                {field === 'nombre' ? 'Nombre' :
+                field === 'apellido' ? 'Apellido' :
+                field === 'email' ? 'Correo' :
+                field === 'edad' ? 'Edad' :
+                field === 'peso' ? 'Peso' :
+                field === 'medicaciones' ? 'Medicación' :
+                field === 'embarazo' ? 'Probabilidad de embarazo' : ''}:
+              </Text>
+              <Text>
+                {field === 'embarazo' 
+                  ? (props.user.user[field] ? 'Sí' : 'No') 
+                  : props.user.user[field]
+                }
+              </Text>
+            </View>
+          )
+        ))}
+      </ScrollView>
+
+      <View style={styles.timeSinceDonation}>
+        {lastDonation ? (
+          <Text style={styles.label}>Tiempo desde la última donación: {calculateTimeSinceDonation(lastDonation)}</Text>
+        ) : (
+          <Text style={styles.label}>Todavía no has realizado ninguna donación</Text>
+        )}
+      </View>
+
+      <TouchableOpacity onPress={() => props.navigation.navigate('HistoryDonation')}>
+        <View style={styles.historyBenefits}>
+          <Text style={styles.historyBenefitsText}>Beneficios</Text>
+        </View>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -138,46 +165,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#A4161A',
-  },
-  info: {
-    fontSize: 16,
-    color: 'black',
-  },
-  infoEdit: {
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 15,
-    width: '100%',
-    color: 'black',
-  },
-  editButton: {
-    backgroundColor: '#A4161A',
-    borderRadius: 15,
-    padding: 15,
-  },
-  editButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#B1A7A6',
-    borderRadius: 20,
-    padding: 15,
-    marginRight: 10,
-  },
-  saveButton: {
-    backgroundColor: '#A4161A',
-    borderRadius: 20,
-    padding: 15,
-    marginLeft: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 16,
   },
   timeSinceDonation: {
     marginBottom: 10,
