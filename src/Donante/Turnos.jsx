@@ -20,15 +20,20 @@ export const Turnos = (props) => {
   }, []);
 
   const fetchTurnos = async () => {
-    setLoading(true); // Muestra el indicador de carga
+    setLoading(true);
     try {
       let response = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);
       let data = await response.json();
-      setTurnos(data);
+  
+      if (data.message === "No se encontraron turnos para este donante.") {
+        setTurnos([]);
+      } else {
+        setTurnos(data);
+      }
     } catch (error) {
       console.error('Error fetching turnos:', error);
     } finally {
-      setLoading(false); // Oculta el indicador de carga
+      setLoading(false);
     }
   };
 
@@ -183,15 +188,24 @@ export const Turnos = (props) => {
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      <FlatList 
-        data={turnos} 
-        renderItem={renderItem} 
-        keyExtractor={(item) => item.id.toString()}
-        refreshing={loading} // Estado de carga para Pull-to-Refresh
-        onRefresh={fetchTurnos} // Llamado al deslizar hacia abajo
-      />
+  
+      {turnos.length === 0 && !loading ? (
+        <View style={styles.noTurnosContainer}>
+          <Text style={styles.noTurnosText}>No hay turnos</Text>
+        </View>
+      ) : (
+        <FlatList 
+          data={turnos} 
+          renderItem={renderItem} 
+          keyExtractor={(item) => item.id.toString()}
+          refreshing={loading}
+          onRefresh={fetchTurnos}
+          contentContainerStyle={turnos.length === 0 ? styles.flatListEmpty : null}
+        />
+      )}
+  
       <Modal visible={selectedTurn !== null} animationType="slide" transparent>
-      <View style={styles.modalContainer}>
+        <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalHeading}>{selectedHospital?.nombre}</Text>
             <Text style={styles.modalInfo}>Fecha: {selectedTurn ? formatFecha(selectedTurn.fecha) : "N/A"}hs</Text>
@@ -316,6 +330,22 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: 'right',
   },
+  noTurnosContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+  },
+  noTurnosText: {
+    fontSize: 20,
+    color: '#A4161A',
+    fontWeight: 'bold',
+  },
+  flatListEmpty: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default Turnos;

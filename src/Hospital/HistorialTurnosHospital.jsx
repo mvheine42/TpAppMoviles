@@ -95,6 +95,8 @@ const HistorialTurnosHospital = (props) => {
     </View>
   );
 
+  const isPastTurn = selectedTurn && new Date(selectedTurn.fecha) < new Date();
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -143,13 +145,19 @@ const HistorialTurnosHospital = (props) => {
                   <Text style={styles.modalInfoPaciente}>Edad: {selectedTurn.donante.edad}</Text>
                   <Text style={styles.modalInfoPaciente}>Peso: {selectedTurn.donante.peso}kg</Text>
                   <Text style={styles.modalInfoPaciente}>Medicaciones: {selectedTurn.donante.medicaciones}</Text>
-                  <Text style={styles.modalInfoPaciente}>Embarazo: {selectedTurn.donante.embarazo}</Text>
+                  <Text style={styles.modalInfoPaciente}>Embarazo: {selectedTurn.donante.embarazo ? 'Sí' : 'No'}</Text>
                   <Text style={styles.modalInfoPaciente}>Tipo de Sangre: {selectedTurn.donante.tipoSangre} {selectedTurn.donante.factorRH}</Text>
                 </View>
               </View>
             )}
-            <TouchableOpacity onPress={cancelTurn} style={styles.modalCloseButton}>
-              <Text style={styles.modalCloseButtonText}>Cancelar Turno</Text>
+            <TouchableOpacity
+              onPress={!isPastTurn ? cancelTurn : null}
+              style={[styles.modalCloseButton, isPastTurn && styles.disabledButton]}
+              disabled={isPastTurn}
+            >
+              <Text style={[styles.modalCloseButtonText, isPastTurn && styles.disabledButtonText]}>
+                {isPastTurn ? 'Turno Expirado' : 'Cancelar Turno'}
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -257,6 +265,12 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 20,
     color: '#A4161A',
+  },
+  disabledButton: {
+    backgroundColor: '#CCCCCC',
+  },
+  disabledButtonText: {
+    color: '#666666',
   },
 });
 
