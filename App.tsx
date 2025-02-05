@@ -8,17 +8,16 @@ import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PushNotification from "react-native-push-notification";
 
-// Crear el canal de notificación
 const createNotificationChannel = () => {
   PushNotification.createChannel(
     {
-      channelId: "default-channel-id", // ID del canal
-      channelName: "Default Channel",  // Nombre del canal
-      channelDescription: "Canal predeterminado para notificaciones", // Descripción
-      playSound: true, // Habilitar sonido
-      soundName: "default", // Nombre del sonido
-      importance: 4, // Alta importancia
-      vibrate: true, // Habilitar vibración
+      channelId: "default-channel-id",
+      channelName: "Default Channel",
+      channelDescription: "Canal predeterminado para notificaciones",
+      playSound: true, 
+      soundName: "default",
+      importance: 4,
+      vibrate: true,
     },
     (created) => console.log(`Canal creado: ${created}`)
   );
@@ -37,7 +36,6 @@ const StackNavigator = connectScreen(StackNavigatorScreen);
 
 const App = () => {
   useEffect(() => {
-    // Crear canal de notificación al iniciar la app
     createNotificationChannel();
 
     requestMultiple([PERMISSIONS.ANDROID.POST_NOTIFICATIONS]).then((statuses) => {
@@ -51,10 +49,8 @@ const App = () => {
     messaging().onMessage(async remoteMessage => {
       if (remoteMessage.notification) {
         const messageBody = remoteMessage.notification.body ?? 'Mensaje no disponible';
-
-        // Aquí ya estás usando el channelId, asegúrate de que esté disponible
         PushNotification.localNotification({
-          channelId: "default-channel-id", // Usar el canal creado
+          channelId: "default-channel-id",
           title: remoteMessage.notification.title,
           message: messageBody,
         });
@@ -63,7 +59,6 @@ const App = () => {
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       if (remoteMessage.notification) {
-        // Manejar notificación en segundo plano
       }
     });
   }, []);

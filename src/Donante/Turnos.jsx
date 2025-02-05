@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, Modal} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { useFocusEffect } from '@react-navigation/native';
 
 const API_URL = "http://localhost:3000";
 
@@ -14,20 +13,24 @@ export const Turnos = (props) => {
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
-    
+  const [loading, setLoading] = useState(false);
   
-  useFocusEffect(
-    React.useCallback(() => {
+  React.useEffect(() => {      
       fetchTurnos();
-    }, [])
-  );
-  
+  }, []);
 
   const fetchTurnos = async () => {
-    let turnos = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);
-    turnos = await turnos.json();
-    setTurnos(turnos);
-  }
+    setLoading(true); // Muestra el indicador de carga
+    try {
+      let response = await fetch(`${API_URL}/donante/getTurnosById/${props.user.user.id}`);
+      let data = await response.json();
+      setTurnos(data);
+    } catch (error) {
+      console.error('Error fetching turnos:', error);
+    } finally {
+      setLoading(false); // Oculta el indicador de carga
+    }
+  };
 
   function formatFecha(fechaISO) {
     const fecha = new Date(fechaISO);
@@ -180,7 +183,13 @@ export const Turnos = (props) => {
       <View style={styles.header}>
         <Text style={styles.title}>DonaVida+</Text>
       </View>
-      <FlatList data={turnos} renderItem={renderItem} keyExtractor={(item) => item.id}/>
+      <FlatList 
+        data={turnos} 
+        renderItem={renderItem} 
+        keyExtractor={(item) => item.id.toString()}
+        refreshing={loading} // Estado de carga para Pull-to-Refresh
+        onRefresh={fetchTurnos} // Llamado al deslizar hacia abajo
+      />
       <Modal visible={selectedTurn !== null} animationType="slide" transparent>
       <View style={styles.modalContainer}>
           <View style={styles.modalContent}>

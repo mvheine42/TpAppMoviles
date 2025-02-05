@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
+
 const profileImage = require('../../imagenes/icons8-circled-user-female-skin-type-4-100.png');
 const logOutImage = require('../../imagenes/icons8-logout-100-2.png');
 
@@ -11,16 +12,14 @@ export const MyProfile = (props) => {
 
   const fieldsToShow = ['nombre', 'apellido', 'email', 'edad', 'peso', 'medicaciones', 'embarazo'];
 
-  const userFields = props.user.user ? Object.keys(props.user.user) : [];
 
   useEffect(() => {
     const fetchLastDonation = async () => {
       try {
         const response = await fetch(`${API_URL}/donante/getLastAssistedTurnByDonante/${props.user.user.id}`);
         const data = await response.json();
-        if (data.length > 0) {
-          setLastDonation(new Date(data[0].fecha));
-        }
+        setLastDonation(data.fecha);
+
       } catch (error) {
         console.error('Error fetching donation data:', error);
       }
@@ -29,14 +28,41 @@ export const MyProfile = (props) => {
     fetchLastDonation();
   }, [props.user.user.id]);
 
-  const calculateTimeSinceDonation = (date) => {
+  const calculateTimeSinceDonation = () => {
+    if (!lastDonation) return 'No donation found yet';
+    
+    const lastDonationDate = new Date(lastDonation);
+    if (isNaN(lastDonationDate.getTime())) {
+      return 'Invalid date';
+    }
+    
     const now = new Date();
-    const diffInMilliseconds = now - date;
+    
+    const diffInMilliseconds = now - lastDonationDate;
     const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
-    const months = Math.floor(diffInDays / 30);
-    const days = diffInDays % 30;
-    return `${months} meses y ${days} días`;
+  
+    const years = now.getFullYear() - lastDonationDate.getFullYear();
+    const months = now.getMonth() - lastDonationDate.getMonth();
+    const days = now.getDate() - lastDonationDate.getDate();
+    
+    let adjustedMonths = months;
+    let adjustedYears = years;
+  
+    if (adjustedMonths < 0) {
+      adjustedMonths += 12;
+      adjustedYears -= 1;
+    }
+    
+    let adjustedDays = days;
+    if (adjustedDays < 0) {
+      const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      adjustedDays = new Date(now.getFullYear(), now.getMonth(), 0).getDate() - lastDonationDate.getDate() + now.getDate();
+    }
+  
+    return `${adjustedYears} años, ${adjustedMonths} meses y ${adjustedDays} días`;
   };
+  
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -82,7 +108,7 @@ export const MyProfile = (props) => {
 
       <View style={styles.timeSinceDonation}>
         {lastDonation ? (
-          <Text style={styles.label}>Tiempo desde la última donación: {calculateTimeSinceDonation(lastDonation)}</Text>
+          <Text style={styles.label}>Tiempo desde la última donación: {calculateTimeSinceDonation()}</Text>
         ) : (
           <Text style={styles.label}>Todavía no has realizado ninguna donación</Text>
         )}

@@ -89,7 +89,7 @@ const Hospital = (props) => {
   };
 
   const checkDonationEligibility = (turnos) => {
-    if (!Array.isArray(turnos) || turnos.length === 0) {
+    if (!Array.isArray(turnos)) {
       return;
     }
   

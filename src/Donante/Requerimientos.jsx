@@ -6,7 +6,7 @@ const Requerimientos = () => {
     const data = [
       { id: '1', source: require('../../imagenes/business-people.png'), text: 'Tener entre 16 y 65 años' },
       { id: '2', source: require('../../imagenes/bascula.png'), text: 'Pesar mas de 50K' },
-      { id: '3', source: require('../../imagenes/sangre.png'), text: '2 meses desde ultima donacion' },
+      { id: '3', source: require('../../imagenes/sangre.png'), text: '6 meses desde ultima donacion' },
       { id: '4', source: require('../../imagenes/dormir.png'), text: 'dormir mas de 6 horas' },
       { id: '5', source: require('../../imagenes/plato.png'), text: 'Desayunar/Almorzar' },
       { id: '6', source: require('../../imagenes/tatuaje.png'), text: '6 meses desde ultimo tatuaje' },

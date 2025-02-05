@@ -15,7 +15,6 @@ const Tab = createMaterialBottomTabNavigator();
 
 
 function StackNavigation(props) {
-  console.log(props)
   return (
     <Stack.Navigator>
       <Stack.Screen name='HomeDelHospital' options={{ headerShown: false }} {...props}>
